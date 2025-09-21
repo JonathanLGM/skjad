@@ -19,38 +19,37 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Verificar conexión al iniciar la app
+// Verificar conexión
 pool.connect()
   .then(() => console.log('✅ Conectado a Postgres correctamente en Render'))
   .catch(err => console.error('❌ Error de conexión:', err));
 
-// Endpoint de prueba para barrios
+// Endpoint de prueba
 app.get('/barrios', async (req, res) => {
   try {
     const result = await pool.query('SELECT nombre FROM barrio LIMIT 10;');
     res.json(result.rows);
   } catch (err) {
-    console.error('❌ Error en la consulta:', err);
+    console.error(err);
     res.status(500).send('Error en la consulta');
   }
 });
 
-// Ruta raíz para abrir el HTML del frontend
+// Ruta raíz para frontend
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/../frontend/cliente.html');
+  res.sendFile(__dirname + '/frontend/cliente.html');
 });
 
-// Importar rutas usando 'backend/...'
+// Importar rutas
 const clienteRouter = require('./rutasCliente');
-const cuentaRouter  = require('backend/rutas/cuenta');
-const usuarioRouter = require('backend/rutas/usuario');
-
-// Usar rutas
 app.use('/cliente', clienteRouter);
-app.use('/cuenta', cuentaRouter);
-app.use('/usuario', usuarioRouter);
 
-// Levantar servidor
+// Agrega aquí las demás rutas cuando las tengas
+// const cuentaRouter = require('./cuenta');
+// const usuarioRouter = require('./usuario');
+// app.use('/cuenta', cuentaRouter);
+// app.use('/usuario', usuarioRouter);
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
