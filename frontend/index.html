@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Barrios de Manizales</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { background: #f4f4f4; margin: 5px 0; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Barrios de Manizales</h1>
+    <ul id="barrios-list">
+        <li>Cargando...</li>
+    </ul>
+
+    <script>
+        const backendUrl = "http://localhost:3000"; // cuando lo subas a Render, reemplaza por la URL de allá
+
+        fetch(`${backendUrl}/barrios`)
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('barrios-list');
+                list.innerHTML = ''; // Limpiar el "Cargando..."
+                if (data.length > 0) {
+                    data.forEach(barrio => {
+                        const li = document.createElement('li');
+                        li.textContent = barrio.nombre; // 👈 corregido aquí
+                        list.appendChild(li);
+                    });
+                } else {
+                    list.innerHTML = '<li>No se encontraron barrios.</li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const list = document.getElementById('barrios-list');
+                list.innerHTML = '<li>Error al cargar los datos.</li>';
+            });
+    </script>
+</body>
+</html>
