@@ -44,9 +44,9 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
 
-const clienteRouter = require('./routes/cliente');
+const clienteRouter = require('./rutas/cliente');
 app.use('/cliente', clienteRouter);
-const cuentaRouter = require('./routes/cuenta');
+const cuentaRouter = require('./ruta/cuenta');
 app.use('/cuenta', cuentaRouter);
-const usuarioRouter = require('./routes/usuario');
+const usuarioRouter = require('./rutas/usuario');
 app.use('/usuario', usuarioRouter);
