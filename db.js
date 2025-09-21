@@ -1,17 +1,14 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
-  dialectOptions: { ssl: { rejectUnauthorized: false } },
+  protocol: 'postgres',
+  dialectOptions: {
+    ssl: {
+      rejectUnauthorized: false // necesario en Render
+    }
+  },
+  logging: false // opcional, para no mostrar logs SQL
 });
 
-const Cliente = require('./cliente')(sequelize, DataTypes);
-const Cuenta  = require('./cuenta')(sequelize, DataTypes);
-const Usuario = require('./usuario')(sequelize, DataTypes);
-
-module.exports = {
-  sequelize,
-  Cliente,
-  Cuenta,
-  Usuario
-};
+module.exports = sequelize;
