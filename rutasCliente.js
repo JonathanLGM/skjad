@@ -1,6 +1,7 @@
+module.exports = router;
 const express = require('express');
 const router = express.Router();
-const clienteControlador = require('../controladores/clienteControlador');
+const clienteControlador = require('./clienteControlador');
 
 // Crear cliente
 router.post('/', clienteControlador.registrarCliente);
