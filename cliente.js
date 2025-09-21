@@ -1,7 +1,6 @@
-const { Sequelize, DataTypes } = require('sequelize');
-
-const defineCliente = (sequelize) => {
-  const Cliente = sequelize.define('Cliente', {
+// Cliente.js
+const defineCliente = (sequelize, DataTypes) => {
+  return sequelize.define('Cliente', {
     id_cliente: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -41,14 +40,6 @@ const defineCliente = (sequelize) => {
     tableName: 'cliente',
     timestamps: true
   });
-
-  // Relaciones opcionales
-  Cliente.associate = (models) => {
-    Cliente.belongsTo(models.Barrio, { foreignKey: 'id_barrio', as: 'barrio' });
-    Cliente.hasMany(models.Cuenta, { foreignKey: 'id_cliente', as: 'cuentas' });
-  };
-
-  return Cliente;
 };
 
 module.exports = defineCliente;
