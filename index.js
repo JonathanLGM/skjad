@@ -6,33 +6,32 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 
-// Puerto dinámico de Render
+// Servir archivos estáticos desde /public
+app.use(express.static('public'));
+
 const PORT = process.env.PORT || 3000;
 
-// Pool de PostgreSQL con SSL (necesario en Render)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-
-// Verificar conexión al iniciar la app
-pool.connect()
-  .then(() => console.log('✅ Conectado a Postgres correctamente en Render'))
-  .catch(err => console.error('❌ Error de conexión:', err));
-
-// Endpoint para traer barrios
+// Endpoint para barrios
 app.get('/barrios', async (req, res) => {
   try {
-    const result = await pool.query('SELECT nombre FROM barrio LIMIT 10;');
+    const result = await pool.query('SELECT nombre FROM barrio LIMIT 5;');
     res.json(result.rows);
   } catch (err) {
-    console.error('❌ Error en la consulta:', err);
+    console.error(err);
     res.status(500).send('Error en la consulta');
   }
 });
 
-// Levantar servidor
+// Ruta raíz que entrega el HTML
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
+
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
