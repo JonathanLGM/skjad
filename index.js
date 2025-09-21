@@ -1,35 +1,52 @@
 const express = require('express');
+const { Pool } = require('pg');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
-
-// Middleware
 app.use(cors());
-app.use(express.json()); // Para recibir JSON en req.body
 
-// Importar rutas usando rutas absolutas relativas a este archivo
-const clienteRouter = require(path.join(__dirname, 'rutas', 'cliente'));
-const cuentaRouter = require(path.join(__dirname, 'rutas', 'cuenta'));
-const usuarioRouter = require(path.join(__dirname, 'rutas', 'usuario'));
+// Servir archivos estáticos desde la carpeta "frontend"
+app.use(express.static('frontend'));
 
-// Servir frontend estático
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
-
-// Rutas del backend
-app.use('/cliente', clienteRouter);
-app.use('/cuenta', cuentaRouter);
-app.use('/usuario', usuarioRouter);
-
-// Endpoint por defecto para abrir el frontend
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'cliente.html'));
-});
-
-// Puerto dinámico asignado por Render
+// Puerto dinámico de Render
 const PORT = process.env.PORT || 3000;
 
+// Pool de PostgreSQL con SSL (necesario en Render)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+// Verificar conexión al iniciar la app
+pool.connect()
+  .then(() => console.log('✅ Conectado a Postgres correctamente en Render'))
+  .catch(err => console.error('❌ Error de conexión:', err));
+
+// Endpoint para traer barrios
+app.get('/barrios', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT nombre FROM barrio LIMIT 10;');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Error en la consulta:', err);
+    res.status(500).send('Error en la consulta');
+  }
+});
+
+// Ruta raíz para servir el HTML
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/frontend/index.html');
+});
+
+// Levantar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
+
+const clienteRouter = require('./rutas/rutasCliente'); // si index.js está dentro de backend
+app.use('/cliente', clienteRouter);
+const cuentaRouter = require('./ruta/cuenta');
+app.use('/cuenta', cuentaRouter);
+const usuarioRouter = require('./rutas/usuario');
+app.use('/usuario', usuarioRouter);
