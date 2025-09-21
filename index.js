@@ -43,3 +43,10 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
+
+const clienteRouter = require('./routes/cliente');
+app.use('/cliente', clienteRouter);
+const cuentaRouter = require('./routes/cuenta');
+app.use('/cuenta', cuentaRouter);
+const usuarioRouter = require('./routes/usuario');
+app.use('/usuario', usuarioRouter);
