@@ -16,17 +16,16 @@
     </ul>
 
     <script>
-        const backendUrl = "http://localhost:3000"; // cuando lo subas a Render, reemplaza por la URL de allá
-
-        fetch(`${backendUrl}/barrios`)
+        // Ruta relativa, funciona tanto en local como en Render
+        fetch(`/barrios`)
             .then(response => response.json())
             .then(data => {
                 const list = document.getElementById('barrios-list');
-                list.innerHTML = ''; // Limpiar el "Cargando..."
+                list.innerHTML = ''; // Limpiar "Cargando..."
                 if (data.length > 0) {
                     data.forEach(barrio => {
                         const li = document.createElement('li');
-                        li.textContent = barrio.nombre; // 👈 corregido aquí
+                        li.textContent = barrio.nombre;
                         list.appendChild(li);
                     });
                 } else {
