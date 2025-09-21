@@ -1,7 +1,6 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -9,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // Servir frontend
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.use(express.static('frontend'));
 
 // Puerto dinámico de Render
 const PORT = process.env.PORT || 3000;
@@ -38,13 +37,13 @@ app.get('/barrios', async (req, res) => {
 
 // Ruta raíz para abrir el HTML del frontend
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'cliente.html'));
+  res.sendFile(__dirname + '/../frontend/cliente.html');
 });
 
-// Importar rutas del backend usando nombres reales
-const clienteRouter = require(path.join(__dirname, 'rutas', 'rutasCliente')); // archivo: backend/rutas/rutasCliente.js
-const cuentaRouter = require(path.join(__dirname, 'rutas', 'cuenta'));        // archivo: backend/rutas/cuenta.js
-const usuarioRouter = require(path.join(__dirname, 'rutas', 'usuario'));      // archivo: backend/rutas/usuario.js
+// Importar rutas usando 'backend/...'
+const clienteRouter = require('backend/rutas/rutasCliente');
+const cuentaRouter  = require('backend/rutas/cuenta');
+const usuarioRouter = require('backend/rutas/usuario');
 
 // Usar rutas
 app.use('/cliente', clienteRouter);
