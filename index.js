@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
 });
 
 // Importar rutas usando 'backend/...'
-const clienteRouter = require('backend/rutas/rutasCliente');
+const clienteRouter = require('./rutasCliente');
 const cuentaRouter  = require('backend/rutas/cuenta');
 const usuarioRouter = require('backend/rutas/usuario');
 
