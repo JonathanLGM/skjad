@@ -1,42 +1,44 @@
 const express = require('express');
 const { Client } = require('pg');
-const cors = require('cors'); // 👈 importar cors
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
+app.use(cors());
 
-// 👇 permitir todas las peticiones (desde Brave, Chrome, etc.)
-app.use(cors({
-  origin: "*",  // 👈 acepta cualquier origen (file:// también)
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type"]
-}));
+const PORT = process.env.PORT || 3000;
 
-// Configuración de Postgres
+// Crear cliente con la URL de conexión de Render
 const client = new Client({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'BancaTerritorialDB',
-  password: 'postgres',
-  port: 5432,
-  client_encoding: 'UTF8'
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // obligatorio en Render
 });
+
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // necesario en Render
+});
+
 
 // Conexión
 client.connect()
-  .then(() => console.log('✅ Conectado a Postgres correctamente (UTF-8)'))
+  .then(() => console.log('✅ Conectado a Postgres correctamente en Render'))
   .catch(err => console.error('❌ Error de conexión:', err));
 
-// Endpoint
+// Endpoint para traer barrios
 app.get('/barrios', async (req, res) => {
   try {
-    const result = await client.query('SELECT nombre FROM barrio LIMIT 10');
+    const result = await client.query('SELECT nombre FROM barrio LIMIT 10;');
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error('Error en la consulta:', err);
     res.status(500).send('Error en la consulta');
   }
 });
 
-app.listen(3000, () => {
-  console.log('🚀 Servidor en http://localhost:3000');
+// Levantar servidor
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor en http://localhost:${PORT}`);
 });
