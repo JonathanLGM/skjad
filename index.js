@@ -1,18 +1,20 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
-// Servir archivos estáticos desde la carpeta "frontend"
-app.use(express.static('frontend'));
+// Servir frontend
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 // Puerto dinámico de Render
 const PORT = process.env.PORT || 3000;
 
-// Pool de PostgreSQL con SSL (necesario en Render)
+// Pool de PostgreSQL con SSL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
@@ -23,7 +25,7 @@ pool.connect()
   .then(() => console.log('✅ Conectado a Postgres correctamente en Render'))
   .catch(err => console.error('❌ Error de conexión:', err));
 
-// Endpoint para traer barrios
+// Endpoint de prueba para barrios
 app.get('/barrios', async (req, res) => {
   try {
     const result = await pool.query('SELECT nombre FROM barrio LIMIT 10;');
@@ -34,19 +36,22 @@ app.get('/barrios', async (req, res) => {
   }
 });
 
-// Ruta raíz para servir el HTML
+// Ruta raíz para abrir el HTML del frontend
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/frontend/index.html');
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'cliente.html'));
 });
+
+// Importar rutas del backend usando nombres reales
+const clienteRouter = require(path.join(__dirname, 'rutas', 'rutasCliente')); // archivo: backend/rutas/rutasCliente.js
+const cuentaRouter = require(path.join(__dirname, 'rutas', 'cuenta'));        // archivo: backend/rutas/cuenta.js
+const usuarioRouter = require(path.join(__dirname, 'rutas', 'usuario'));      // archivo: backend/rutas/usuario.js
+
+// Usar rutas
+app.use('/cliente', clienteRouter);
+app.use('/cuenta', cuentaRouter);
+app.use('/usuario', usuarioRouter);
 
 // Levantar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
-
-const clienteRouter = require('./rutas/rutasCliente'); // si index.js está dentro de backend
-app.use('/cliente', clienteRouter);
-const cuentaRouter = require('./ruta/cuenta');
-app.use('/cuenta', cuentaRouter);
-const usuarioRouter = require('./rutas/usuario');
-app.use('/usuario', usuarioRouter);
