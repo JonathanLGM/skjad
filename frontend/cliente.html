@@ -46,17 +46,12 @@
   </table>
 
   <script>
-    // --- IMPORTANTE: Ajusta esta URL ---
-    // Opción 1: Si tu frontend y backend están en el MISMO servicio Render y el HTML se sirve desde la raíz
-    // y el backend escucha en /cliente, puedes usar una ruta relativa.
+    // --- CAMBIO CLAVE AQUÍ ---
+    // Usamos una ruta relativa porque el frontend y backend están en el mismo origen
     const backendUrl = "/cliente"; 
-    
-    // Opción 2: Si por alguna razón tu HTML está en un dominio/subdominio diferente o necesitas la URL completa,
-    // REEMPLAZA "https://tu-app-de-render.onrender.com" con la URL real que Render te asigna a tu servicio.
-    // const backendUrl = "https://tu-app-de-render.onrender.com/cliente"; 
 
     const obtenerClientes = async () => {
-      try { // Añade manejo de errores para las peticiones fetch
+      try {
         const res = await fetch(backendUrl);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
@@ -104,24 +99,20 @@
         id_barrio: parseInt(document.getElementById('id_barrio').value)
       };
 
-      // Validación básica
       if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || !clienteData.correo || isNaN(clienteData.id_barrio)) {
           alert('Por favor, completa todos los campos obligatorios (Nombre, Apellido, Documento, Correo, ID Barrio).');
           return;
       }
 
-
       let res;
       try {
         if (id_cliente) {
-          // Actualizar
           res = await fetch(`${backendUrl}/${id_cliente}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(clienteData)
           });
         } else {
-          // Crear
           res = await fetch(backendUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -193,7 +184,6 @@
 
     document.getElementById('guardarBtn').addEventListener('click', guardarCliente);
 
-    // Cargar clientes al inicio
     obtenerClientes();
   </script>
 </body>

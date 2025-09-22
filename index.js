@@ -1,23 +1,17 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { sequelize } = require('./db'); // Importa la instancia de sequelize y modelos
-const { Cliente } = require('./db'); // Importa el modelo Cliente
+const { sequelize } = require('./db');
+const { Cliente } = require('./db'); // Asegúrate de que db.js exporte Cliente
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- ACLARACIÓN IMPORTANTE PARA SERVIR FRONTEND ---
-// Si tu cliente.html está en la RAÍZ del repositorio, usa esto:
-app.use(express.static(__dirname)); // Sirve archivos estáticos desde la raíz
-// Si tu cliente.html está en una carpeta 'frontend' en la raíz, usa esto:
-// app.use(express.static('frontend')); // Sirve archivos estáticos desde la carpeta 'frontend'
-
-// **Por tu descripción, parece que quieres todo en la raíz, así que recomiendo la primera opción.**
-// Sin embargo, tu HTML hace referencia a un "frontend/cliente.html" en el comentario.
-// Voy a asumir que cliente.html está en la raíz y la carpeta 'frontend' no existe o no se usa para el HTML.
-// Si realmente tienes una carpeta 'frontend' con cliente.html dentro, ajusta la línea anterior.
+// --- CAMBIO CLAVE AQUÍ ---
+// Sirve archivos estáticos desde la carpeta 'frontend'
+// Esto significa que si pides `/cliente.html`, Express lo buscará en `./frontend/cliente.html`
+app.use(express.static('frontend'));
 
 // Puerto dinámico de Render
 const PORT = process.env.PORT || 3000;
@@ -30,13 +24,9 @@ sequelize.authenticate()
     process.exit(1);
   });
 
-// Endpoint de prueba para barrios usando Sequelize si tuvieras un modelo Barrio
-// Si no tienes un modelo Barrio definido con Sequelize, seguirás usando el pool de pg.
-// Para mantener tu endpoint existente, lo dejo como está, pero ten en cuenta la duplicidad
-// de conexión si usas pg y sequelize para la misma DB.
-// Si solo necesitas el nombre, puedes seguir usando pg.
-const { Pool } = require('pg'); // Mantén esto si sigues usando pg directamente para /barrios
-const pool = new Pool({ // Y esto
+// --- Mantenemos el Pool de pg si lo necesitas para /barrios, de lo contrario, puedes quitarlo ---
+const { Pool } = require('pg');
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
@@ -51,20 +41,27 @@ app.get('/barrios', async (req, res) => {
   }
 });
 
-// Ruta raíz para cargar directamente cliente.html
+// --- CAMBIO CLAVE AQUÍ ---
+// Ruta raíz para cargar cliente.html
+// Ahora que 'frontend' se sirve estáticamente, simplemente podemos referirnos a 'cliente.html'
+// si la ruta base es `/` y el archivo está en la carpeta servida.
+// Sin embargo, para ser explícitos y evitar ambigüedades, es mejor usar la ruta completa.
 app.get('/', (req, res) => {
-  // Asegúrate de que esta ruta apunte al archivo correcto.
-  // Si cliente.html está en la raíz:
-  res.sendFile(__dirname + '/cliente.html');
-  // Si cliente.html está en una carpeta 'frontend' y estás sirviendo 'frontend':
-  // res.sendFile(__dirname + '/frontend/cliente.html'); // Esta es tu línea original
+  res.sendFile(__dirname + '/frontend/cliente.html'); // Ruta explícita dentro del proyecto
 });
 
 
 // Rutas CRUD de Cliente
-// Asegúrate de que rutasCliente.js esté en la misma carpeta raíz
+// Estas rutas asumen que clienteRouter.js está en la raíz, lo cual es correcto según tu imagen.
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
+
+// Puedes añadir aquí otras rutas como las de usuario y cuenta
+const cuentaRouter = require('./rutasCuenta');
+app.use('/cuenta', cuentaRouter);
+
+const usuarioRouter = require('./rutasUsuario');
+app.use('/usuario', usuarioRouter);
 
 
 // Levantar servidor

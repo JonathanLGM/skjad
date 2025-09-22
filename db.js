@@ -1,39 +1,47 @@
 const { Sequelize, DataTypes } = require('sequelize');
 require('dotenv').config();
 
-// Configuración de Sequelize para PostgreSQL en Render
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   protocol: 'postgres',
   dialectOptions: {
     ssl: {
       require: true,
-      rejectUnauthorized: false // Importante para Render
+      rejectUnauthorized: false
     }
   },
-  logging: false // Desactiva el log de SQL por defecto, puedes activarlo para depurar
+  logging: false
 });
 
-// Importar y definir el modelo Cliente
-const defineCliente = require('./cliente'); // Asume que cliente.js está en la misma raíz
+// --- Asegúrate de que estas rutas de require son correctas según tu estructura ---
+// Si cliente.js está en la raíz
+const defineCliente = require('./cliente');
 const Cliente = defineCliente(sequelize, DataTypes);
 
-// Definir el modelo Barrio (si lo necesitas para relaciones o validaciones futuras)
-// Aunque en tu modelo Cliente usas id_barrio, no defines el modelo Barrio aquí.
-// Por ahora, solo nos enfocamos en Cliente.
-// Si tuvieras un modelo Barrio, se definiría y se asociaría aquí.
+// Repite para otros modelos, por ejemplo:
+const defineCuenta = require('./cuenta');
+const Cuenta = defineCuenta(sequelize, DataTypes);
 
-// Sincronizar modelos (crea las tablas si no existen)
-// En producción, es mejor usar migraciones, pero para desarrollo rápido, esto funciona.
-sequelize.sync()
+const defineUsuario = require('./usuario');
+const Usuario = defineUsuario(sequelize, DataTypes);
+
+// Aquí definirías las asociaciones si las hay
+// Ejemplo: Cliente.hasMany(Cuenta, { foreignKey: 'id_cliente' });
+// Cuenta.belongsTo(Cliente, { foreignKey: 'id_cliente' });
+
+sequelize.sync({ alter: true }) // 'alter: true' intentará actualizar las tablas sin borrarlas
   .then(() => {
     console.log('✅ Modelos sincronizados con la base de datos');
   })
   .catch(err => {
     console.error('❌ Error al sincronizar modelos:', err);
+    // Considera si quieres que la aplicación se cierre en un entorno de producción si la sincronización falla
+    // process.exit(1);
   });
 
 module.exports = {
   sequelize,
-  Cliente
+  Cliente,
+  Cuenta, // Exporta todos tus modelos
+  Usuario
 };
