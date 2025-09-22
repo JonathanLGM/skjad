@@ -18,13 +18,6 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 const defineCliente = require('./cliente');
 const Cliente = defineCliente(sequelize, DataTypes);
 
-// Repite para otros modelos, por ejemplo:
-const defineCuenta = require('./cuenta');
-const Cuenta = defineCuenta(sequelize, DataTypes);
-
-const defineUsuario = require('./usuario');
-const Usuario = defineUsuario(sequelize, DataTypes);
-
 // Aquí definirías las asociaciones si las hay
 // Ejemplo: Cliente.hasMany(Cuenta, { foreignKey: 'id_cliente' });
 // Cuenta.belongsTo(Cliente, { foreignKey: 'id_cliente' });
@@ -42,6 +35,4 @@ sequelize.sync({ alter: true }) // 'alter: true' intentará actualizar las tabla
 module.exports = {
   sequelize,
   Cliente,
-  Cuenta, // Exporta todos tus modelos
-  Usuario
 };
