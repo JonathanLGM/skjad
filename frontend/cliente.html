@@ -46,31 +46,50 @@
   </table>
 
   <script>
-    const backendUrl = "https://TU-URL-RENDER/cliente"; // reemplaza con tu URL de Render
+    // --- IMPORTANTE: Ajusta esta URL ---
+    // Opción 1: Si tu frontend y backend están en el MISMO servicio Render y el HTML se sirve desde la raíz
+    // y el backend escucha en /cliente, puedes usar una ruta relativa.
+    const backendUrl = "/cliente"; 
+    
+    // Opción 2: Si por alguna razón tu HTML está en un dominio/subdominio diferente o necesitas la URL completa,
+    // REEMPLAZA "https://tu-app-de-render.onrender.com" con la URL real que Render te asigna a tu servicio.
+    // const backendUrl = "https://tu-app-de-render.onrender.com/cliente"; 
 
     const obtenerClientes = async () => {
-      const res = await fetch(backendUrl);
-      const data = await res.json();
-      const tbody = document.getElementById('clientesTable');
-      tbody.innerHTML = '';
-      data.resultado.forEach(cliente => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${cliente.id_cliente}</td>
-          <td>${cliente.nombre}</td>
-          <td>${cliente.apellido}</td>
-          <td>${cliente.documento}</td>
-          <td>${cliente.telefono || ''}</td>
-          <td>${cliente.direccion || ''}</td>
-          <td>${cliente.correo}</td>
-          <td>${cliente.id_barrio}</td>
-          <td>
-            <button onclick="editarCliente(${cliente.id_cliente})">Editar</button>
-            <button onclick="eliminarCliente(${cliente.id_cliente})">Eliminar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+      try { // Añade manejo de errores para las peticiones fetch
+        const res = await fetch(backendUrl);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const tbody = document.getElementById('clientesTable');
+        tbody.innerHTML = '';
+        if (data.resultado && Array.isArray(data.resultado)) {
+            data.resultado.forEach(cliente => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${cliente.id_cliente}</td>
+                <td>${cliente.nombre}</td>
+                <td>${cliente.apellido}</td>
+                <td>${cliente.documento}</td>
+                <td>${cliente.telefono || ''}</td>
+                <td>${cliente.direccion || ''}</td>
+                <td>${cliente.correo}</td>
+                <td>${cliente.id_barrio}</td>
+                <td>
+                <button onclick="editarCliente(${cliente.id_cliente})">Editar</button>
+                <button onclick="eliminarCliente(${cliente.id_cliente})">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            });
+        } else {
+            console.warn("La respuesta no contiene un array de clientes en 'resultado':", data);
+            tbody.innerHTML = '<tr><td colspan="9">No hay clientes para mostrar.</td></tr>';
+        }
+      } catch (error) {
+        console.error("Error al obtener clientes:", error);
+        alert("Error al cargar clientes: " + error.message);
+        document.getElementById('clientesTable').innerHTML = '<tr><td colspan="9">Error al cargar clientes.</td></tr>';
+      }
     };
 
     const guardarCliente = async () => {
@@ -85,50 +104,80 @@
         id_barrio: parseInt(document.getElementById('id_barrio').value)
       };
 
-      let res;
-      if (id_cliente) {
-        // Actualizar
-        res = await fetch(`${backendUrl}/${id_cliente}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(clienteData)
-        });
-      } else {
-        // Crear
-        res = await fetch(backendUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(clienteData)
-        });
+      // Validación básica
+      if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || !clienteData.correo || isNaN(clienteData.id_barrio)) {
+          alert('Por favor, completa todos los campos obligatorios (Nombre, Apellido, Documento, Correo, ID Barrio).');
+          return;
       }
 
-      const result = await res.json();
-      alert(result.mensaje);
-      limpiarFormulario();
-      obtenerClientes();
+
+      let res;
+      try {
+        if (id_cliente) {
+          // Actualizar
+          res = await fetch(`${backendUrl}/${id_cliente}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(clienteData)
+          });
+        } else {
+          // Crear
+          res = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(clienteData)
+          });
+        }
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        
+        alert(result.mensaje);
+        limpiarFormulario();
+        obtenerClientes();
+      } catch (error) {
+        console.error("Error al guardar cliente:", error);
+        alert("Error al guardar cliente: " + error.message);
+      }
     };
 
     const editarCliente = async (id) => {
-      const res = await fetch(`${backendUrl}/${id}`);
-      const data = await res.json();
-      const cliente = data.resultado;
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const cliente = data.resultado;
 
-      document.getElementById('id_cliente').value = cliente.id_cliente;
-      document.getElementById('nombre').value = cliente.nombre;
-      document.getElementById('apellido').value = cliente.apellido;
-      document.getElementById('documento').value = cliente.documento;
-      document.getElementById('telefono').value = cliente.telefono || '';
-      document.getElementById('direccion').value = cliente.direccion || '';
-      document.getElementById('correo').value = cliente.correo;
-      document.getElementById('id_barrio').value = cliente.id_barrio;
+        if (cliente) {
+            document.getElementById('id_cliente').value = cliente.id_cliente;
+            document.getElementById('nombre').value = cliente.nombre;
+            document.getElementById('apellido').value = cliente.apellido;
+            document.getElementById('documento').value = cliente.documento;
+            document.getElementById('telefono').value = cliente.telefono || '';
+            document.getElementById('direccion').value = cliente.direccion || '';
+            document.getElementById('correo').value = cliente.correo;
+            document.getElementById('id_barrio').value = cliente.id_barrio;
+        } else {
+            alert('Cliente no encontrado para edición.');
+        }
+      } catch (error) {
+        console.error("Error al editar cliente:", error);
+        alert("Error al cargar datos del cliente para edición: " + error.message);
+      }
     };
 
     const eliminarCliente = async (id) => {
       if (!confirm('¿Seguro que quieres eliminar este cliente?')) return;
-      const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
-      const result = await res.json();
-      alert(result.mensaje);
-      obtenerClientes();
+      try {
+        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        obtenerClientes();
+      } catch (error) {
+        console.error("Error al eliminar cliente:", error);
+        alert("Error al eliminar cliente: " + error.message);
+      }
     };
 
     const limpiarFormulario = () => {
@@ -146,9 +195,6 @@
 
     // Cargar clientes al inicio
     obtenerClientes();
-
-    <button onclick="window.location.href='cliente.html'" style="padding: 10px; margin: 20px 0;">Ir al CRUD de Clientes</button>
-
   </script>
 </body>
 </html>

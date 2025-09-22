@@ -38,7 +38,7 @@ const defineCliente = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'cliente',
-    timestamps: true
+    timestamps: true // Esto creará createdAt y updatedAt
   });
 };
 
