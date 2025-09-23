@@ -1,61 +1,190 @@
-<script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Cliente</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    input, button { padding: 5px; margin: 5px 0; width: 100%; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>CRUD Cliente</h1>
+
+  <!-- Formulario para crear o actualizar -->
+  <div>
+    <input type="hidden" id="id_cliente">
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="text" id="apellido" placeholder="Apellido">
+    <input type="text" id="documento" placeholder="Documento">
+    <input type="text" id="telefono" placeholder="Teléfono">
+    <input type="text" id="direccion" placeholder="Dirección">
+    <input type="email" id="correo" placeholder="Correo">
+    <input type="number" id="id_barrio" placeholder="ID Barrio">
+    <button id="guardarBtn">Guardar Cliente</button>
+  </div>
+
+  <!-- Tabla de clientes -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Documento</th>
+        <th>Teléfono</th>
+        <th>Dirección</th>
+        <th>Correo</th>
+        <th>ID Barrio</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="clientesTable"></tbody>
+  </table>
+
+  <script>
+    // --- CAMBIO CLAVE AQUÍ ---
+    // Usamos una ruta relativa porque el frontend y backend están en el mismo origen
     const backendUrl = "/cliente"; 
 
-    // ... (otras funciones como obtenerClientes, editarCliente, eliminarCliente y limpiarFormulario son las mismas) ...
-
-    const guardarCliente = async () => {
-        const id_cliente_val = document.getElementById('id_cliente').value; // Obtén el valor del input oculto
-
-        // Crea el objeto con los datos del cliente
-        const clienteData = {
-            nombre: document.getElementById('nombre').value,
-            apellido: document.getElementById('apellido').value,
-            documento: document.getElementById('documento').value,
-            telefono: document.getElementById('telefono').value,
-            direccion: document.getElementById('direccion').value,
-            correo: document.getElementById('correo').value,
-            id_barrio: parseInt(document.getElementById('id_barrio').value)
-        };
-
-        // Validación básica
-        if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || !clienteData.correo || isNaN(clienteData.id_barrio)) {
-            alert('Por favor, completa todos los campos obligatorios (Nombre, Apellido, Documento, Correo, ID Barrio).');
-            return;
+    const obtenerClientes = async () => {
+      try {
+        const res = await fetch(backendUrl);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const tbody = document.getElementById('clientesTable');
+        tbody.innerHTML = '';
+        if (data.resultado && Array.isArray(data.resultado)) {
+            data.resultado.forEach(cliente => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${cliente.id_cliente}</td>
+                <td>${cliente.nombre}</td>
+                <td>${cliente.apellido}</td>
+                <td>${cliente.documento}</td>
+                <td>${cliente.telefono || ''}</td>
+                <td>${cliente.direccion || ''}</td>
+                <td>${cliente.correo}</td>
+                <td>${cliente.id_barrio}</td>
+                <td>
+                <button onclick="editarCliente(${cliente.id_cliente})">Editar</button>
+                <button onclick="eliminarCliente(${cliente.id_cliente})">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            });
+        } else {
+            console.warn("La respuesta no contiene un array de clientes en 'resultado':", data);
+            tbody.innerHTML = '<tr><td colspan="9">No hay clientes para mostrar.</td></tr>';
         }
-
-        let res;
-        try {
-            if (id_cliente_val) { // Si id_cliente_val tiene un valor, estamos actualizando
-                // No necesitas añadir id_cliente al body para PUT, ya va en la URL
-                res = await fetch(`${backendUrl}/${id_cliente_val}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clienteData)
-                });
-            } else { // Si id_cliente_val está vacío, estamos creando
-                // Asegúrate de que id_cliente NO se envíe en el body para POST
-                // clienteData ya no incluye id_cliente porque nunca lo pusimos.
-                res = await fetch(backendUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clienteData)
-                });
-            }
-
-            const result = await res.json();
-            if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-            
-            alert(result.mensaje);
-            limpiarFormulario();
-            obtenerClientes();
-        } catch (error) {
-            console.error("Error al guardar cliente:", error);
-            alert("Error al guardar cliente: " + error.message);
-        }
+      } catch (error) {
+        console.error("Error al obtener clientes:", error);
+        alert("Error al cargar clientes: " + error.message);
+        document.getElementById('clientesTable').innerHTML = '<tr><td colspan="9">Error al cargar clientes.</td></tr>';
+      }
     };
 
-    // ... (el resto del script es el mismo) ...
+    const guardarCliente = async () => {
+      const id_cliente = document.getElementById('id_cliente').value;
+      const clienteData = {
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        documento: document.getElementById('documento').value,
+        telefono: document.getElementById('telefono').value,
+        direccion: document.getElementById('direccion').value,
+        correo: document.getElementById('correo').value,
+        id_barrio: parseInt(document.getElementById('id_barrio').value)
+      };
+
+      if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || !clienteData.correo || isNaN(clienteData.id_barrio)) {
+          alert('Por favor, completa todos los campos obligatorios (Nombre, Apellido, Documento, Correo, ID Barrio).');
+          return;
+      }
+
+      let res;
+      try {
+        if (id_cliente) {
+          res = await fetch(`${backendUrl}/${id_cliente}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(clienteData)
+          });
+        } else {
+          res = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(clienteData)
+          });
+        }
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        
+        alert(result.mensaje);
+        limpiarFormulario();
+        obtenerClientes();
+      } catch (error) {
+        console.error("Error al guardar cliente:", error);
+        alert("Error al guardar cliente: " + error.message);
+      }
+    };
+
+    const editarCliente = async (id) => {
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const cliente = data.resultado;
+
+        if (cliente) {
+            document.getElementById('id_cliente').value = cliente.id_cliente;
+            document.getElementById('nombre').value = cliente.nombre;
+            document.getElementById('apellido').value = cliente.apellido;
+            document.getElementById('documento').value = cliente.documento;
+            document.getElementById('telefono').value = cliente.telefono || '';
+            document.getElementById('direccion').value = cliente.direccion || '';
+            document.getElementById('correo').value = cliente.correo;
+            document.getElementById('id_barrio').value = cliente.id_barrio;
+        } else {
+            alert('Cliente no encontrado para edición.');
+        }
+      } catch (error) {
+        console.error("Error al editar cliente:", error);
+        alert("Error al cargar datos del cliente para edición: " + error.message);
+      }
+    };
+
+    const eliminarCliente = async (id) => {
+      if (!confirm('¿Seguro que quieres eliminar este cliente?')) return;
+      try {
+        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        obtenerClientes();
+      } catch (error) {
+        console.error("Error al eliminar cliente:", error);
+        alert("Error al eliminar cliente: " + error.message);
+      }
+    };
+
+    const limpiarFormulario = () => {
+      document.getElementById('id_cliente').value = '';
+      document.getElementById('nombre').value = '';
+      document.getElementById('apellido').value = '';
+      document.getElementById('documento').value = '';
+      document.getElementById('telefono').value = '';
+      document.getElementById('direccion').value = '';
+      document.getElementById('correo').value = '';
+      document.getElementById('id_barrio').value = '';
+    };
 
     document.getElementById('guardarBtn').addEventListener('click', guardarCliente);
+
     obtenerClientes();
-</script>
+  </script>
+</body>
+</html>
