@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Usuario</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    input, button { padding: 5px; margin: 5px 0; width: 100%; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>CRUD Usuario</h1>
+
+  <!-- Formulario -->
+  <div>
+    <input type="hidden" id="id_usuario">
+    <input type="text" id="username" placeholder="Usuario">
+    <input type="password" id="password" placeholder="Contraseña">
+    <input type="date" id="fecha_inicio" placeholder="Fecha Inicio">
+    <input type="date" id="fecha_final" placeholder="Fecha Final">
+    <input type="text" id="rol" placeholder="Rol">
+    <input type="text" id="estado" placeholder="Estado">
+    <input type="number" id="id_cliente" placeholder="ID Cliente">
+    <button id="guardarBtn">Guardar Usuario</button>
+  </div>
+
+  <!-- Tabla -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Fecha Inicio</th>
+        <th>Fecha Final</th>
+        <th>ID Cliente</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="usuariosTable"></tbody>
+  </table>
+
+  <script>
+    const backendUrl = "/usuario";
+
+    const obtenerUsuarios = async () => {
+      try {
+        const res = await fetch(backendUrl);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const tbody = document.getElementById('usuariosTable');
+        tbody.innerHTML = '';
+        if (data.resultado && Array.isArray(data.resultado)) {
+          data.resultado.forEach(usuario => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${usuario.id_usuario}</td>
+              <td>${usuario.username}</td>
+              <td>${usuario.rol}</td>
+              <td>${usuario.estado}</td>
+              <td>${usuario.fecha_inicio}</td>
+              <td>${usuario.fecha_final || ''}</td>
+              <td>${usuario.id_cliente}</td>
+              <td>
+                <button onclick="editarUsuario(${usuario.id_usuario})">Editar</button>
+                <button onclick="eliminarUsuario(${usuario.id_usuario})">Eliminar</button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } else {
+          tbody.innerHTML = '<tr><td colspan="8">No hay usuarios para mostrar.</td></tr>';
+        }
+      } catch (error) {
+        console.error("Error al obtener usuarios:", error);
+        alert("Error al cargar usuarios: " + error.message);
+      }
+    };
+
+    const guardarUsuario = async () => {
+      const id_usuario = document.getElementById('id_usuario').value;
+      const usuarioData = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        fecha_inicio: document.getElementById('fecha_inicio').value,
+        fecha_final: document.getElementById('fecha_final').value || null,
+        rol: document.getElementById('rol').value,
+        estado: document.getElementById('estado').value,
+        id_cliente: parseInt(document.getElementById('id_cliente').value)
+      };
+
+      if (!usuarioData.username || !usuarioData.password || !usuarioData.fecha_inicio || !usuarioData.rol || !usuarioData.estado || isNaN(usuarioData.id_cliente)) {
+        alert('Completa todos los campos obligatorios.');
+        return;
+      }
+
+      let res;
+      try {
+        if (id_usuario) {
+          res = await fetch(`${backendUrl}/${id_usuario}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(usuarioData)
+          });
+        } else {
+          res = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(usuarioData)
+          });
+        }
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        limpiarFormulario();
+        obtenerUsuarios();
+      } catch (error) {
+        console.error("Error al guardar usuario:", error);
+        alert("Error al guardar usuario: " + error.message);
+      }
+    };
+
+    const editarUsuario = async (id) => {
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const usuario = data.resultado;
+
+        if (usuario) {
+          document.getElementById('id_usuario').value = usuario.id_usuario;
+          document.getElementById('username').value = usuario.username;
+          document.getElementById('password').value = usuario.password;
+          document.getElementById('fecha_inicio').value = usuario.fecha_inicio.split('T')[0];
+          document.getElementById('fecha_final').value = usuario.fecha_final ? usuario.fecha_final.split('T')[0] : '';
+          document.getElementById('rol').value = usuario.rol;
+          document.getElementById('estado').value = usuario.estado;
+          document.getElementById('id_cliente').value = usuario.id_cliente;
+        } else {
+          alert('Usuario no encontrado.');
+        }
+      } catch (error) {
+        console.error("Error al editar usuario:", error);
+        alert("Error al cargar datos del usuario: " + error.message);
+      }
+    };
+
+    const eliminarUsuario = async (id) => {
+      if (!confirm('¿Seguro que quieres eliminar este usuario?')) return;
+      try {
+        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        obtenerUsuarios();
+      } catch (error) {
+        console.error("Error al eliminar usuario:", error);
+        alert("Error al eliminar usuario: " + error.message);
+      }
+    };
+
+    const limpiarFormulario = () => {
+      document.getElementById('id_usuario').value = '';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('fecha_inicio').value = '';
+      document.getElementById('fecha_final').value = '';
+      document.getElementById('rol').value = '';
+      document.getElementById('estado').value = '';
+      document.getElementById('id_cliente').value = '';
+    };
+
+    document.getElementById('guardarBtn').addEventListener('click', guardarUsuario);
+
+    obtenerUsuarios();
+  </script>
+</body>
+</html>
