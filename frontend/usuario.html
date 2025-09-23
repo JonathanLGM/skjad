@@ -127,45 +127,6 @@
       }
     };
 
-    const editarUsuario = async (id) => {
-      try {
-        const res = await fetch(`${backendUrl}/${id}`);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        const usuario = data.resultado;
-
-        if (usuario) {
-          document.getElementById('id_usuario').value = usuario.id_usuario;
-          document.getElementById('username').value = usuario.username;
-          document.getElementById('password').value = usuario.password;
-          document.getElementById('fecha_inicio').value = usuario.fecha_inicio.split('T')[0];
-          document.getElementById('fecha_final').value = usuario.fecha_final ? usuario.fecha_final.split('T')[0] : '';
-          document.getElementById('rol').value = usuario.rol;
-          document.getElementById('estado').value = usuario.estado;
-          document.getElementById('id_cliente').value = usuario.id_cliente;
-        } else {
-          alert('Usuario no encontrado.');
-        }
-      } catch (error) {
-        console.error("Error al editar usuario:", error);
-        alert("Error al cargar datos del usuario: " + error.message);
-      }
-    };
-
-    const eliminarUsuario = async (id) => {
-      if (!confirm('¿Seguro que quieres eliminar este usuario?')) return;
-      try {
-        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-        alert(result.mensaje);
-        obtenerUsuarios();
-      } catch (error) {
-        console.error("Error al eliminar usuario:", error);
-        alert("Error al eliminar usuario: " + error.message);
-      }
-    };
-
     const limpiarFormulario = () => {
       document.getElementById('id_usuario').value = '';
       document.getElementById('username').value = '';
