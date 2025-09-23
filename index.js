@@ -56,13 +56,6 @@ app.get('/', (req, res) => {
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
 
-// Puedes añadir aquí otras rutas como las de usuario y cuenta
-const cuentaRouter = require('./rutasCuenta');
-app.use('/cuenta', cuentaRouter);
-
-const usuarioRouter = require('./rutasUsuario');
-app.use('/usuario', usuarioRouter);
-
 
 // Levantar servidor
 app.listen(PORT, () => {
