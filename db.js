@@ -34,5 +34,5 @@ sequelize.sync({ alter: true }) // 'alter: true' intentará actualizar las tabla
 
 module.exports = {
   sequelize,
-  Cliente,
+  cliente,
 };
