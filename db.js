@@ -13,9 +13,9 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   logging: false
 });
 
-// Importamos el archivo 'Cliente.js' y la función 'defineCliente'.
-const defineCliente = require('./Cliente');
-const Cliente = defineCliente(sequelize, DataTypes);
+// Importa y define el modelo 'Cliente'.
+// La variable 'Cliente' (con 'C' mayúscula) es lo que se exportará.
+const Cliente = require('./cliente')(sequelize, DataTypes);
 
 // Sincroniza los modelos con la base de datos
 sequelize.sync({ alter: true })
@@ -24,10 +24,12 @@ sequelize.sync({ alter: true })
   })
   .catch(err => {
     console.error('❌ Error al sincronizar modelos:', err);
+    // En un entorno de producción, es buena práctica salir si la conexión falla.
+    // process.exit(1);
   });
 
-// Exporta la instancia de Sequelize y el modelo 'Cliente' (con C mayúscula).
+// Exporta la instancia de Sequelize y el modelo 'Cliente'.
 module.exports = {
   sequelize,
-  Cliente,
+  Cliente1
 };

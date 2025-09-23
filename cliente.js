@@ -1,6 +1,6 @@
 // Cliente.js
 const defineCliente = (sequelize, DataTypes) => {
-  return sequelize.define('Cliente', {
+  return sequelize.define('Cliente1', {
     id_cliente: {
       type: DataTypes.INTEGER,
       autoIncrement: true,

@@ -1,16 +1,22 @@
 // clienteControlador.js
-const { Cliente } = require('./Cliente'); // ajusta la ruta si es necesario
+const { Cliente } = require('./db'); // importa desde la raíz
 
 // Crear cliente
 const registrarCliente = async (req, res) => {
   try {
-    // Excluir id_cliente para que Postgres lo autoincremente
-    const { id_cliente, ...data } = req.body;
-    const nuevoCliente = await Cliente.create(data);
-    res.status(201).json(nuevoCliente);
-  } catch (error) {
-    console.error("❌ Error al guardar cliente:", error);
-    res.status(500).json({ error: "Error al guardar cliente" });
+    const { documento, correo } = req.body;
+
+    // Validar duplicados
+    if (await Cliente.findOne({ where: { documento } }))
+      return res.status(400).json({ mensaje: 'El documento ya está registrado' });
+
+    if (await Cliente.findOne({ where: { correo } }))
+      return res.status(400).json({ mensaje: 'El correo ya está registrado' });
+
+    const nuevoCliente = await Cliente.create(req.body);
+    res.status(201).json({ mensaje: 'Cliente creado', resultado: nuevoCliente });
+  } catch (err) {
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
@@ -18,10 +24,9 @@ const registrarCliente = async (req, res) => {
 const listarClientes = async (req, res) => {
   try {
     const clientes = await Cliente.findAll();
-    res.json(clientes);
-  } catch (error) {
-    console.error("❌ Error al listar clientes:", error);
-    res.status(500).json({ error: "Error al listar clientes" });
+    res.status(200).json({ mensaje: 'Clientes listados', resultado: clientes });
+  } catch (err) {
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
@@ -29,13 +34,10 @@ const listarClientes = async (req, res) => {
 const obtenerClientePorId = async (req, res) => {
   try {
     const cliente = await Cliente.findByPk(req.params.id_cliente);
-    if (!cliente) {
-      return res.status(404).json({ error: "Cliente no encontrado" });
-    }
-    res.json(cliente);
-  } catch (error) {
-    console.error("❌ Error al obtener cliente:", error);
-    res.status(500).json({ error: "Error al obtener cliente" });
+    if (!cliente) return res.status(404).json({ mensaje: 'Cliente no encontrado', resultado: null });
+    res.status(200).json({ mensaje: 'Cliente encontrado', resultado: cliente });
+  } catch (err) {
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
@@ -43,14 +45,12 @@ const obtenerClientePorId = async (req, res) => {
 const actualizarCliente = async (req, res) => {
   try {
     const cliente = await Cliente.findByPk(req.params.id_cliente);
-    if (!cliente) {
-      return res.status(404).json({ error: "Cliente no encontrado" });
-    }
+    if (!cliente) return res.status(404).json({ mensaje: 'Cliente no encontrado', resultado: null });
+
     await cliente.update(req.body);
-    res.json(cliente);
-  } catch (error) {
-    console.error("❌ Error al actualizar cliente:", error);
-    res.status(500).json({ error: "Error al actualizar cliente" });
+    res.status(200).json({ mensaje: 'Cliente actualizado', resultado: cliente });
+  } catch (err) {
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
@@ -58,14 +58,12 @@ const actualizarCliente = async (req, res) => {
 const borrarCliente = async (req, res) => {
   try {
     const cliente = await Cliente.findByPk(req.params.id_cliente);
-    if (!cliente) {
-      return res.status(404).json({ error: "Cliente no encontrado" });
-    }
+    if (!cliente) return res.status(404).json({ mensaje: 'Cliente no encontrado', resultado: null });
+
     await cliente.destroy();
-    res.json({ message: "Cliente eliminado correctamente" });
-  } catch (error) {
-    console.error("❌ Error al eliminar cliente:", error);
-    res.status(500).json({ error: "Error al eliminar cliente" });
+    res.status(200).json({ mensaje: 'Cliente eliminado', resultado: cliente });
+  } catch (err) {
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
