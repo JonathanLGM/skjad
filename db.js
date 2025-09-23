@@ -15,7 +15,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 
 // Importa y define el modelo 'Cliente'.
 // La variable 'Cliente' (con 'C' mayúscula) es lo que se exportará.
-const Cliente = require('./cliente')(sequelize, DataTypes);
+const Cliente1 = require('./cliente')(sequelize, DataTypes);
 
 // Sincroniza los modelos con la base de datos
 sequelize.sync({ alter: true })
