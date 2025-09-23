@@ -46,8 +46,6 @@
   </table>
 
   <script>
-    // --- CAMBIO CLAVE AQUÍ ---
-    // Usamos una ruta relativa porque el frontend y backend están en el mismo origen
     const backendUrl = "/cliente"; 
 
     const obtenerClientes = async () => {
@@ -57,32 +55,31 @@
         const data = await res.json();
         const tbody = document.getElementById('clientesTable');
         tbody.innerHTML = '';
+
         if (data.resultado && Array.isArray(data.resultado)) {
-            data.resultado.forEach(cliente => {
+          data.resultado.forEach(cliente => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${cliente.id_cliente}</td>
-                <td>${cliente.nombre}</td>
-                <td>${cliente.apellido}</td>
-                <td>${cliente.documento}</td>
-                <td>${cliente.telefono || ''}</td>
-                <td>${cliente.direccion || ''}</td>
-                <td>${cliente.correo}</td>
-                <td>${cliente.id_barrio}</td>
-                <td>
+              <td>${cliente.id_cliente}</td>
+              <td>${cliente.nombre}</td>
+              <td>${cliente.apellido}</td>
+              <td>${cliente.documento}</td>
+              <td>${cliente.telefono || ''}</td>
+              <td>${cliente.direccion || ''}</td>
+              <td>${cliente.correo}</td>
+              <td>${cliente.id_barrio}</td>
+              <td>
                 <button onclick="editarCliente(${cliente.id_cliente})">Editar</button>
                 <button onclick="eliminarCliente(${cliente.id_cliente})">Eliminar</button>
-                </td>
+              </td>
             `;
             tbody.appendChild(tr);
-            });
+          });
         } else {
-            console.warn("La respuesta no contiene un array de clientes en 'resultado':", data);
-            tbody.innerHTML = '<tr><td colspan="9">No hay clientes para mostrar.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="9">No hay clientes para mostrar.</td></tr>';
         }
       } catch (error) {
         console.error("Error al obtener clientes:", error);
-        alert("Error al cargar clientes: " + error.message);
         document.getElementById('clientesTable').innerHTML = '<tr><td colspan="9">Error al cargar clientes.</td></tr>';
       }
     };
@@ -100,19 +97,21 @@
       };
 
       if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || !clienteData.correo || isNaN(clienteData.id_barrio)) {
-          alert('Por favor, completa todos los campos obligatorios (Nombre, Apellido, Documento, Correo, ID Barrio).');
-          return;
+        alert('Completa todos los campos obligatorios.');
+        return;
       }
 
-      let res;
       try {
+        let res;
         if (id_cliente) {
+          // Actualizar cliente
           res = await fetch(`${backendUrl}/${id_cliente}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(clienteData)
           });
         } else {
+          // Crear cliente nuevo
           res = await fetch(backendUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -122,7 +121,7 @@
 
         const result = await res.json();
         if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-        
+
         alert(result.mensaje);
         limpiarFormulario();
         obtenerClientes();
@@ -140,20 +139,21 @@
         const cliente = data.resultado;
 
         if (cliente) {
-            document.getElementById('id_cliente').value = cliente.id_cliente;
-            document.getElementById('nombre').value = cliente.nombre;
-            document.getElementById('apellido').value = cliente.apellido;
-            document.getElementById('documento').value = cliente.documento;
-            document.getElementById('telefono').value = cliente.telefono || '';
-            document.getElementById('direccion').value = cliente.direccion || '';
-            document.getElementById('correo').value = cliente.correo;
-            document.getElementById('id_barrio').value = cliente.id_barrio;
+          // Llenar formulario con datos existentes
+          document.getElementById('id_cliente').value = cliente.id_cliente;
+          document.getElementById('nombre').value = cliente.nombre;
+          document.getElementById('apellido').value = cliente.apellido;
+          document.getElementById('documento').value = cliente.documento;
+          document.getElementById('telefono').value = cliente.telefono || '';
+          document.getElementById('direccion').value = cliente.direccion || '';
+          document.getElementById('correo').value = cliente.correo;
+          document.getElementById('id_barrio').value = cliente.id_barrio;
         } else {
-            alert('Cliente no encontrado para edición.');
+          alert('Cliente no encontrado.');
         }
       } catch (error) {
         console.error("Error al editar cliente:", error);
-        alert("Error al cargar datos del cliente para edición: " + error.message);
+        alert("Error al cargar cliente: " + error.message);
       }
     };
 
