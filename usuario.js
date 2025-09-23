@@ -14,7 +14,15 @@ const defineUsuario = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    fecha_inicio: {
+    rol: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    id_cliente: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+      fecha_inicio: {
       type: DataTypes.DATE,
       allowNull: false
     },
@@ -22,16 +30,8 @@ const defineUsuario = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true
     },
-    rol: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     estado: {
       type: DataTypes.STRING,
-      allowNull: false
-    },
-    id_cliente: {
-      type: DataTypes.INTEGER,
       allowNull: false
     }
   }, {
