@@ -31,5 +31,4 @@ sequelize.sync({ alter: true })
 // Exporta la instancia de Sequelize y el modelo 'Cliente'.
 module.exports = {
   sequelize,
-  Cliente,
 };
