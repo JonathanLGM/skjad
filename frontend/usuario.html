@@ -49,7 +49,7 @@
 
     const obtenerUsuarios = async () => {
       try {
-        const res = await fetch(backendUrl);
+        const res = await fetch(`${backendUrl}/listar`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const tbody = document.getElementById('usuariosTable');
@@ -107,7 +107,7 @@
             body: JSON.stringify(usuarioData)
           });
         } else {
-          res = await fetch(backendUrl, {
+          res = await fetch(`${backendUrl}/registrar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(usuarioData)
