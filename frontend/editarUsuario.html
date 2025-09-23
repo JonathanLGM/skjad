@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Usuario</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        input, button { padding: 5px; margin: 5px 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Editar Usuario</h1>
+
+    <div>
+        <input type="hidden" id="id_usuario">
+        <input type="text" id="username" placeholder="Usuario">
+        <input type="password" id="password" placeholder="Contraseña">
+        <input type="text" id="rol" placeholder="Rol">
+        <input type="text" id="estado" placeholder="Estado">
+        <input type="date" id="fecha_inicio" placeholder="Fecha Inicio">
+        <input type="date" id="fecha_final" placeholder="Fecha Final">
+        <input type="number" id="id_cliente" placeholder="ID Cliente">
+        <button id="guardarBtn">Guardar Cambios</button>
+        <button onclick="window.history.back()">Cancelar</button>
+    </div>
+
+    <script>
+        const backendUrl = "/usuario";
+
+        // Cargar datos de un usuario por ID
+        const cargarDatosUsuario = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if (!id) {
+                alert('ID de usuario no proporcionado.');
+                window.history.back();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${backendUrl}/${id}`);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const data = await res.json();
+                const usuario = data.resultado;
+
+                if (usuario) {
+                    document.getElementById('id_usuario').value = usuario.id_usuario;
+                    document.getElementById('username').value = usuario.username;
+                    document.getElementById('password').value = usuario.password;
+                    document.getElementById('rol').value = usuario.rol;
+                    document.getElementById('estado').value = usuario.estado;
+                    document.getElementById('fecha_inicio').value = usuario.fecha_inicio ? usuario.fecha_inicio.split('T')[0] : '';
+                    document.getElementById('fecha_final').value = usuario.fecha_final ? usuario.fecha_final.split('T')[0] : '';
+                    document.getElementById('id_cliente').value = usuario.id_cliente;
+                } else {
+                    alert('Usuario no encontrado para edición.');
+                    window.history.back();
+                }
+            } catch (error) {
+                console.error("Error al cargar datos del usuario:", error);
+                alert("Error al cargar datos del usuario para edición: " + error.message);
+                window.history.back();
+            }
+        };
+
+        // Guardar cambios del usuario
+        const guardarCambios = async () => {
+            const id_usuario = document.getElementById('id_usuario').value;
+            const usuarioData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                rol: document.getElementById('rol').value,
+                estado: document.getElementById('estado').value,
+                fecha_inicio: document.getElementById('fecha_inicio').value,
+                fecha_final: document.getElementById('fecha_final').value || null,
+                id_cliente: parseInt(document.getElementById('id_cliente').value)
+            };
+
+            if (!usuarioData.username || !usuarioData.password || !usuarioData.rol || !usuarioData.estado || !usuarioData.fecha_inicio || isNaN(usuarioData.id_cliente)) {
+                alert('Por favor, completa todos los campos obligatorios.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${backendUrl}/${id_usuario}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(usuarioData)
+                });
+
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+                
+                alert(result.mensaje);
+                window.location.href = 'usuario.html'; // Redirige de vuelta al listado de usuarios
+            } catch (error) {
+                console.error("Error al guardar cambios:", error);
+                alert("Error al guardar cambios: " + error.message);
+            }
+        };
+
+        document.getElementById('guardarBtn').addEventListener('click', guardarCambios);
+        cargarDatosUsuario();
+    </script>
+</body>
+</html>
