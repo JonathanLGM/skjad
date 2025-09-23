@@ -3,10 +3,10 @@ const router = express.Router();
 const usuarioControlador = require('./usuarioControlador'); // ahora todo está en raíz
 
 // Crear usuario
-router.post('/', usuarioControlador.registrarUsuario);
+router.post('/registrar', usuarioControlador.registrarUsuario);
 
 // Obtener todos los usuarios
-router.get('/', usuarioControlador.listarUsuarios);
+router.get('/listar', usuarioControlador.listarUsuarios);
 
 // Obtener un usuario por id
 router.get('/:id_usuario', usuarioControlador.obtenerUsuarioPorId);
