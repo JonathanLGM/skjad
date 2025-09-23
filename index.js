@@ -44,10 +44,12 @@ app.get('/', (req, res) => {
 });
 
 // Rutas CRUD de Cliente
-// Esta línea carga el router, que a su vez llama al controlador
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
 
+// 🚀 Rutas CRUD de Usuario (agregado)
+const usuarioRouter = require('./rutasUsuario');
+app.use('/usuario', usuarioRouter);
 
 // Levantar servidor
 app.listen(PORT, () => {
