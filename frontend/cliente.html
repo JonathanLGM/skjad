@@ -134,31 +134,6 @@
       }
     };
 
-    const editarCliente = async (id) => {
-      try {
-        const res = await fetch(`${backendUrl}/${id}`);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        const cliente = data.resultado;
-
-        if (cliente) {
-            document.getElementById('id_cliente').value = cliente.id_cliente;
-            document.getElementById('nombre').value = cliente.nombre;
-            document.getElementById('apellido').value = cliente.apellido;
-            document.getElementById('documento').value = cliente.documento;
-            document.getElementById('telefono').value = cliente.telefono || '';
-            document.getElementById('direccion').value = cliente.direccion || '';
-            document.getElementById('correo').value = cliente.correo;
-            document.getElementById('id_barrio').value = cliente.id_barrio;
-        } else {
-            alert('Cliente no encontrado para edición.');
-        }
-      } catch (error) {
-        console.error("Error al editar cliente:", error);
-        alert("Error al cargar datos del cliente para edición: " + error.message);
-      }
-    };
-
     const eliminarCliente = async (id) => {
       if (!confirm('¿Seguro que quieres eliminar este cliente?')) return;
       try {
