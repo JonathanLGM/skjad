@@ -19,6 +19,9 @@ const Cliente1 = require('./cliente')(sequelize, DataTypes);
 // Importa y define el modelo 'Usuario'
 const Usuario1 = require('./usuario')(sequelize, DataTypes);
 
+// Importa y define el modelo 'Cuenta'
+const Cuenta1 = require('./cuenta')(sequelize, DataTypes);
+
 // Sincroniza los modelos con la base de datos
 sequelize.sync({ alter: true })
   .then(() => {
@@ -34,5 +37,6 @@ sequelize.sync({ alter: true })
 module.exports = {
   sequelize,
   Cliente1,
-  Usuario1
+  Usuario1,
+  Cuenta1
 };

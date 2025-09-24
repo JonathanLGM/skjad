@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Cuenta</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    input, button { padding: 5px; margin: 5px 0; width: 100%; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>CRUD Cuenta</h1>
+
+  <!-- Formulario para crear o actualizar -->
+  <div>
+    <input type="hidden" id="id_cuenta">
+    <input type="text" id="numero_cuenta" placeholder="Número de Cuenta">
+    <input type="text" id="estado" placeholder="Estado (activa, inactiva, bloqueada)">
+    <input type="number" id="saldo" placeholder="Saldo">
+    <input type="date" id="fecha_apertura" placeholder="Fecha de Apertura">
+    <input type="number" id="id_cliente" placeholder="ID Cliente">
+    <button id="guardarBtn">Guardar Cuenta</button>
+  </div>
+
+  <!-- Tabla de cuentas -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Número</th>
+        <th>Estado</th>
+        <th>Saldo</th>
+        <th>Fecha Apertura</th>
+        <th>ID Cliente</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="cuentasTable"></tbody>
+  </table>
+
+  <script>
+    // --- CAMBIO CLAVE AQUÍ ---
+    const backendUrl = "/cuenta"; 
+
+    const obtenerCuentas = async () => {
+      try {
+        const res = await fetch(backendUrl);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const tbody = document.getElementById('cuentasTable');
+        tbody.innerHTML = '';
+        if (data.resultado && Array.isArray(data.resultado)) {
+            data.resultado.forEach(cuenta => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${cuenta.id_cuenta}</td>
+                <td>${cuenta.numero_cuenta}</td>
+                <td>${cuenta.estado}</td>
+                <td>${cuenta.saldo}</td>
+                <td>${new Date(cuenta.fecha_apertura).toLocaleDateString()}</td>
+                <td>${cuenta.id_cliente}</td>
+                <td>
+                <button onclick="editarCuenta(${cuenta.id_cuenta})">Editar</button>
+                <button onclick="eliminarCuenta(${cuenta.id_cuenta})">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            });
+        } else {
+            console.warn("La respuesta no contiene un array de cuentas en 'resultado':", data);
+            tbody.innerHTML = '<tr><td colspan="7">No hay cuentas para mostrar.</td></tr>';
+        }
+      } catch (error) {
+        console.error("Error al obtener cuentas:", error);
+        alert("Error al cargar cuentas: " + error.message);
+        document.getElementById('cuentasTable').innerHTML = '<tr><td colspan="7">Error al cargar cuentas.</td></tr>';
+      }
+    };
+
+    const guardarCuenta = async () => {
+      const id_cuenta = document.getElementById('id_cuenta').value;
+      const cuentaData = {
+        numero_cuenta: document.getElementById('numero_cuenta').value,
+        estado: document.getElementById('estado').value,
+        saldo: parseFloat(document.getElementById('saldo').value),
+        fecha_apertura: document.getElementById('fecha_apertura').value,
+        id_cliente: parseInt(document.getElementById('id_cliente').value)
+      };
+
+      if (!cuentaData.numero_cuenta || !cuentaData.estado || isNaN(cuentaData.saldo) || !cuentaData.fecha_apertura || isNaN(cuentaData.id_cliente)) {
+          alert('Por favor, completa todos los campos obligatorios.');
+          return;
+      }
+
+      let res;
+      try {
+        if (id_cuenta) {
+          res = await fetch(`${backendUrl}/${id_cuenta}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cuentaData)
+          });
+        } else {
+          res = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cuentaData)
+          });
+        }
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        
+        alert(result.mensaje);
+        limpiarFormulario();
+        obtenerCuentas();
+      } catch (error) {
+        console.error("Error al guardar cuenta:", error);
+        alert("Error al guardar cuenta: " + error.message);
+      }
+    };
+
+    const editarCuenta = async (id) => {
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const cuenta = data.resultado;
+
+        if (cuenta) {
+            document.getElementById('id_cuenta').value = cuenta.id_cuenta;
+            document.getElementById('numero_cuenta').value = cuenta.numero_cuenta;
+            document.getElementById('estado').value = cuenta.estado;
+            document.getElementById('saldo').value = cuenta.saldo;
+            document.getElementById('fecha_apertura').value = cuenta.fecha_apertura.split('T')[0];
+            document.getElementById('id_cliente').value = cuenta.id_cliente;
+        } else {
+            alert('Cuenta no encontrada para edición.');
+        }
+      } catch (error) {
+        console.error("Error al editar cuenta:", error);
+        alert("Error al cargar datos de la cuenta para edición: " + error.message);
+      }
+    };
+
+    const eliminarCuenta = async (id) => {
+      if (!confirm('¿Seguro que quieres eliminar esta cuenta?')) return;
+      try {
+        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        obtenerCuentas();
+      } catch (error) {
+        console.error("Error al eliminar cuenta:", error);
+        alert("Error al eliminar cuenta: " + error.message);
+      }
+    };
+
+    const limpiarFormulario = () => {
+      document.getElementById('id_cuenta').value = '';
+      document.getElementById('numero_cuenta').value = '';
+      document.getElementById('estado').value = '';
+      document.getElementById('saldo').value = '';
+      document.getElementById('fecha_apertura').value = '';
+      document.getElementById('id_cliente').value = '';
+    };
+
+    document.getElementById('guardarBtn').addEventListener('click', guardarCuenta);
+
+    obtenerCuentas();
+  </script>
+</body>
+</html>

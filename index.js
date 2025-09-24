@@ -51,6 +51,10 @@ app.use('/cliente', clienteRouter);
 const usuarioRouter = require('./rutasUsuario');
 app.use('/usuario', usuarioRouter);
 
+// 🚀 Rutas CRUD de Cuenta (nuevo)
+const cuentaRouter = require('./rutasCuenta');
+app.use('/cuenta', cuentaRouter);
+
 // Levantar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
