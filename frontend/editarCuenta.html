@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Cuenta</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        input, button { padding: 5px; margin: 5px 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Editar Cuenta</h1>
+
+    <div>
+        <input type="hidden" id="id_cuenta">
+        <input type="text" id="numero_cuenta" placeholder="Número de Cuenta">
+        <input type="number" step="0.01" id="saldo" placeholder="Saldo">
+        <input type="text" id="tipo_cuenta" placeholder="Tipo de Cuenta">
+        <input type="text" id="estado" placeholder="Estado">
+        <input type="date" id="fecha_apertura" placeholder="Fecha de Apertura">
+        <button id="guardarBtn">Guardar Cambios</button>
+        <button onclick="window.history.back()">Cancelar</button>
+    </div>
+
+    <script>
+        const backendUrl = "/cuenta";
+
+        // Cargar datos de una cuenta por ID
+        const cargarDatosCuenta = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if (!id) {
+                alert('ID de cuenta no proporcionado.');
+                window.history.back();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${backendUrl}/${id}`);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const data = await res.json();
+                const cuenta = data.resultado;
+
+                if (cuenta) {
+                    document.getElementById('id_cuenta').value = cuenta.id_cuenta;
+                    document.getElementById('numero_cuenta').value = cuenta.numero_cuenta;
+                    document.getElementById('saldo').value = cuenta.saldo;
+                    document.getElementById('tipo_cuenta').value = cuenta.tipo_cuenta;
+                    document.getElementById('estado').value = cuenta.estado;
+                    document.getElementById('fecha_apertura').value = cuenta.fecha_apertura ? cuenta.fecha_apertura.split('T')[0] : '';
+                } else {
+                    alert('Cuenta no encontrada para edición.');
+                    window.history.back();
+                }
+            } catch (error) {
+                console.error("Error al cargar datos de la cuenta:", error);
+                alert("Error al cargar datos de la cuenta para edición: " + error.message);
+                window.history.back();
+            }
+        };
+
+        // Guardar cambios de la cuenta
+        const guardarCambios = async () => {
+            const id_cuenta = document.getElementById('id_cuenta').value;
+            const cuentaData = {
+                numero_cuenta: document.getElementById('numero_cuenta').value,
+                saldo: parseFloat(document.getElementById('saldo').value),
+                tipo_cuenta: document.getElementById('tipo_cuenta').value,
+                estado: document.getElementById('estado').value,
+                fecha_apertura: document.getElementById('fecha_apertura').value
+            };
+
+            if (!cuentaData.numero_cuenta || isNaN(cuentaData.saldo) || !cuentaData.tipo_cuenta || !cuentaData.estado || !cuentaData.fecha_apertura) {
+                alert('Por favor, completa todos los campos obligatorios.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${backendUrl}/${id_cuenta}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cuentaData)
+                });
+
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+                
+                alert(result.mensaje);
+                window.location.href = 'cuenta.html'; // Redirige al listado de cuentas
+            } catch (error) {
+                console.error("Error al guardar cambios:", error);
+                alert("Error al guardar cambios: " + error.message);
+            }
+        };
+
+        document.getElementById('guardarBtn').addEventListener('click', guardarCambios);
+        cargarDatosCuenta();
+    </script>
+</body>
+</html>

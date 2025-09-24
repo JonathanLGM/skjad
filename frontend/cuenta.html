@@ -63,7 +63,9 @@
                 <td>${new Date(cuenta.fecha_apertura).toLocaleDateString()}</td>
                 <td>${cuenta.id_cliente}</td>
                 <td>
-                <button onclick="editarCuenta(${cuenta.id_cuenta})">Editar</button>
+                <a href="editarCuenta.html?id=${cuenta.id_cuenta}">
+                <button>Editar</button>
+                </a>
                 <button onclick="eliminarCuenta(${cuenta.id_cuenta})">Eliminar</button>
                 </td>
             `;
