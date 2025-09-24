@@ -51,6 +51,7 @@
     // --- LISTAR CLIENTES ---
     const obtenerClientes = async () => {
       try {
+        // aquí corregimos la ruta 👇
         const res = await fetch(`${backendUrl}/listarcliente`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
