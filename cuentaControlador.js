@@ -1,19 +1,13 @@
-const { Cuenta1, Cliente1 } = require('./db'); // Importa Cuenta1 y Cliente1
+const { Cuenta1 } = require('./db'); // Importar modelo Cuenta1
 
 // Crear cuenta
 const registrarCuenta = async (req, res) => {
   try {
-    const { numero_cuenta, id_cliente } = req.body;
+    const { numero_cuenta } = req.body;
 
-    // Validar duplicado de número de cuenta
+    // Validar duplicados
     if (await Cuenta1.findOne({ where: { numero_cuenta } })) {
       return res.status(400).json({ mensaje: 'El número de cuenta ya está registrado' });
-    }
-
-    // Validar que el cliente exista
-    const cliente = await Cliente1.findByPk(id_cliente);
-    if (!cliente) {
-      return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     }
 
     const nuevaCuenta = await Cuenta1.create(req.body);
@@ -27,7 +21,7 @@ const registrarCuenta = async (req, res) => {
 // Listar cuentas
 const listarCuentas = async (req, res) => {
   try {
-    const cuentas = await Cuenta1.findAll({ include: Cliente1 });
+    const cuentas = await Cuenta1.findAll();
     res.status(200).json({ mensaje: 'Cuentas listadas', resultado: cuentas });
   } catch (err) {
     console.error('Error en listarCuentas:', err);
@@ -38,7 +32,7 @@ const listarCuentas = async (req, res) => {
 // Obtener cuenta por ID
 const obtenerCuentaPorId = async (req, res) => {
   try {
-    const cuenta = await Cuenta1.findByPk(req.params.id_cuenta, { include: Cliente1 });
+    const cuenta = await Cuenta1.findByPk(req.params.id_cuenta);
     if (!cuenta) return res.status(404).json({ mensaje: 'Cuenta no encontrada', resultado: null });
     res.status(200).json({ mensaje: 'Cuenta encontrada', resultado: cuenta });
   } catch (err) {
