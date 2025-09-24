@@ -14,7 +14,7 @@
 <body>
   <h1>CRUD Cliente</h1>
 
-  <!-- Formulario para crear o actualizar -->
+  <!-- Formulario -->
   <div>
     <input type="hidden" id="id_cliente">
     <input type="text" id="nombre" placeholder="Nombre">
@@ -27,7 +27,7 @@
     <button id="guardarBtn">Guardar Cliente</button>
   </div>
 
-  <!-- Tabla de clientes -->
+  <!-- Tabla -->
   <table>
     <thead>
       <tr>
@@ -46,15 +46,12 @@
   </table>
 
   <script>
-    // --- IMPORTANTE ---
-    // Si tu backend está en Render, cambia "/cliente" por la URL pública de tu API, ej:
-    // const backendUrl = "https://tu-backend.onrender.com/cliente";
     const backendUrl = "/cliente";
 
-    // Obtener todos los clientes
+    // --- LISTAR CLIENTES ---
     const obtenerClientes = async () => {
       try {
-        const res = await fetch(backendUrl);
+        const res = await fetch(`${backendUrl}/listar`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const tbody = document.getElementById('clientesTable');
@@ -79,17 +76,15 @@
             tbody.appendChild(tr);
           });
         } else {
-          console.warn("La respuesta no contiene un array de clientes en 'resultado':", data);
           tbody.innerHTML = '<tr><td colspan="9">No hay clientes para mostrar.</td></tr>';
         }
       } catch (error) {
         console.error("Error al obtener clientes:", error);
         alert("Error al cargar clientes: " + error.message);
-        document.getElementById('clientesTable').innerHTML = '<tr><td colspan="9">Error al cargar clientes.</td></tr>';
       }
     };
 
-    // Guardar (crear o actualizar)
+    // --- GUARDAR (CREAR/ACTUALIZAR) ---
     const guardarCliente = async () => {
       const id_cliente = document.getElementById('id_cliente').value;
       const clienteData = {
@@ -103,12 +98,12 @@
       };
 
       if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || !clienteData.correo || isNaN(clienteData.id_barrio)) {
-        alert('Por favor, completa todos los campos obligatorios (Nombre, Apellido, Documento, Correo, ID Barrio).');
+        alert('Completa todos los campos obligatorios.');
         return;
       }
 
-      let res;
       try {
+        let res;
         if (id_cliente) {
           res = await fetch(`${backendUrl}/${id_cliente}`, {
             method: 'PUT',
@@ -116,7 +111,7 @@
             body: JSON.stringify(clienteData)
           });
         } else {
-          res = await fetch(backendUrl, {
+          res = await fetch(`${backendUrl}/registrar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(clienteData)
@@ -125,7 +120,6 @@
 
         const result = await res.json();
         if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-        
         alert(result.mensaje);
         limpiarFormulario();
         obtenerClientes();
@@ -135,14 +129,13 @@
       }
     };
 
-    // Cargar cliente en el formulario
+    // --- EDITAR CLIENTE ---
     const editarCliente = async (id) => {
       try {
         const res = await fetch(`${backendUrl}/${id}`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const cliente = data.resultado;
-
         if (cliente) {
           document.getElementById('id_cliente').value = cliente.id_cliente;
           document.getElementById('nombre').value = cliente.nombre;
@@ -153,15 +146,15 @@
           document.getElementById('correo').value = cliente.correo;
           document.getElementById('id_barrio').value = cliente.id_barrio;
         } else {
-          alert('Cliente no encontrado para edición.');
+          alert('Cliente no encontrado.');
         }
       } catch (error) {
         console.error("Error al editar cliente:", error);
-        alert("Error al cargar datos del cliente para edición: " + error.message);
+        alert("Error al cargar cliente: " + error.message);
       }
     };
 
-    // Eliminar cliente
+    // --- ELIMINAR CLIENTE ---
     const eliminarCliente = async (id) => {
       if (!confirm('¿Seguro que quieres eliminar este cliente?')) return;
       try {
@@ -176,7 +169,7 @@
       }
     };
 
-    // Limpiar formulario
+    // --- LIMPIAR FORM ---
     const limpiarFormulario = () => {
       document.getElementById('id_cliente').value = '';
       document.getElementById('nombre').value = '';
@@ -190,7 +183,7 @@
 
     document.getElementById('guardarBtn').addEventListener('click', guardarCliente);
 
-    // Cargar lista al abrir
+    // --- CARGAR AL INICIO ---
     obtenerClientes();
   </script>
 </body>
