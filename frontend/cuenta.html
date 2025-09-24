@@ -125,6 +125,29 @@
       }
     };
 
+    const editarCuenta = async (id) => {
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const cuenta = data.resultado;
+
+        if (cuenta) {
+            document.getElementById('id_cuenta').value = cuenta.id_cuenta;
+            document.getElementById('numero_cuenta').value = cuenta.numero_cuenta;
+            document.getElementById('estado').value = cuenta.estado;
+            document.getElementById('saldo').value = cuenta.saldo;
+            document.getElementById('fecha_apertura').value = cuenta.fecha_apertura.split('T')[0];
+            document.getElementById('id_cliente').value = cuenta.id_cliente;
+        } else {
+            alert('Cuenta no encontrada para edición.');
+        }
+      } catch (error) {
+        console.error("Error al editar cuenta:", error);
+        alert("Error al cargar datos de la cuenta para edición: " + error.message);
+      }
+    };
+
     const eliminarCuenta = async (id) => {
       if (!confirm('¿Seguro que quieres eliminar esta cuenta?')) return;
       try {
