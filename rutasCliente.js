@@ -1,12 +1,20 @@
 const express = require('express');
-const enrutador = express.Router();
-const clienteControlador = require('./clienteControlador'); // como todo está en raíz
+const router = express.Router();
+const clienteControlador = require('./clienteControlador'); // ahora todo está en raíz
 
-// CRUD de Cliente
-enrutador.post('/registrar', clienteControlador.registrarCliente);
-enrutador.get('/listar', clienteControlador.listarClientes);
-enrutador.get('/buscar/:id_cliente', clienteControlador.obtenerClientePorId);
-enrutador.put('/actualizar/:id_cliente', clienteControlador.actualizarCliente);
-enrutador.delete('/eliminar/:id_cliente', clienteControlador.borrarCliente);
+// Crear cliente
+router.post('/', clienteControlador.registrarCliente);
 
-module.exports = enrutador;
+// Obtener todos los clientes (con alias /listar)
+router.get('/listar', clienteControlador.listarClientes);
+
+// Obtener un cliente por id
+router.get('/:id_cliente', clienteControlador.obtenerClientePorId);
+
+// Actualizar cliente
+router.put('/:id_cliente', clienteControlador.actualizarCliente);
+
+// Eliminar cliente
+router.delete('/:id_cliente', clienteControlador.borrarCliente);
+
+module.exports = router;
