@@ -6,7 +6,7 @@ const clienteControlador = require('./clienteControlador'); // ahora todo está 
 router.post('/', clienteControlador.registrarCliente);
 
 // Obtener todos los clientes (con alias /listar)
-router.get('/listar', clienteControlador.listarClientes);
+router.get('/listarcliente', clienteControlador.listarClientes);
 
 // Obtener un cliente por id
 router.get('/:id_cliente', clienteControlador.obtenerClientePorId);

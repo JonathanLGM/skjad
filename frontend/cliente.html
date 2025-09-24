@@ -51,7 +51,7 @@
     // --- LISTAR CLIENTES ---
     const obtenerClientes = async () => {
       try {
-        const res = await fetch(`${backendUrl}/listar`);
+        const res = await fetch(`${backendUrl}/listarcliente`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const tbody = document.getElementById('clientesTable');
