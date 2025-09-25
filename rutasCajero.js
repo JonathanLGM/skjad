@@ -1,11 +1,21 @@
+// rutasCajero.js
 const express = require('express');
-const enrutador = express.Router();
-const cajeroControlador = require('../controladores/cajeroControlador');
+const router = express.Router();
+const cajeroControlador = require('./cajeroControlador'); // igual que cliente, está en raíz
 
-// CRUD de Cajero
-enrutador.post('/registrar', cajeroControlador.registrarCajero);
-enrutador.get('/listar', cajeroControlador.listarCajeros);
-enrutador.put('/actualizar/:id_cajero', cajeroControlador.actualizarCajero);
-enrutador.delete('/eliminar/:id_cajero', cajeroControlador.borrarCajero);
+// Crear cajero
+router.post('/', cajeroControlador.registrarCajero);
 
-module.exports = enrutador;
+// Obtener todos los cajeros (con alias /listarcajero)
+router.get('/listarcajero', cajeroControlador.listarCajeros);
+
+// Obtener un cajero por id
+router.get('/:id_cajero', cajeroControlador.obtenerCajeroPorId);
+
+// Actualizar cajero
+router.put('/:id_cajero', cajeroControlador.actualizarCajero);
+
+// Eliminar cajero
+router.delete('/:id_cajero', cajeroControlador.borrarCajero);
+
+module.exports = router;

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Cajero</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    input, button { padding: 5px; margin: 5px 0; width: 100%; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>CRUD Cajero</h1>
+
+  <!-- Formulario para crear o actualizar -->
+  <div>
+    <input type="hidden" id="id_cajero">
+    <input type="text" id="direccion" placeholder="Dirección">
+    <input type="number" step="0.000001" id="latitud" placeholder="Latitud">
+    <input type="number" step="0.000001" id="longitud" placeholder="Longitud">
+    <input type="text" id="estado" placeholder="Estado (activo, inactivo, mantenimiento)">
+    <input type="number" id="id_barrio" placeholder="ID Barrio">
+    <input type="number" id="id_tipo" placeholder="ID Tipo">
+    <button id="guardarBtn">Guardar Cajero</button>
+  </div>
+
+  <!-- Tabla de cajeros -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Dirección</th>
+        <th>Latitud</th>
+        <th>Longitud</th>
+        <th>Estado</th>
+        <th>ID Barrio</th>
+        <th>ID Tipo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="cajerosTable"></tbody>
+  </table>
+
+  <script>
+    const backendUrl = "/cajero"; 
+
+    const obtenerCajeros = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/listar`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const tbody = document.getElementById('cajerosTable');
+        tbody.innerHTML = '';
+        if (data.resultado && Array.isArray(data.resultado)) {
+          data.resultado.forEach(cajero => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${cajero.id_cajero}</td>
+              <td>${cajero.direccion}</td>
+              <td>${cajero.latitud}</td>
+              <td>${cajero.longitud}</td>
+              <td>${cajero.estado}</td>
+              <td>${cajero.id_barrio}</td>
+              <td>${cajero.id_tipo}</td>
+              <td>
+                <button onclick="editarCajero(${cajero.id_cajero})">Editar</button>
+                <button onclick="eliminarCajero(${cajero.id_cajero})">Eliminar</button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } else {
+          tbody.innerHTML = '<tr><td colspan="8">No hay cajeros para mostrar.</td></tr>';
+        }
+      } catch (error) {
+        console.error("Error al obtener cajeros:", error);
+        document.getElementById('cajerosTable').innerHTML = '<tr><td colspan="8">Error al cargar cajeros.</td></tr>';
+      }
+    };
+
+    const guardarCajero = async () => {
+      const id_cajero = document.getElementById('id_cajero').value;
+      const cajeroData = {
+        direccion: document.getElementById('direccion').value,
+        latitud: parseFloat(document.getElementById('latitud').value),
+        longitud: parseFloat(document.getElementById('longitud').value),
+        estado: document.getElementById('estado').value,
+        id_barrio: parseInt(document.getElementById('id_barrio').value),
+        id_tipo: parseInt(document.getElementById('id_tipo').value)
+      };
+
+      if (!cajeroData.direccion || isNaN(cajeroData.latitud) || isNaN(cajeroData.longitud) ||
+          !cajeroData.estado || isNaN(cajeroData.id_barrio) || isNaN(cajeroData.id_tipo)) {
+        alert('Por favor, completa todos los campos obligatorios.');
+        return;
+      }
+
+      try {
+        let res;
+        if (id_cajero) {
+          res = await fetch(`${backendUrl}/actualizar/${id_cajero}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cajeroData)
+          });
+        } else {
+          res = await fetch(`${backendUrl}/registrar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cajeroData)
+          });
+        }
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+
+        alert(result.mensaje);
+        limpiarFormulario();
+        obtenerCajeros();
+      } catch (error) {
+        console.error("Error al guardar cajero:", error);
+        alert("Error al guardar cajero: " + error.message);
+      }
+    };
+
+    const editarCajero = async (id) => {
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const cajero = data.resultado;
+
+        if (cajero) {
+          document.getElementById('id_cajero').value = cajero.id_cajero;
+          document.getElementById('direccion').value = cajero.direccion;
+          document.getElementById('latitud').value = cajero.latitud;
+          document.getElementById('longitud').value = cajero.longitud;
+          document.getElementById('estado').value = cajero.estado;
+          document.getElementById('id_barrio').value = cajero.id_barrio;
+          document.getElementById('id_tipo').value = cajero.id_tipo;
+        } else {
+          alert('Cajero no encontrado para edición.');
+        }
+      } catch (error) {
+        console.error("Error al editar cajero:", error);
+        alert("Error al cargar datos del cajero para edición: " + error.message);
+      }
+    };
+
+    const eliminarCajero = async (id) => {
+      if (!confirm('¿Seguro que quieres eliminar este cajero?')) return;
+      try {
+        const res = await fetch(`${backendUrl}/eliminar/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        obtenerCajeros();
+      } catch (error) {
+        console.error("Error al eliminar cajero:", error);
+        alert("Error al eliminar cajero: " + error.message);
+      }
+    };
+
+    const limpiarFormulario = () => {
+      document.getElementById('id_cajero').value = '';
+      document.getElementById('direccion').value = '';
+      document.getElementById('latitud').value = '';
+      document.getElementById('longitud').value = '';
+      document.getElementById('estado').value = '';
+      document.getElementById('id_barrio').value = '';
+      document.getElementById('id_tipo').value = '';
+    };
+
+    document.getElementById('guardarBtn').addEventListener('click', guardarCajero);
+
+    obtenerCajeros();
+  </script>
+</body>
+</html>
