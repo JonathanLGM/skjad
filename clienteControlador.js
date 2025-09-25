@@ -36,14 +36,21 @@ const listarClientes = async (req, res) => {
 // Obtener cliente por ID
 const obtenerClientePorId = async (req, res) => {
   try {
+    // 👇 Aquí ves exactamente qué llega desde la URL
+    console.log('Params recibidos en obtenerClientePorId:', req.params);
+
     const cliente = await Cliente1.findByPk(req.params.id_cliente);
-    if (!cliente) return res.status(404).json({ mensaje: 'Cliente no encontrado', resultado: null });
+    if (!cliente) {
+      return res.status(404).json({ mensaje: 'Cliente no encontrado', resultado: null });
+    }
+
     res.status(200).json({ mensaje: 'Cliente encontrado', resultado: cliente });
   } catch (err) {
     console.error('Error en obtenerClientePorId:', err);
     res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
+
 
 // Actualizar cliente
 const actualizarCliente = async (req, res) => {
