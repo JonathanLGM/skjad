@@ -1,107 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Editar Cliente</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        input, button { padding: 5px; margin: 5px 0; width: 100%; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Cliente</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; }
+    label { font-weight: bold; }
+    input, button { padding: 8px; font-size: 14px; }
+    button { cursor: pointer; background-color: #007bff; color: white; border: none; }
+    button:hover { background-color: #0056b3; }
+  </style>
 </head>
 <body>
-    <h1>Editar Cliente</h1>
+  <h1>Editar Cliente</h1>
+  <form id="editarClienteForm">
+    <input type="hidden" id="id_cliente">
 
-    <div>
-        <input type="hidden" id="id_cliente">
-        <input type="text" id="nombre" placeholder="Nombre">
-        <input type="text" id="apellido" placeholder="Apellido">
-        <input type="text" id="documento" placeholder="Documento">
-        <input type="text" id="telefono" placeholder="Teléfono">
-        <input type="text" id="direccion" placeholder="Dirección">
-        <input type="email" id="correo" placeholder="Correo">
-        <input type="number" id="id_barrio" placeholder="ID Barrio">
-        <button id="guardarBtn">Guardar Cambios</button>
-        <button onclick="window.history.back()">Cancelar</button>
-    </div>
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" required>
 
-    <script>
-        const backendUrl = "/cliente";
+    <label for="apellido">Apellido:</label>
+    <input type="text" id="apellido" required>
 
-        // Cargar datos de un cliente por ID
-        const cargarDatosCliente = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
+    <label for="documento">Documento:</label>
+    <input type="text" id="documento" required>
 
-            if (!id) {
-                alert('ID de cliente no proporcionado.');
-                window.history.back();
-                return;
-            }
+    <label for="correo">Correo:</label>
+    <input type="email" id="correo" required>
 
-            try {
-                const res = await fetch(`${backendUrl}/${id}`);
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
-                const cliente = data.resultado;
+    <label for="telefono">Teléfono:</label>
+    <input type="text" id="telefono">
 
-                if (cliente) {
-                    document.getElementById('id_cliente').value = cliente.id_cliente;
-                    document.getElementById('nombre').value = cliente.nombre;
-                    document.getElementById('apellido').value = cliente.apellido;
-                    document.getElementById('documento').value = cliente.documento;
-                    document.getElementById('telefono').value = cliente.telefono || '';
-                    document.getElementById('direccion').value = cliente.direccion || '';
-                    document.getElementById('correo').value = cliente.correo;
-                    document.getElementById('id_barrio').value = cliente.id_barrio;
-                } else {
-                    alert('Cliente no encontrado para edición.');
-                    window.history.back();
-                }
-            } catch (error) {
-                console.error("Error al cargar datos del cliente:", error);
-                alert("Error al cargar datos del cliente para edición: " + error.message);
-                window.history.back();
-            }
+    <label for="direccion">Dirección:</label>
+    <input type="text" id="direccion">
+
+    <label for="id_barrio">ID Barrio:</label>
+    <input type="number" id="id_barrio" required>
+
+    <button type="submit">Guardar Cambios</button>
+  </form>
+
+  <script>
+    // URL base del backend (ajústala si tu backend está en otro servicio)
+    const backendUrl = "/cliente";
+
+    // Obtener el ID de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    // Cargar datos del cliente
+    async function cargarCliente() {
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error("Error al cargar datos de la cuenta para edición");
+        const data = await res.json();
+
+        if (!data.resultado) throw new Error("Cliente no encontrado");
+
+        const cliente = data.resultado;
+
+        document.getElementById("id_cliente").value = cliente.id_cliente;
+        document.getElementById("nombre").value = cliente.nombre;
+        document.getElementById("apellido").value = cliente.apellido;
+        document.getElementById("documento").value = cliente.documento;
+        document.getElementById("correo").value = cliente.correo;
+        document.getElementById("telefono").value = cliente.telefono || "";
+        document.getElementById("direccion").value = cliente.direccion || "";
+        document.getElementById("id_barrio").value = cliente.id_barrio;
+      } catch (err) {
+        alert(err.message);
+        console.error(err);
+      }
+    }
+
+    // Guardar cambios
+    document.getElementById("editarClienteForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        const clienteActualizado = {
+          nombre: document.getElementById("nombre").value,
+          apellido: document.getElementById("apellido").value,
+          documento: document.getElementById("documento").value,
+          correo: document.getElementById("correo").value,
+          telefono: document.getElementById("telefono").value,
+          direccion: document.getElementById("direccion").value,
+          id_barrio: document.getElementById("id_barrio").value
         };
 
-        // Guardar cambios del cliente
-        const guardarCambios = async () => {
-            const id_cliente = document.getElementById('id_cliente').value;
-            const clienteData = {
-                nombre: document.getElementById('nombre').value,
-                apellido: document.getElementById('apellido').value,
-                documento: document.getElementById('documento').value,
-                telefono: document.getElementById('telefono').value,
-                direccion: document.getElementById('direccion').value,
-                correo: document.getElementById('correo').value,
-                id_barrio: parseInt(document.getElementById('id_barrio').value)
-            };
+        const res = await fetch(`${backendUrl}/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(clienteActualizado)
+        });
 
-            if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || !clienteData.correo || isNaN(clienteData.id_barrio)) {
-                alert('Por favor, completa todos los campos obligatorios.');
-                return;
-            }
+        if (!res.ok) throw new Error("Error al actualizar el cliente");
+        const data = await res.json();
 
-            try {
-                const res = await fetch(`${backendUrl}/${id_cliente}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clienteData)
-                });
+        alert("Cliente actualizado con éxito");
+        window.location.href = "listarCliente.html"; // redirige después de editar
+      } catch (err) {
+        alert(err.message);
+        console.error(err);
+      }
+    });
 
-                const result = await res.json();
-                if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-                
-                alert(result.mensaje);
-                window.location.href = 'cliente.html'; // Redirige al listado de clientes
-            } catch (error) {
-                console.error("Error al guardar cambios:", error);
-                alert("Error al guardar cambios: " + error.message);
-            }
-        };
-
-        document.getElementById('guardarBtn').addEventListener('click', guardarCambios);
-        cargarDatosCliente();
-    </script>
+    // Ejecutar carga inicial
+    cargarCliente();
+  </script>
 </body>
 </html>
