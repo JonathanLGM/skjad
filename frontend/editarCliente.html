@@ -2,131 +2,108 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Editar Cliente</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input, button { padding: 5px; margin: 5px 0; width: 100%; }
+  </style>
 </head>
 <body>
   <h1>Editar Cliente</h1>
-  <form id="formEditarCliente">
-    <input type="hidden" id="id_cliente" name="id_cliente">
 
-    <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" name="nombre" required><br>
+  <div>
+    <input type="hidden" id="id_cliente">
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="text" id="apellido" placeholder="Apellido">
+    <input type="text" id="documento" placeholder="Documento">
+    <input type="text" id="telefono" placeholder="Teléfono">
+    <input type="text" id="direccion" placeholder="Dirección">
+    <input type="email" id="correo" placeholder="Correo">
+    <input type="number" id="id_barrio" placeholder="ID Barrio">
 
-    <label for="apellido">Apellido:</label>
-    <input type="text" id="apellido" name="apellido" required><br>
-
-    <label for="documento">Documento:</label>
-    <input type="text" id="documento" name="documento" required><br>
-
-    <label for="telefono">Teléfono:</label>
-    <input type="text" id="telefono" name="telefono" required><br>
-
-    <label for="direccion">Dirección:</label>
-    <input type="text" id="direccion" name="direccion" required><br>
-
-    <label for="correo">Correo:</label>
-    <input type="email" id="correo" name="correo" required><br>
-
-    <label for="id_barrio">Barrio:</label>
-    <input type="number" id="id_barrio" name="id_barrio" required><br>
-
-    <button type="submit">Guardar Cambios</button>
-  </form>
+    <button id="guardarBtn">Guardar Cambios</button>
+    <button onclick="window.history.back()">Cancelar</button>
+  </div>
 
   <script>
-    // ESTA ES LA URL BASE DE TU BACKEND API, LA QUE TE DIO CHATGPT Y FUNCIONA
-    const BACKEND_API_BASE_URL = "https://skjad.onrender.com"; // <-- ¡Define tu URL base aquí!
+    const backendUrl = "/cliente";
 
-    // El endpoint específico para clientes (singular, como en tu prueba exitosa)
-    const CLIENT_API_PATH = "/cliente"; 
+    // Cargar datos del cliente por ID
+    const cargarDatosCliente = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
 
-    const params = new URLSearchParams(window.location.search);
-    const id_cliente = params.get("id");
-
-    // Cargar datos del cliente
-    if (id_cliente) {
-      // CONSTRUYE LA URL COMPLETA USANDO LA BASE Y LA RUTA ESPECÍFICA
-      fetch(`${BACKEND_API_BASE_URL}${CLIENT_API_PATH}/${id_cliente}`)
-        .then(response => {
-          if (!response.ok) {
-            // Intenta leer el mensaje de error del backend si la respuesta no es OK
-            return response.json().catch(() => {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }).then(errorData => {
-                throw new Error(errorData.mensaje || `HTTP error! status: ${response.status}`);
-            });
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log("Datos recibidos del servidor para cliente:", data); // Depuración
-
-          if (data.resultado) { // Verifica que `resultado` exista en la respuesta
-            document.getElementById("id_cliente").value = data.resultado.id_cliente;
-            document.getElementById("nombre").value = data.resultado.nombre;
-            document.getElementById("apellido").value = data.resultado.apellido;
-            document.getElementById("documento").value = data.resultado.documento;
-            document.getElementById("telefono").value = data.resultado.telefono;
-            document.getElementById("direccion").value = data.resultado.direccion;
-            document.getElementById("correo").value = data.resultado.correo;
-            document.getElementById("id_barrio").value = data.resultado.id_barrio;
-          } else {
-            alert('Respuesta del servidor no contiene datos de cliente válidos (data.resultado es nulo o indefinido).');
-            window.history.back();
-          }
-        })
-        .catch(error => {
-          console.error("Error al cargar datos del cliente para edición:", error);
-          alert("Error al cargar datos del cliente para edición: " + error.message);
-          window.history.back();
-        });
-    } else {
-        alert('ID de cliente no proporcionado en la URL (ej. editarCliente.html?id=6).');
+      if (!id) {
+        alert("ID de cliente no proporcionado.");
         window.history.back();
-    }
+        return;
+      }
 
-    // Guardar cambios
-    document.getElementById("formEditarCliente").addEventListener("submit", function (e) {
-      e.preventDefault();
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const cliente = data.resultado;
 
-      const cliente = {
+        if (cliente) {
+          document.getElementById("id_cliente").value = cliente.id_cliente;
+          document.getElementById("nombre").value = cliente.nombre;
+          document.getElementById("apellido").value = cliente.apellido;
+          document.getElementById("documento").value = cliente.documento;
+          document.getElementById("telefono").value = cliente.telefono || "";
+          document.getElementById("direccion").value = cliente.direccion || "";
+          document.getElementById("correo").value = cliente.correo;
+          document.getElementById("id_barrio").value = cliente.id_barrio;
+        } else {
+          alert("Cliente no encontrado para edición.");
+          window.history.back();
+        }
+      } catch (error) {
+        console.error("Error al cargar datos del cliente:", error);
+        alert("Error al cargar datos del cliente: " + error.message);
+        window.history.back();
+      }
+    };
+
+    // Guardar cambios del cliente
+    const guardarCambios = async () => {
+      const id_cliente = document.getElementById("id_cliente").value;
+      const clienteData = {
         nombre: document.getElementById("nombre").value,
         apellido: document.getElementById("apellido").value,
         documento: document.getElementById("documento").value,
         telefono: document.getElementById("telefono").value,
         direccion: document.getElementById("direccion").value,
         correo: document.getElementById("correo").value,
-        id_barrio: parseInt(document.getElementById("id_barrio").value), // Asegúrate de que sea un número
+        id_barrio: parseInt(document.getElementById("id_barrio").value)
       };
 
-      // CONSTRUYE LA URL COMPLETA TAMBIÉN PARA LA SOLICITUD PUT
-      fetch(`${BACKEND_API_BASE_URL}${CLIENT_API_PATH}/${id_cliente}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cliente),
-      })
-        .then(response => {
-          if (!response.ok) {
-            return response.json().catch(() => {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }).then(errorData => {
-                throw new Error(errorData.mensaje || `HTTP error! status: ${response.status}`);
-            });
-          }
-          return response.json();
-        })
-        .then(data => {
-          alert("Cliente actualizado correctamente");
-          window.location.href = "listarCliente.html";
-        })
-        .catch(error => {
-          console.error("Error al actualizar el cliente:", error);
-          alert("Error al actualizar el cliente: " + error.message);
+      if (!clienteData.nombre || !clienteData.apellido || !clienteData.documento || 
+          !clienteData.correo || isNaN(clienteData.id_barrio)) {
+        alert("Por favor, completa todos los campos obligatorios.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${backendUrl}/${id_cliente}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(clienteData)
         });
-    });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+
+        alert(result.mensaje);
+        window.location.href = "cliente.html"; // ✅ Regresa al listado correcto
+      } catch (error) {
+        console.error("Error al guardar cambios:", error);
+        alert("Error al guardar cambios: " + error.message);
+      }
+    };
+
+    document.getElementById("guardarBtn").addEventListener("click", guardarCambios);
+    cargarDatosCliente();
   </script>
 </body>
 </html>
