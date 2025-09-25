@@ -35,26 +35,34 @@
   </form>
 
   <script>
-    // Define la URL base de tu backend.
-    // Si tu backend está en el mismo servicio de Render, puedes usar una ruta relativa.
-    // Si tu backend está en un servicio de Render diferente (por ejemplo, una API separada),
-    // deberías usar su URL completa de Render: `https://nombre-de-tu-api.onrender.com/clientes`
-    const backendClienteUrl = "/clientes"; // <-- ¡Cambio aquí!
+    // ESTA ES LA URL BASE DE TU BACKEND API, LA QUE TE DIO CHATGPT Y FUNCIONA
+    const BACKEND_API_BASE_URL = "https://skjad.onrender.com"; // <-- ¡Define tu URL base aquí!
+
+    // El endpoint específico para clientes (singular, como en tu prueba exitosa)
+    const CLIENT_API_PATH = "/cliente"; 
 
     const params = new URLSearchParams(window.location.search);
     const id_cliente = params.get("id");
 
     // Cargar datos del cliente
     if (id_cliente) {
-      fetch(`${backendClienteUrl}/${id_cliente}`) // <-- ¡Cambio aquí!
+      // CONSTRUYE LA URL COMPLETA USANDO LA BASE Y LA RUTA ESPECÍFICA
+      fetch(`${BACKEND_API_BASE_URL}${CLIENT_API_PATH}/${id_cliente}`)
         .then(response => {
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            // Intenta leer el mensaje de error del backend si la respuesta no es OK
+            return response.json().catch(() => {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }).then(errorData => {
+                throw new Error(errorData.mensaje || `HTTP error! status: ${response.status}`);
+            });
           }
           return response.json();
         })
         .then(data => {
-          if (data.resultado) {
+          console.log("Datos recibidos del servidor para cliente:", data); // Depuración
+
+          if (data.resultado) { // Verifica que `resultado` exista en la respuesta
             document.getElementById("id_cliente").value = data.resultado.id_cliente;
             document.getElementById("nombre").value = data.resultado.nombre;
             document.getElementById("apellido").value = data.resultado.apellido;
@@ -64,21 +72,19 @@
             document.getElementById("correo").value = data.resultado.correo;
             document.getElementById("id_barrio").value = data.resultado.id_barrio;
           } else {
-             // Añadir manejo si no hay resultado pero la respuesta es OK
-             alert('Cliente no encontrado para edición.');
-             window.history.back();
+            alert('Respuesta del servidor no contiene datos de cliente válidos (data.resultado es nulo o indefinido).');
+            window.history.back();
           }
         })
         .catch(error => {
           console.error("Error al cargar datos del cliente para edición:", error);
           alert("Error al cargar datos del cliente para edición: " + error.message);
-          window.history.back(); // Volver si hay un error al cargar
+          window.history.back();
         });
     } else {
-        alert('ID de cliente no proporcionado.');
-        window.history.back(); // Volver si no hay ID
+        alert('ID de cliente no proporcionado en la URL (ej. editarCliente.html?id=6).');
+        window.history.back();
     }
-
 
     // Guardar cambios
     document.getElementById("formEditarCliente").addEventListener("submit", function (e) {
@@ -91,10 +97,11 @@
         telefono: document.getElementById("telefono").value,
         direccion: document.getElementById("direccion").value,
         correo: document.getElementById("correo").value,
-        id_barrio: document.getElementById("id_barrio").value,
+        id_barrio: parseInt(document.getElementById("id_barrio").value), // Asegúrate de que sea un número
       };
 
-      fetch(`${backendClienteUrl}/${id_cliente}`, { // <-- ¡Cambio aquí!
+      // CONSTRUYE LA URL COMPLETA TAMBIÉN PARA LA SOLICITUD PUT
+      fetch(`${BACKEND_API_BASE_URL}${CLIENT_API_PATH}/${id_cliente}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -103,8 +110,11 @@
       })
         .then(response => {
           if (!response.ok) {
-            // Es buena práctica leer el cuerpo de la respuesta incluso si no es OK para obtener mensajes de error del servidor
-            return response.json().then(err => { throw new Error(err.mensaje || `HTTP error! status: ${response.status}`); });
+            return response.json().catch(() => {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }).then(errorData => {
+                throw new Error(errorData.mensaje || `HTTP error! status: ${response.status}`);
+            });
           }
           return response.json();
         })
