@@ -1,5 +1,5 @@
 const defineCajero = (sequelize, DataTypes) => {
-  return sequelize.define('Cajero', {
+  return sequelize.define('Cajero1', {
     id_cajero: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
