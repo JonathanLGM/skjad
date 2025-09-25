@@ -46,6 +46,7 @@
   <script>
     const backendUrl = "/cajero"; 
 
+    // Listar cajeros
     const obtenerCajeros = async () => {
       try {
         const res = await fetch(`${backendUrl}/listar`);
@@ -80,6 +81,7 @@
       }
     };
 
+    // Guardar cajero (crear o actualizar)
     const guardarCajero = async () => {
       const id_cajero = document.getElementById('id_cajero').value;
       const cajeroData = {
@@ -124,6 +126,7 @@
       }
     };
 
+    // Editar cajero
     const editarCajero = async (id) => {
       try {
         const res = await fetch(`${backendUrl}/${id}`);
@@ -148,6 +151,7 @@
       }
     };
 
+    // Eliminar cajero
     const eliminarCajero = async (id) => {
       if (!confirm('¿Seguro que quieres eliminar este cajero?')) return;
       try {
