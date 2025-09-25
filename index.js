@@ -44,6 +44,9 @@ app.get('/', (req, res) => {
 });
 
 // Rutas CRUD de Cliente
+const clienteRouter = require('./rutasCliente');
+app.use('/cliente', clienteRouter);
+
 
 // 🚀 Rutas CRUD de Usuario (agregado)
 const usuarioRouter = require('./rutasUsuario');
