@@ -69,7 +69,9 @@
               <td>${cliente.correo}</td>
               <td>${cliente.id_barrio}</td>
               <td>
-                <button onclick="editarCliente(${cliente.id_cliente})">Editar</button>
+                <a href="editarCuenta.html?id=${cliente.id_cliente}">
+                <button>Editar</button>
+                </a>
                 <button onclick="eliminarCliente(${cliente.id_cliente})">Eliminar</button>
               </td>
             `;
