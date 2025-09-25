@@ -65,7 +65,9 @@
               <td>${cajero.id_barrio}</td>
               <td>${cajero.id_tipo}</td>
               <td>
-                <button onclick="editarCajero(${cajero.id_cajero})">Editar</button>
+                <a href="editarCajero.html?id=${cajero.id_cajero}">
+                <button>Editar</button>
+                </a>
                 <button onclick="eliminarCajero(${cajero.id_cajero})">Eliminar</button>
               </td>
             `;
