@@ -4,110 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Editar Cliente</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; }
-    label { font-weight: bold; }
-    input, button { padding: 8px; font-size: 14px; }
-    button { cursor: pointer; background-color: #007bff; color: white; border: none; }
-    button:hover { background-color: #0056b3; }
-  </style>
 </head>
 <body>
   <h1>Editar Cliente</h1>
-  <form id="editarClienteForm">
-    <input type="hidden" id="id_cliente">
+  <form id="formEditarCliente">
+    <input type="hidden" id="id_cliente" name="id_cliente">
 
     <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" required>
+    <input type="text" id="nombre" name="nombre" required><br>
 
     <label for="apellido">Apellido:</label>
-    <input type="text" id="apellido" required>
+    <input type="text" id="apellido" name="apellido" required><br>
 
     <label for="documento">Documento:</label>
-    <input type="text" id="documento" required>
-
-    <label for="correo">Correo:</label>
-    <input type="email" id="correo" required>
+    <input type="text" id="documento" name="documento" required><br>
 
     <label for="telefono">Teléfono:</label>
-    <input type="text" id="telefono">
+    <input type="text" id="telefono" name="telefono" required><br>
 
     <label for="direccion">Dirección:</label>
-    <input type="text" id="direccion">
+    <input type="text" id="direccion" name="direccion" required><br>
 
-    <label for="id_barrio">ID Barrio:</label>
-    <input type="number" id="id_barrio" required>
+    <label for="correo">Correo:</label>
+    <input type="email" id="correo" name="correo" required><br>
+
+    <label for="id_barrio">Barrio:</label>
+    <input type="number" id="id_barrio" name="id_barrio" required><br>
 
     <button type="submit">Guardar Cambios</button>
   </form>
 
   <script>
-    // URL base del backend (ajústala si tu backend está en otro servicio)
-    const backendUrl = "/cliente";
-
-    // Obtener el ID de la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
+    const params = new URLSearchParams(window.location.search);
+    const id_cliente = params.get("id");
 
     // Cargar datos del cliente
-    async function cargarCliente() {
-      try {
-        const res = await fetch(`${backendUrl}/${id}`);
-        if (!res.ok) throw new Error("Error al cargar datos de la cuenta para edición");
-        const data = await res.json();
-
-        if (!data.resultado) throw new Error("Cliente no encontrado");
-
-        const cliente = data.resultado;
-
-        document.getElementById("id_cliente").value = cliente.id_cliente;
-        document.getElementById("nombre").value = cliente.nombre;
-        document.getElementById("apellido").value = cliente.apellido;
-        document.getElementById("documento").value = cliente.documento;
-        document.getElementById("correo").value = cliente.correo;
-        document.getElementById("telefono").value = cliente.telefono || "";
-        document.getElementById("direccion").value = cliente.direccion || "";
-        document.getElementById("id_barrio").value = cliente.id_barrio;
-      } catch (err) {
-        alert(err.message);
-        console.error(err);
-      }
+    if (id_cliente) {
+      fetch(`http://localhost:3000/clientes/${id_cliente}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.resultado) {
+            document.getElementById("id_cliente").value = data.resultado.id_cliente;
+            document.getElementById("nombre").value = data.resultado.nombre;
+            document.getElementById("apellido").value = data.resultado.apellido;
+            document.getElementById("documento").value = data.resultado.documento;
+            document.getElementById("telefono").value = data.resultado.telefono;
+            document.getElementById("direccion").value = data.resultado.direccion;
+            document.getElementById("correo").value = data.resultado.correo;
+            document.getElementById("id_barrio").value = data.resultado.id_barrio;
+          }
+        })
+        .catch(error => {
+          console.error("Error al cargar datos del cliente para edición:", error);
+          alert("Error al cargar datos del cliente para edición: " + error.message);
+        });
     }
 
     // Guardar cambios
-    document.getElementById("editarClienteForm").addEventListener("submit", async (e) => {
+    document.getElementById("formEditarCliente").addEventListener("submit", function (e) {
       e.preventDefault();
-      try {
-        const clienteActualizado = {
-          nombre: document.getElementById("nombre").value,
-          apellido: document.getElementById("apellido").value,
-          documento: document.getElementById("documento").value,
-          correo: document.getElementById("correo").value,
-          telefono: document.getElementById("telefono").value,
-          direccion: document.getElementById("direccion").value,
-          id_barrio: document.getElementById("id_barrio").value
-        };
 
-        const res = await fetch(`${backendUrl}/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(clienteActualizado)
+      const cliente = {
+        nombre: document.getElementById("nombre").value,
+        apellido: document.getElementById("apellido").value,
+        documento: document.getElementById("documento").value,
+        telefono: document.getElementById("telefono").value,
+        direccion: document.getElementById("direccion").value,
+        correo: document.getElementById("correo").value,
+        id_barrio: document.getElementById("id_barrio").value,
+      };
+
+      fetch(`http://localhost:3000/clientes/${id_cliente}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cliente),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert("Cliente actualizado correctamente");
+          window.location.href = "listarCliente.html";
+        })
+        .catch(error => {
+          console.error("Error al actualizar el cliente:", error);
+          alert("Error al actualizar el cliente: " + error.message);
         });
-
-        if (!res.ok) throw new Error("Error al actualizar el cliente");
-        const data = await res.json();
-
-        alert("Cliente actualizado con éxito");
-        window.location.href = "listarCliente.html"; // redirige después de editar
-      } catch (err) {
-        alert(err.message);
-        console.error(err);
-      }
     });
-
-    // Ejecutar carga inicial
-    cargarCliente();
   </script>
 </body>
 </html>
