@@ -40,13 +40,12 @@ app.get('/barrios', async (req, res) => {
 
 // Ruta raíz para cargar cliente.html
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/frontend/cliente.html');
+  res.sendFile(__dirname + '/frontend/cajero.html');
 });
 
 // Rutas CRUD de Cliente
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
-
 
 // 🚀 Rutas CRUD de Usuario (agregado)
 const usuarioRouter = require('./rutasUsuario');
@@ -55,6 +54,10 @@ app.use('/usuario', usuarioRouter);
 // 🚀 Rutas CRUD de Cuenta (nuevo)
 const cuentaRouter = require('./rutasCuenta');
 app.use('/cuenta', cuentaRouter);
+
+// 🚀 Rutas CRUD de Cajero (nuevo)
+const cajeroRouter = require('./rutasCajero');
+app.use('/cajero', cajeroRouter);
 
 // Levantar servidor
 app.listen(PORT, () => {
