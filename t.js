@@ -1,6 +1,6 @@
 // transaccion.js
 const defineTransaccion = (sequelize, DataTypes) => {
-  return sequelize.define('Transaccion1', {
+  return sequelize.define('transaccion1', {
     id_transaccion: {
       type: DataTypes.INTEGER,
       primaryKey: true,
