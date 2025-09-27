@@ -79,8 +79,8 @@
         }
       } catch (error) {
         console.error("Error al obtener transacciones:", error);
-        alert("Error al cargar transacciones: " + error.message);
         document.getElementById('transaccionesTable').innerHTML = '<tr><td colspan="8">Error al cargar transacciones.</td></tr>';
+        alert("Error al cargar transacciones: " + error.message);
       }
     };
 
@@ -153,6 +153,7 @@
 
     document.getElementById('guardarBtn').addEventListener('click', guardarTransaccion);
 
+    // Cargar transacciones al inicio
     obtenerTransacciones();
   </script>
 </body>
