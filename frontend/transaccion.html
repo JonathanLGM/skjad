@@ -44,15 +44,16 @@
   </table>
 
   <script>
-    const backendUrl = "/transaccion"; // base URL de tus rutas
+    const backendUrl = "/transaccion"; // Base URL de las rutas
 
     const obtenerTransacciones = async () => {
       try {
-        const res = await fetch(`${backendUrl}/listartransaccion`);
+        const res = await fetch(backendUrl);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const tbody = document.getElementById('transaccionesTable');
         tbody.innerHTML = '';
+
         if (data.resultado && Array.isArray(data.resultado)) {
           data.resultado.forEach(transaccion => {
             const tr = document.createElement('tr');
@@ -65,7 +66,7 @@
               <td>${transaccion.id_cuenta_destino || '-'}</td>
               <td>${transaccion.id_cajero}</td>
               <td>
-                <a href="editarT.html?id=${transaccion.id_transaccion}">
+                <a href="editarTransaccion.html?id=${transaccion.id_transaccion}">
                   <button>Editar</button>
                 </a>
                 <button onclick="eliminarTransaccion(${transaccion.id_transaccion})">Eliminar</button>
@@ -78,8 +79,8 @@
         }
       } catch (error) {
         console.error("Error al obtener transacciones:", error);
-        document.getElementById('transaccionesTable').innerHTML = '<tr><td colspan="8">Error al cargar transacciones.</td></tr>';
         alert("Error al cargar transacciones: " + error.message);
+        document.getElementById('transaccionesTable').innerHTML = '<tr><td colspan="8">Error al cargar transacciones.</td></tr>';
       }
     };
 
