@@ -1,68 +1,68 @@
-const { transaccion1 } = require('./db'); // Importar modelo transaccion1
+const { transaccion1 } = require('./db'); // importar modelo transaccion1
 
-// Crear transaccion
+// crear transaccion
 const registrarTransaccion = async (req, res) => {
   try {
     const nuevaTransaccion = await transaccion1.create(req.body);
-    res.status(201).json({ mensaje: 'Transaccion creada', resultado: nuevaTransaccion });
+    res.status(201).json({ mensaje: 'transaccion creada', resultado: nuevaTransaccion });
   } catch (err) {
-    console.error('Error en registrarTransaccion:', err);
+    console.error('error en registrarTransaccion:', err);
     res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
-// Listar transacciones
+// listar transacciones
 const listarTransacciones = async (req, res) => {
   try {
     const transacciones = await transaccion1.findAll();
-    res.status(200).json({ mensaje: 'Transacciones listadas', resultado: transacciones });
+    res.status(200).json({ mensaje: 'transacciones listadas', resultado: transacciones });
   } catch (err) {
-    console.error('Error en listarTransacciones:', err);
+    console.error('error en listarTransacciones:', err);
     res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
-// Obtener transaccion por ID
+// obtener transaccion por id
 const obtenerTransaccionPorId = async (req, res) => {
   try {
-    console.log('Params recibidos en obtenerTransaccionPorId:', req.params);
+    console.log('params recibidos en obtenerTransaccionPorId:', req.params);
 
     const transaccion = await transaccion1.findByPk(req.params.id_transaccion);
     if (!transaccion) {
-      return res.status(404).json({ mensaje: 'Transaccion no encontrada', resultado: null });
+      return res.status(404).json({ mensaje: 'transaccion no encontrada', resultado: null });
     }
 
-    res.status(200).json({ mensaje: 'Transaccion encontrada', resultado: transaccion });
+    res.status(200).json({ mensaje: 'transaccion encontrada', resultado: transaccion });
   } catch (err) {
-    console.error('Error en obtenerTransaccionPorId:', err);
+    console.error('error en obtenerTransaccionPorId:', err);
     res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
-// Actualizar transaccion
+// actualizar transaccion
 const actualizarTransaccion = async (req, res) => {
   try {
     const transaccion = await transaccion1.findByPk(req.params.id_transaccion);
-    if (!transaccion) return res.status(404).json({ mensaje: 'Transaccion no encontrada', resultado: null });
+    if (!transaccion) return res.status(404).json({ mensaje: 'transaccion no encontrada', resultado: null });
 
     await transaccion.update(req.body);
-    res.status(200).json({ mensaje: 'Transaccion actualizada', resultado: transaccion });
+    res.status(200).json({ mensaje: 'transaccion actualizada', resultado: transaccion });
   } catch (err) {
-    console.error('Error en actualizarTransaccion:', err);
+    console.error('error en actualizarTransaccion:', err);
     res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
-// Eliminar transaccion
+// eliminar transaccion
 const borrarTransaccion = async (req, res) => {
   try {
     const transaccion = await transaccion1.findByPk(req.params.id_transaccion);
-    if (!transaccion) return res.status(404).json({ mensaje: 'Transaccion no encontrada', resultado: null });
+    if (!transaccion) return res.status(404).json({ mensaje: 'transaccion no encontrada', resultado: null });
 
     await transaccion.destroy();
-    res.status(200).json({ mensaje: 'Transaccion eliminada', resultado: transaccion });
+    res.status(200).json({ mensaje: 'transaccion eliminada', resultado: transaccion });
   } catch (err) {
-    console.error('Error en borrarTransaccion:', err);
+    console.error('error en borrarTransaccion:', err);
     res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
