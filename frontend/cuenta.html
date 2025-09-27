@@ -14,7 +14,7 @@
 <body>
   <h1>CRUD Cuenta</h1>
 
-  <!-- Formulario para crear o actualizar -->
+  <!-- Formulario para crear -->
   <div>
     <input type="hidden" id="id_cuenta">
     <input type="text" id="numero_cuenta" placeholder="Número de Cuenta">
@@ -42,38 +42,37 @@
   </table>
 
   <script>
-    // --- CAMBIO CLAVE AQUÍ ---
-    const backendUrl = "/cuenta"; 
+    const backendUrl = "/cuenta"; // Ahora GET /cuenta devuelve todas las cuentas
 
     const obtenerCuentas = async () => {
       try {
-        const res = await fetch(backendUrl);
+        const res = await fetch(backendUrl); // GET /cuenta
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const tbody = document.getElementById('cuentasTable');
         tbody.innerHTML = '';
+
         if (data.resultado && Array.isArray(data.resultado)) {
-            data.resultado.forEach(cuenta => {
+          data.resultado.forEach(cuenta => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${cuenta.id_cuenta}</td>
-                <td>${cuenta.numero_cuenta}</td>
-                <td>${cuenta.estado}</td>
-                <td>${cuenta.saldo}</td>
-                <td>${new Date(cuenta.fecha_apertura).toLocaleDateString()}</td>
-                <td>${cuenta.id_cliente}</td>
-                <td>
+              <td>${cuenta.id_cuenta}</td>
+              <td>${cuenta.numero_cuenta}</td>
+              <td>${cuenta.estado}</td>
+              <td>${cuenta.saldo}</td>
+              <td>${new Date(cuenta.fecha_apertura).toLocaleDateString()}</td>
+              <td>${cuenta.id_cliente}</td>
+              <td>
                 <a href="editarCuenta.html?id=${cuenta.id_cuenta}">
-                <button>Editar</button>
+                  <button>Editar</button>
                 </a>
                 <button onclick="eliminarCuenta(${cuenta.id_cuenta})">Eliminar</button>
-                </td>
+              </td>
             `;
             tbody.appendChild(tr);
-            });
+          });
         } else {
-            console.warn("La respuesta no contiene un array de cuentas en 'resultado':", data);
-            tbody.innerHTML = '<tr><td colspan="7">No hay cuentas para mostrar.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7">No hay cuentas para mostrar.</td></tr>';
         }
       } catch (error) {
         console.error("Error al obtener cuentas:", error);
@@ -93,19 +92,21 @@
       };
 
       if (!cuentaData.numero_cuenta || !cuentaData.estado || isNaN(cuentaData.saldo) || !cuentaData.fecha_apertura || isNaN(cuentaData.id_cliente)) {
-          alert('Por favor, completa todos los campos obligatorios.');
-          return;
+        alert('Por favor, completa todos los campos obligatorios.');
+        return;
       }
 
-      let res;
       try {
+        let res;
         if (id_cuenta) {
+          // Actualizar
           res = await fetch(`${backendUrl}/${id_cuenta}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cuentaData)
           });
         } else {
+          // Crear
           res = await fetch(backendUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -115,7 +116,7 @@
 
         const result = await res.json();
         if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-        
+
         alert(result.mensaje);
         limpiarFormulario();
         obtenerCuentas();
@@ -124,7 +125,6 @@
         alert("Error al guardar cuenta: " + error.message);
       }
     };
-
 
     const eliminarCuenta = async (id) => {
       if (!confirm('¿Seguro que quieres eliminar esta cuenta?')) return;
