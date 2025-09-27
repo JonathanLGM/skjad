@@ -8,18 +8,22 @@
 <body>
   <div class="container">
     <h1>Banco Virtual</h1>
-    
-    <!-- Login -->
-    <div class="form-container">
-      <h2>Iniciar Sesión</h2>
+
+    <!-- Pestañas -->
+    <div class="tabs">
+      <button class="tab-button active" data-tab="login">Iniciar Sesión</button>
+      <button class="tab-button" data-tab="registro">Registrarse</button>
+    </div>
+
+    <!-- Formulario Login -->
+    <div id="login" class="form-container active">
       <input id="correo" class="form-styling" type="text" placeholder="Correo">
       <input id="clave" class="form-styling" type="password" placeholder="Clave">
       <button type="button" class="btn-signin">Ingresar</button>
     </div>
 
-    <!-- Registro -->
-    <div class="form-container">
-      <h2>Registrarse</h2>
+    <!-- Formulario Registro -->
+    <div id="registro" class="form-container">
       <input id="nombre" class="form-styling" type="text" placeholder="Nombre">
       <input id="apellido" class="form-styling" type="text" placeholder="Apellido">
       <input id="correoRegistro" class="form-styling" type="text" placeholder="Correo">
