@@ -26,15 +26,15 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;   /* 👈 ocupa toda la pantalla */
+  height: 100vh;   /* ocupa toda la pantalla */
   padding: 0;
 }
 
 /* Caja del login */
 .container {
   background: #fff;
-  width: 360px;
-  padding: 30px;
+  width: 420px;   /* 👈 más ancho */
+  padding: 35px;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   position: relative;
@@ -83,18 +83,19 @@ form.active {
 }
 
 .input-box input {
-  width: 100%;
-  padding: 12px;
+  width: 100%;          /* 👈 ahora llenan el rectángulo */
+  padding: 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
   outline: none;
-  font-size: 14px;
+  font-size: 15px;
+  box-sizing: border-box; /* 👈 evita que se descuadre */
 }
 
 /* Botón */
 .btn {
-  width: 100%;
-  padding: 12px;
+  width: 100%;          /* 👈 botón ocupa todo el ancho */
+  padding: 14px;
   background: #007BFF;
   border: none;
   border-radius: 8px;
