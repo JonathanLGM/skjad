@@ -61,7 +61,7 @@ app.use('/cajero', cajeroRouter);
 
 // 🚀 Rutas CRUD de Transaccion (nuevo)
 const transaccionRouter = require('./rutasTransaccion');
-app.use('/transaccion', transaccionRouter);
+app.use('/t', transaccionRouter);
 
 // Levantar servidor
 app.listen(PORT, () => {

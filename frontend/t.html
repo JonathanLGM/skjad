@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Transacción</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+    input, button { padding: 5px; margin: 5px 0; width: 100%; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>CRUD Transacción</h1>
+
+  <!-- Formulario para crear o actualizar -->
+  <div>
+    <input type="hidden" id="id_transaccion">
+    <input type="text" id="tipo" placeholder="Tipo (depósito, retiro, transferencia)">
+    <input type="date" id="fecha" placeholder="Fecha">
+    <input type="number" id="monto" placeholder="Monto">
+    <input type="number" id="id_cuenta_origen" placeholder="ID Cuenta Origen">
+    <input type="number" id="id_cuenta_destino" placeholder="ID Cuenta Destino (opcional)">
+    <input type="number" id="id_cajero" placeholder="ID Cajero">
+    <button id="guardarBtn">Guardar Transacción</button>
+  </div>
+
+  <!-- Tabla de transacciones -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tipo</th>
+        <th>Fecha</th>
+        <th>Monto</th>
+        <th>ID Cuenta Origen</th>
+        <th>ID Cuenta Destino</th>
+        <th>ID Cajero</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="transaccionesTable"></tbody>
+  </table>
+
+  <script>
+    const backendUrl = "/t"; // endpoint de transacción
+
+    const obtenerTransacciones = async () => {
+      try {
+        const res = await fetch(backendUrl);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const tbody = document.getElementById('transaccionesTable');
+        tbody.innerHTML = '';
+        if (data.resultado && Array.isArray(data.resultado)) {
+          data.resultado.forEach(transaccion => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${transaccion.id_transaccion}</td>
+              <td>${transaccion.tipo}</td>
+              <td>${new Date(transaccion.fecha).toLocaleDateString()}</td>
+              <td>${transaccion.monto}</td>
+              <td>${transaccion.id_cuenta_origen}</td>
+              <td>${transaccion.id_cuenta_destino || '-'}</td>
+              <td>${transaccion.id_cajero}</td>
+              <td>
+                <a href="editarT.html?id=${transaccion.id_transaccion}">
+                  <button>Editar</button>
+                </a>
+                <button onclick="eliminarTransaccion(${transaccion.id_transaccion})">Eliminar</button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } else {
+          console.warn("La respuesta no contiene un array de transacciones:", data);
+          tbody.innerHTML = '<tr><td colspan="8">No hay transacciones para mostrar.</td></tr>';
+        }
+      } catch (error) {
+        console.error("Error al obtener transacciones:", error);
+        alert("Error al cargar transacciones: " + error.message);
+        document.getElementById('transaccionesTable').innerHTML = '<tr><td colspan="8">Error al cargar transacciones.</td></tr>';
+      }
+    };
+
+    const guardarTransaccion = async () => {
+      const id_transaccion = document.getElementById('id_transaccion').value;
+      const transaccionData = {
+        tipo: document.getElementById('tipo').value,
+        fecha: document.getElementById('fecha').value,
+        monto: parseFloat(document.getElementById('monto').value),
+        id_cuenta_origen: parseInt(document.getElementById('id_cuenta_origen').value),
+        id_cuenta_destino: document.getElementById('id_cuenta_destino').value ? parseInt(document.getElementById('id_cuenta_destino').value) : null,
+        id_cajero: parseInt(document.getElementById('id_cajero').value)
+      };
+
+      if (!transaccionData.tipo || !transaccionData.fecha || isNaN(transaccionData.monto) || isNaN(transaccionData.id_cuenta_origen) || isNaN(transaccionData.id_cajero)) {
+        alert('Por favor, completa todos los campos obligatorios.');
+        return;
+      }
+
+      let res;
+      try {
+        if (id_transaccion) {
+          res = await fetch(`${backendUrl}/${id_transaccion}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transaccionData)
+          });
+        } else {
+          res = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transaccionData)
+          });
+        }
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        
+        alert(result.mensaje);
+        limpiarFormulario();
+        obtenerTransacciones();
+      } catch (error) {
+        console.error("Error al guardar transacción:", error);
+        alert("Error al guardar transacción: " + error.message);
+      }
+    };
+
+    const editarTransaccion = async (id) => {
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const transaccion = data.resultado;
+
+        if (transaccion) {
+          document.getElementById('id_transaccion').value = transaccion.id_transaccion;
+          document.getElementById('tipo').value = transaccion.tipo;
+          document.getElementById('fecha').value = transaccion.fecha.split('T')[0];
+          document.getElementById('monto').value = transaccion.monto;
+          document.getElementById('id_cuenta_origen').value = transaccion.id_cuenta_origen;
+          document.getElementById('id_cuenta_destino').value = transaccion.id_cuenta_destino || '';
+          document.getElementById('id_cajero').value = transaccion.id_cajero;
+        } else {
+          alert('Transacción no encontrada para edición.');
+        }
+      } catch (error) {
+        console.error("Error al editar transacción:", error);
+        alert("Error al cargar datos de la transacción: " + error.message);
+      }
+    };
+
+    const eliminarTransaccion = async (id) => {
+      if (!confirm('¿Seguro que quieres eliminar esta transacción?')) return;
+      try {
+        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        obtenerTransacciones();
+      } catch (error) {
+        console.error("Error al eliminar transacción:", error);
+        alert("Error al eliminar transacción: " + error.message);
+      }
+    };
+
+    const limpiarFormulario = () => {
+      document.getElementById('id_transaccion').value = '';
+      document.getElementById('tipo').value = '';
+      document.getElementById('fecha').value = '';
+      document.getElementById('monto').value = '';
+      document.getElementById('id_cuenta_origen').value = '';
+      document.getElementById('id_cuenta_destino').value = '';
+      document.getElementById('id_cajero').value = '';
+    };
+
+    document.getElementById('guardarBtn').addEventListener('click', guardarTransaccion);
+
+    obtenerTransacciones();
+  </script>
+</body>
+</html>

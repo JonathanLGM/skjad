@@ -1,5 +1,6 @@
-module.exports = (sequelize, DataTypes) => {
-  const transaccion = sequelize.define("transaccion1", {
+// transaccion.js
+const defineTransaccion = (sequelize, DataTypes) => {
+  return sequelize.define('Transaccion1', {
     id_transaccion: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -30,9 +31,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
-    tableName: "transaccion",
+    tableName: 'transaccion',
     timestamps: false
   });
-
-  return transaccion; // 👈 ahora coincide con la variable en minúscula
 };
+
+module.exports = defineTransaccion;
