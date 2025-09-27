@@ -26,7 +26,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - 70px); /* resta la franja superior */
+  height: 100vh;   /* 👈 ocupa toda la pantalla */
+  padding: 0;
 }
 
 /* Caja del login */
