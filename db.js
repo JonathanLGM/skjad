@@ -24,7 +24,7 @@ module.exports = {
   sequelize,
   Cliente1,
   Usuario1,
-  Cliente1,
+  Cuenta1,
   Cajero1,
   Transaccion1
 };
