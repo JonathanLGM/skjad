@@ -40,7 +40,7 @@ app.get('/barrios', async (req, res) => {
 
 // Ruta raíz para cargar cliente.html
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/frontend/log_in.css');
+  res.sendFile(__dirname + '/frontend/log_in.js');
 });
 
 // Rutas CRUD de Cliente
