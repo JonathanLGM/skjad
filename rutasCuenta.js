@@ -6,7 +6,7 @@ const cuentaControlador = require('./cuentaControlador'); // ahora todo está en
 router.post('/', cuentaControlador.registrarCuenta);
 
 // Obtener todas las cuentas
-router.get('/', cuentaControlador.listarCuentas);
+router.get('/listarCuentas', cuentaControlador.listarCuentas);
 
 // Obtener una cuenta por id
 router.get('/:id_cuenta', cuentaControlador.obtenerCuentaPorId);
