@@ -1,21 +1,20 @@
-// routes/transaccionRoutes.js
 const express = require('express');
 const router = express.Router();
-const transaccionControlador = require('./transaccionControlador'); // está en raíz, igual que clienteControlador
+const transaccionControlador = require('./transaccionControlador'); // importa bien
 
-// Crear transacción
-router.post('/', transaccionControlador.crearTransaccion);
+// crear transaccion
+router.post('/', transaccionControlador.registrarTransaccion);
 
-// Obtener todas las transacciones (con alias /listar)
+// listar todas
 router.get('/listartransaccion', transaccionControlador.listarTransacciones);
 
-// Obtener una transacción por id
+// obtener por id
 router.get('/:id_transaccion', transaccionControlador.obtenerTransaccionPorId);
 
-// Actualizar transacción
+// actualizar
 router.put('/:id_transaccion', transaccionControlador.actualizarTransaccion);
 
-// Eliminar transacción
+// eliminar
 router.delete('/:id_transaccion', transaccionControlador.borrarTransaccion);
 
 module.exports = router;
