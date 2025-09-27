@@ -126,30 +126,6 @@
       }
     };
 
-    const editarCajero = async (id) => {
-      try {
-        const res = await fetch(`${backendUrl}/${id}`);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        const cajero = data.resultado;
-
-        if (cajero) {
-          document.getElementById('id_cajero').value = cajero.id_cajero;
-          document.getElementById('direccion').value = cajero.direccion;
-          document.getElementById('latitud').value = cajero.latitud;
-          document.getElementById('longitud').value = cajero.longitud;
-          document.getElementById('estado').value = cajero.estado;
-          document.getElementById('id_barrio').value = cajero.id_barrio;
-          document.getElementById('id_tipo').value = cajero.id_tipo;
-        } else {
-          alert('Cajero no encontrado para edición.');
-        }
-      } catch (error) {
-        console.error("Error al editar cajero:", error);
-        alert("Error al cargar datos del cajero para edición: " + error.message);
-      }
-    };
-
     const eliminarCajero = async (id) => {
       if (!confirm('¿Seguro que quieres eliminar este cajero?')) return;
       try {
