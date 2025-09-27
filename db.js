@@ -25,6 +25,9 @@ const Cuenta1 = require('./cuenta')(sequelize, DataTypes);
 // Importa y define el modelo 'Cajero'
 const Cajero1 = require('./cajero')(sequelize, DataTypes);
 
+// Importa y define el modelo 'Transaccion'
+const Transaccion1 = require('./transaccion')(sequelize, DataTypes);
+
 // Sincroniza los modelos con la base de datos
 sequelize.sync({ alter: true })
   .then(() => {
@@ -42,5 +45,6 @@ module.exports = {
   Cliente1,
   Usuario1,
   Cuenta1,
-  Cajero1
+  Cajero1,
+  Transaccion1
 };
