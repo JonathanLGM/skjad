@@ -65,12 +65,6 @@
               <td>${transaccion.id_cuenta_origen}</td>
               <td>${transaccion.id_cuenta_destino || '-'}</td>
               <td>${transaccion.id_cajero}</td>
-              <td>
-                <a href="editarTransaccion.html?id=${transaccion.id_transaccion}">
-                  <button>Editar</button>
-                </a>
-                <button onclick="eliminarTransaccion(${transaccion.id_transaccion})">Eliminar</button>
-              </td>
             `;
             tbody.appendChild(tr);
           });
@@ -124,20 +118,6 @@
       } catch (error) {
         console.error("Error al guardar transacción:", error);
         alert("Error al guardar transacción: " + error.message);
-      }
-    };
-
-    const eliminarTransaccion = async (id) => {
-      if (!confirm('¿Seguro que quieres eliminar esta transacción?')) return;
-      try {
-        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-        alert(result.mensaje);
-        obtenerTransacciones();
-      } catch (error) {
-        console.error("Error al eliminar transacción:", error);
-        alert("Error al eliminar transacción: " + error.message);
       }
     };
 
