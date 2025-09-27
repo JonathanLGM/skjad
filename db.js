@@ -13,36 +13,18 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   logging: false
 });
 
-// importa y define el modelo 'cliente'
-const cliente1 = require('./cliente')(sequelize, DataTypes);
-
-// importa y define el modelo 'usuario'
-const usuario1 = require('./usuario')(sequelize, DataTypes);
-
-// importa y define el modelo 'cuenta'
-const cuenta1 = require('./cuenta')(sequelize, DataTypes);
-
-// importa y define el modelo 'cajero'
-const cajero1 = require('./cajero')(sequelize, DataTypes);
-
-// importa y define el modelo 'transaccion'
-const transaccion1 = require('./transaccion')(sequelize, DataTypes);
-
-// sincroniza los modelos con la base de datos
-sequelize.sync({ alter: true })
-  .then(() => {
-    console.log('✅ modelos sincronizados con la base de datos');
-  })
-  .catch(err => {
-    console.error('❌ error al sincronizar modelos:', err);
-  });
+const Cliente1 = require('./cliente')(sequelize, DataTypes);
+const Usuario1 = require('./usuario')(sequelize, DataTypes);
+const Cuenta1 = require('./cuenta')(sequelize, DataTypes);
+const Cajero1 = require('./cajero')(sequelize, DataTypes);
+const Transaccion1 = require('./transaccion')(sequelize, DataTypes);
 
 // exporta la instancia de sequelize y los modelos (todo en minúscula)
 module.exports = {
   sequelize,
-  cliente1,
-  usuario1,
-  cuenta1,
-  cajero1,
-  transaccion1
+  Cliente1,
+  Usuario1,
+  Cliente1,
+  Cajero1,
+  Transaccion1
 };
