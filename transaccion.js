@@ -1,21 +1,20 @@
-// transaccion.js
 const defineTransaccion = (sequelize, DataTypes) => {
-  return sequelize.define('transaccion1', {
+  return sequelize.define('Transaccion1', { // mayúscula inicial como en Cuenta1
     id_transaccion: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
+      primaryKey: true
     },
     tipo: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
     fecha: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY, // como fecha_apertura en cuenta.js
       allowNull: false
     },
     monto: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(12, 2), // similar a saldo de cuenta
       allowNull: false
     },
     id_cuenta_origen: {
@@ -31,8 +30,8 @@ const defineTransaccion = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
-    tableName: 'transaccion',
-    timestamps: false
+    tableName: 'transaccion', // nombre de la tabla en la base
+    timestamps: true // igual que en cuenta.js
   });
 };
 

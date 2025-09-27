@@ -26,7 +26,7 @@ const cuenta1 = require('./cuenta')(sequelize, DataTypes);
 const cajero1 = require('./cajero')(sequelize, DataTypes);
 
 // importa y define el modelo 'transaccion'
-const transaccion1 = require('./t')(sequelize, DataTypes);
+const transaccion1 = require('./transaccion')(sequelize, DataTypes);
 
 // sincroniza los modelos con la base de datos
 sequelize.sync({ alter: true })
