@@ -1,23 +1,46 @@
+/* Reset */
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #004080, #007BFF);
-  height: 100vh;
+  background: #f5f5f5; /* Fondo claro como web de banco */
+  margin: 0;
+  padding: 0;
+}
+
+/* Barra superior */
+.topbar {
+  background: #004080;
+  color: #fff;
+  padding: 15px 30px;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.logo {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Contenido centrado */
+main {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
+  height: calc(100vh - 70px); /* resta la franja superior */
 }
 
+/* Caja del login */
 .container {
   background: #fff;
   width: 360px;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   position: relative;
   overflow: hidden;
 }
 
+/* Tabs */
 .tabs {
   display: flex;
   justify-content: space-between;
@@ -38,6 +61,7 @@ body {
   border-bottom: 3px solid #007BFF;
 }
 
+/* Formularios con animación */
 form {
   display: none;
   animation: fade 0.5s ease;
@@ -52,6 +76,7 @@ form.active {
   to {opacity: 1; transform: translateY(0);}
 }
 
+/* Inputs */
 .input-box {
   margin-bottom: 15px;
 }
@@ -65,6 +90,7 @@ form.active {
   font-size: 14px;
 }
 
+/* Botón */
 .btn {
   width: 100%;
   padding: 12px;
@@ -81,6 +107,7 @@ form.active {
   background: #0056b3;
 }
 
+/* Extra links */
 .extra {
   margin-top: 10px;
   text-align: center;
