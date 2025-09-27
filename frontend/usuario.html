@@ -67,7 +67,7 @@
               <td>${usuario.id_cliente}</td>
               <td>
                 <a href="editarUsuario.html?id=${usuario.id_usuario}">
-                <button>Editar</button>
+                  <button>Editar</button>
                 </a>
                 <button onclick="eliminarUsuario(${usuario.id_usuario})">Eliminar</button>
               </td>
@@ -124,6 +124,20 @@
       } catch (error) {
         console.error("Error al guardar usuario:", error);
         alert("Error al guardar usuario: " + error.message);
+      }
+    };
+
+    const eliminarUsuario = async (id) => {
+      if (!confirm('¿Seguro que quieres eliminar este usuario?')) return;
+      try {
+        const res = await fetch(`${backendUrl}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+        alert(result.mensaje);
+        obtenerUsuarios();
+      } catch (error) {
+        console.error("Error al eliminar usuario:", error);
+        alert("Error al eliminar usuario: " + error.message);
       }
     };
 
