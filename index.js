@@ -63,9 +63,6 @@ app.use('/cajero', cajeroRouter);
 const transaccionRouter = require('./rutasTransaccion');
 app.use('/transaccion', transaccionRouter);
 
-const usuarioRouter = require('./rutasUsuario');
-app.use('/usuario', usuarioRouter);
-
 // Levantar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
