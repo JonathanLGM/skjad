@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Banco - Login</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Pequeños ajustes para centrar formularios y botones */
+    body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+    .topbar { background: #004080; color: white; padding: 15px 30px; font-size: 1.5rem; }
+    .container { background: white; padding: 30px; max-width: 400px; margin: 50px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .tabs { display: flex; margin-bottom: 20px; }
+    .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; background: #f0f0f0; border-radius: 5px 5px 0 0; }
+    .tab.active { background: #004080; color: white; }
+    form { display: none; flex-direction: column; }
+    form.active { display: flex; }
+    .input-box { margin-bottom: 15px; }
+    .input-box input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .btn { padding: 10px; background: #004080; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .extra { margin-top: 10px; font-size: 0.9rem; }
+    .extra a { color: #004080; text-decoration: none; }
+  </style>
 </head>
 <body>
   <!-- Barra superior -->
@@ -16,17 +32,17 @@
   <main>
     <div class="container">
       <div class="tabs">
-        <div class="tab active" onclick="showForm('login')">Iniciar Sesión</div>
-        <div class="tab" onclick="showForm('register')">Registrarse</div>
+        <div class="tab active" onclick="showForm('login', event)">Iniciar Sesión</div>
+        <div class="tab" onclick="showForm('register', event)">Registrarse</div>
       </div>
 
       <!-- Login -->
       <form id="login" class="active">
         <div class="input-box">
-          <input type="text" placeholder="Usuario" required>
+          <input type="text" id="loginUsername" placeholder="Usuario" required>
         </div>
         <div class="input-box">
-          <input type="password" placeholder="Contraseña" required>
+          <input type="password" id="loginPassword" placeholder="Contraseña" required>
         </div>
         <button type="submit" class="btn">Ingresar</button>
         <div class="extra"><a href="#">¿Olvidaste tu contraseña?</a></div>
@@ -35,13 +51,22 @@
       <!-- Register -->
       <form id="register">
         <div class="input-box">
-          <input type="text" placeholder="Nombre completo" required>
+          <input type="text" id="regUsername" placeholder="Usuario" required>
         </div>
         <div class="input-box">
-          <input type="email" placeholder="Correo electrónico" required>
+          <input type="password" id="regPassword" placeholder="Contraseña" required>
         </div>
         <div class="input-box">
-          <input type="password" placeholder="Contraseña" required>
+          <input type="date" id="regFechaInicio" placeholder="Fecha Inicio" required>
+        </div>
+        <div class="input-box">
+          <input type="text" id="regRol" placeholder="Rol" required>
+        </div>
+        <div class="input-box">
+          <input type="text" id="regEstado" placeholder="Estado" required>
+        </div>
+        <div class="input-box">
+          <input type="number" id="regIdCliente" placeholder="ID Cliente" required>
         </div>
         <button type="submit" class="btn">Crear cuenta</button>
       </form>
@@ -49,13 +74,70 @@
   </main>
 
   <script>
-    function showForm(formId) {
+    function showForm(formId, event) {
       document.querySelectorAll("form").forEach(f => f.classList.remove("active"));
       document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
 
       document.getElementById(formId).classList.add("active");
-      event.target.classList.add("active");
+      event.currentTarget.classList.add("active");
     }
+
+    // --- LOGIN ---
+    const loginForm = document.getElementById('login');
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch('/usuario/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.mensaje || 'Error en login');
+
+        alert(data.mensaje); // Login exitoso
+        window.location.href = 'transaccion.html';
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
+
+    // --- REGISTER ---
+    const registerForm = document.getElementById('register');
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usuarioData = {
+        username: document.getElementById('regUsername').value,
+        password: document.getElementById('regPassword').value,
+        fecha_inicio: document.getElementById('regFechaInicio').value,
+        rol: document.getElementById('regRol').value,
+        estado: document.getElementById('regEstado').value,
+        id_cliente: parseInt(document.getElementById('regIdCliente').value)
+      };
+
+      try {
+        const res = await fetch('/usuario/registrar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(usuarioData)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.mensaje || 'Error al registrar');
+
+        alert(data.mensaje); // Registro exitoso
+        registerForm.reset();
+        showForm('login', { currentTarget: document.querySelector('.tab') });
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
   </script>
 </body>
 </html>
