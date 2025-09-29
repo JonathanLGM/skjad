@@ -1,62 +1,18 @@
-const { Transaccion1, Cuenta1, sequelize } = require('./db'); // Importamos también Cuenta1 y sequelize
+const { Transaccion1 } = require('./db'); // Importar modelo Transaccion1
 
 // Crear transacción
 const registrarTransaccion = async (req, res) => {
-  const t = await sequelize.transaction(); // Iniciamos transacción de Sequelize
   try {
     const { tipo, fecha, monto, id_cuenta_origen, id_cuenta_destino, id_cajero } = req.body;
 
-    // 1. Validar monto negativo
-    if (monto <= 0) {
-      await t.rollback();
-      return res.status(400).json({ mensaje: 'El monto debe ser mayor a 0', resultado: null });
-    }
+    // Validación opcional: evitar duplicados si es necesario (depende de tu lógica)
+    // Por ejemplo, podrías validar transacciones duplicadas según tipo, fecha y cuenta origen
 
-    // 2. Buscar cuenta origen
-    const cuentaOrigen = await Cuenta1.findByPk(id_cuenta_origen, { transaction: t });
-    if (!cuentaOrigen) {
-      await t.rollback();
-      return res.status(404).json({ mensaje: 'Cuenta origen no encontrada', resultado: null });
-    }
-
-    // 3. Buscar cuenta destino
-    const cuentaDestino = await Cuenta1.findByPk(id_cuenta_destino, { transaction: t });
-    if (!cuentaDestino) {
-      await t.rollback();
-      return res.status(404).json({ mensaje: 'Cuenta destino no encontrada', resultado: null });
-    }
-
-    // 4. Validar saldo suficiente en la cuenta origen
-    if (cuentaOrigen.saldo < monto) {
-      await t.rollback();
-      return res.status(400).json({ mensaje: 'Saldo insuficiente en la cuenta origen', resultado: null });
-    }
-
-    // 5. Crear transacción en la tabla
-    const nuevaTransaccion = await Transaccion1.create({
-      tipo,
-      fecha,
-      monto,
-      id_cuenta_origen,
-      id_cuenta_destino,
-      id_cajero
-    }, { transaction: t });
-
-    // 6. Actualizar saldos
-    cuentaOrigen.saldo -= monto;
-    cuentaDestino.saldo += monto;
-
-    await cuentaOrigen.save({ transaction: t });
-    await cuentaDestino.save({ transaction: t });
-
-    // 7. Confirmar todo
-    await t.commit();
-
-    res.status(201).json({ mensaje: 'Transacción realizada con éxito', resultado: nuevaTransaccion });
+    const nuevaTransaccion = await Transaccion1.create(req.body);
+    res.status(201).json({ mensaje: 'Transacción creada', resultado: nuevaTransaccion });
   } catch (err) {
-    await t.rollback(); // Revertir si algo falla
     console.error('Error en registrarTransaccion:', err);
-    res.status(500).json({ mensaje: 'Error al registrar transacción', resultado: null });
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
@@ -85,8 +41,38 @@ const obtenerTransaccionPorId = async (req, res) => {
   }
 };
 
+// Actualizar transacción
+const actualizarTransaccion = async (req, res) => {
+  try {
+    const transaccion = await Transaccion1.findByPk(req.params.id_transaccion);
+    if (!transaccion) return res.status(404).json({ mensaje: 'Transacción no encontrada', resultado: null });
+
+    await transaccion.update(req.body);
+    res.status(200).json({ mensaje: 'Transacción actualizada', resultado: transaccion });
+  } catch (err) {
+    console.error('Error en actualizarTransaccion:', err);
+    res.status(500).json({ mensaje: err.message, resultado: null });
+  }
+};
+
+// Eliminar transacción
+const borrarTransaccion = async (req, res) => {
+  try {
+    const transaccion = await Transaccion1.findByPk(req.params.id_transaccion);
+    if (!transaccion) return res.status(404).json({ mensaje: 'Transacción no encontrada', resultado: null });
+
+    await transaccion.destroy();
+    res.status(200).json({ mensaje: 'Transacción eliminada', resultado: transaccion });
+  } catch (err) {
+    console.error('Error en borrarTransaccion:', err);
+    res.status(500).json({ mensaje: err.message, resultado: null });
+  }
+};
+
 module.exports = {
   registrarTransaccion,
   listarTransacciones,
   obtenerTransaccionPorId,
+  actualizarTransaccion,
+  borrarTransaccion
 };
