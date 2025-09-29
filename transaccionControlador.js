@@ -43,8 +43,8 @@ const registrarTransaccion = async (req, res) => {
     }, { transaction: t });
 
     // 6. Actualizar saldos
-    cuentaOrigen.saldo -= monto;
-    cuentaDestino.saldo += monto;
+    cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) - parseFloat(monto);
+    cuentaDestino.saldo = parseFloat(cuentaDestino.saldo) + parseFloat(monto);
 
     await cuentaOrigen.save({ transaction: t });
     await cuentaDestino.save({ transaction: t });
