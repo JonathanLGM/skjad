@@ -20,8 +20,8 @@
     <input type="text" id="tipo" placeholder="Tipo (depósito, retiro, transferencia)">
     <input type="date" id="fecha" placeholder="Fecha">
     <input type="number" id="monto" placeholder="Monto">
-    <input type="number" id="numero_cuenta_origen" placeholder="Número Cuenta Origen">
-    <input type="number" id="numero_cuenta_destino" placeholder="Número Cuenta Destino (opcional)">
+    <input type="number" id="id_cuenta_origen" placeholder="ID Cuenta Origen">
+    <input type="number" id="id_cuenta_destino" placeholder="ID Cuenta Destino (opcional)">
     <input type="number" id="id_cajero" placeholder="ID Cajero">
     <button id="guardarBtn">Guardar Transacción</button>
   </div>
@@ -34,8 +34,8 @@
         <th>Tipo</th>
         <th>Fecha</th>
         <th>Monto</th>
-        <th>Número Cuenta Origen</th>
-        <th>Número Cuenta Destino</th>
+        <th>ID Cuenta Origen</th>
+        <th>ID Cuenta Destino</th>
         <th>ID Cajero</th>
       </tr>
     </thead>
@@ -61,18 +61,18 @@
               <td>${transaccion.tipo}</td>
               <td>${new Date(transaccion.fecha).toLocaleDateString()}</td>
               <td>${transaccion.monto}</td>
-              <td>${transaccion.numero_cuenta_origen}</td>
-              <td>${transaccion.numero_cuenta_destino || '-'}</td>
+              <td>${transaccion.id_cuenta_origen}</td>
+              <td>${transaccion.id_cuenta_destino || '-'}</td>
               <td>${transaccion.id_cajero}</td>
             `;
             tbody.appendChild(tr);
           });
         } else {
-          tbody.innerHTML = '<tr><td colspan="7">No hay transacciones para mostrar.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8">No hay transacciones para mostrar.</td></tr>';
         }
       } catch (error) {
         console.error("Error al obtener transacciones:", error);
-        document.getElementById('transaccionesTable').innerHTML = '<tr><td colspan="7">Error al cargar transacciones.</td></tr>';
+        document.getElementById('transaccionesTable').innerHTML = '<tr><td colspan="8">Error al cargar transacciones.</td></tr>';
         alert("Error al cargar transacciones: " + error.message);
       }
     };
@@ -83,12 +83,12 @@
         tipo: document.getElementById('tipo').value,
         fecha: document.getElementById('fecha').value,
         monto: parseFloat(document.getElementById('monto').value),
-        numero_cuenta_origen: parseInt(document.getElementById('numero_cuenta_origen').value),
-        numero_cuenta_destino: document.getElementById('numero_cuenta_destino').value ? parseInt(document.getElementById('numero_cuenta_destino').value) : null,
+        id_cuenta_origen: parseInt(document.getElementById('id_cuenta_origen').value),
+        id_cuenta_destino: document.getElementById('id_cuenta_destino').value ? parseInt(document.getElementById('id_cuenta_destino').value) : null,
         id_cajero: parseInt(document.getElementById('id_cajero').value)
       };
 
-      if (!transaccionData.tipo || !transaccionData.fecha || isNaN(transaccionData.monto) || isNaN(transaccionData.numero_cuenta_origen) || isNaN(transaccionData.id_cajero)) {
+      if (!transaccionData.tipo || !transaccionData.fecha || isNaN(transaccionData.monto) || isNaN(transaccionData.id_cuenta_origen) || isNaN(transaccionData.id_cajero)) {
         alert('Por favor, completa todos los campos obligatorios.');
         return;
       }
@@ -125,8 +125,8 @@
       document.getElementById('tipo').value = '';
       document.getElementById('fecha').value = '';
       document.getElementById('monto').value = '';
-      document.getElementById('numero_cuenta_origen').value = '';
-      document.getElementById('numero_cuenta_destino').value = '';
+      document.getElementById('id_cuenta_origen').value = '';
+      document.getElementById('id_cuenta_destino').value = '';
       document.getElementById('id_cajero').value = '';
     };
 
