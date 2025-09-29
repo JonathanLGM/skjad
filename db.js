@@ -19,6 +19,10 @@ const Cuenta1 = require('./cuenta')(sequelize, DataTypes);
 const Cajero1 = require('./cajero')(sequelize, DataTypes);
 const Transaccion1 = require('./transaccion')(sequelize, DataTypes);
 
+Transaccion1.belongsTo(Cuenta1, { as: 'CuentaOrigen', foreignKey: 'id_cuenta_origen' });
+Transaccion1.belongsTo(Cuenta1, { as: 'CuentaDestino', foreignKey: 'id_cuenta_destino' });
+
+
 // exporta la instancia de sequelize y los modelos (todo en minúscula)
 module.exports = {
   sequelize,
