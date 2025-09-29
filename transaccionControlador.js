@@ -60,31 +60,19 @@ const registrarTransaccion = async (req, res) => {
   }
 };
 
-// Listar transacciones con números de cuenta directamente
+/// Listar transacciones
 const listarTransacciones = async (req, res) => {
   try {
     const transacciones = await Transaccion1.findAll({
       include: [
-        { model: Cuenta, as: "CuentaOrigen", attributes: ["numero_cuenta"] },
-        { model: Cuenta, as: "CuentaDestino", attributes: ["numero_cuenta"] }
+        { model: Cuenta1, as: 'CuentaOrigen', attributes: ['numero_cuenta'] },
+        { model: Cuenta1, as: 'CuentaDestino', attributes: ['numero_cuenta'] }
       ]
     });
-
-    // Formatear respuesta
-    const resultado = transacciones.map(t => ({
-      id_transaccion: t.id_transaccion,
-      tipo: t.tipo,
-      fecha: t.fecha,
-      monto: t.monto,
-      numero_cuenta_origen: t.CuentaOrigen ? t.CuentaOrigen.numero_cuenta : null,
-      numero_cuenta_destino: t.CuentaDestino ? t.CuentaDestino.numero_cuenta : null,
-      id_cajero: t.id_cajero
-    }));
-
-    res.json({ mensaje: "Transacciones encontradas", resultado });
+    res.json(transacciones);
   } catch (error) {
-    console.error("Error en listarTransacciones:", error);
-    res.status(500).json({ mensaje: "Error al listar transacciones", error: error.message });
+    console.error('Error al listar transacciones:', error);
+    res.status(500).json({ error: 'Error al listar transacciones' });
   }
 };
 
