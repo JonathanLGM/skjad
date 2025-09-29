@@ -41,38 +41,8 @@ const obtenerTransaccionPorId = async (req, res) => {
   }
 };
 
-// Actualizar transacción
-const actualizarTransaccion = async (req, res) => {
-  try {
-    const transaccion = await Transaccion1.findByPk(req.params.id_transaccion);
-    if (!transaccion) return res.status(404).json({ mensaje: 'Transacción no encontrada', resultado: null });
-
-    await transaccion.update(req.body);
-    res.status(200).json({ mensaje: 'Transacción actualizada', resultado: transaccion });
-  } catch (err) {
-    console.error('Error en actualizarTransaccion:', err);
-    res.status(500).json({ mensaje: err.message, resultado: null });
-  }
-};
-
-// Eliminar transacción
-const borrarTransaccion = async (req, res) => {
-  try {
-    const transaccion = await Transaccion1.findByPk(req.params.id_transaccion);
-    if (!transaccion) return res.status(404).json({ mensaje: 'Transacción no encontrada', resultado: null });
-
-    await transaccion.destroy();
-    res.status(200).json({ mensaje: 'Transacción eliminada', resultado: transaccion });
-  } catch (err) {
-    console.error('Error en borrarTransaccion:', err);
-    res.status(500).json({ mensaje: err.message, resultado: null });
-  }
-};
-
 module.exports = {
   registrarTransaccion,
   listarTransacciones,
-  obtenerTransaccionPorId,
-  actualizarTransaccion,
-  borrarTransaccion
+  obtenerTransaccionPorId
 };
