@@ -60,14 +60,29 @@ const registrarTransaccion = async (req, res) => {
   }
 };
 
-// Listar transacciones
+// Listar transacciones con números de cuenta en vez de IDs
 const listarTransacciones = async (req, res) => {
   try {
-    const transacciones = await Transaccion1.findAll();
-    res.status(200).json({ mensaje: 'Transacciones listadas', resultado: transacciones });
-  } catch (err) {
-    console.error('Error en listarTransacciones:', err);
-    res.status(500).json({ mensaje: err.message, resultado: null });
+    const transacciones = await Transaccion1.findAll({ raw: true });
+
+    // Mapear IDs → números de cuenta
+    const resultado = await Promise.all(
+      transacciones.map(async t => {
+        const cuentaOrigen = await Cuenta.findByPk(t.id_cuenta_origen);
+        const cuentaDestino = t.id_cuenta_destino ? await Cuenta.findByPk(t.id_cuenta_destino) : null;
+
+        return {
+          ...t,
+          numero_cuenta_origen: cuentaOrigen ? cuentaOrigen.numero_cuenta : null,
+          numero_cuenta_destino: cuentaDestino ? cuentaDestino.numero_cuenta : null
+        };
+      })
+    );
+
+    res.json({ mensaje: "Transacciones encontradas", resultado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al listar transacciones", error: error.message });
   }
 };
 
