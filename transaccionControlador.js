@@ -12,15 +12,15 @@ const registrarTransaccion = async (req, res) => {
       return res.status(400).json({ mensaje: 'El monto debe ser mayor a 0', resultado: null });
     }
 
-   // 2. Buscar cuenta origen por numero_cuenta
-    const cuentaOrigen = await Cuenta1.findOne({ where: { numero_cuenta: numero_cuenta_origen }, transaction: t });
+    // 2. Buscar cuenta origen
+    const cuentaOrigen = await Cuenta1.findByPk(id_cuenta_origen, { transaction: t });
     if (!cuentaOrigen) {
       await t.rollback();
       return res.status(404).json({ mensaje: 'Cuenta origen no encontrada', resultado: null });
     }
 
-    // 3. Buscar cuenta destino por numero_cuenta
-    const cuentaDestino = await Cuenta1.findOne({ where: { numero_cuenta: numero_cuenta_destino }, transaction: t });
+    // 3. Buscar cuenta destino
+    const cuentaDestino = await Cuenta1.findByPk(id_cuenta_destino, { transaction: t });
     if (!cuentaDestino) {
       await t.rollback();
       return res.status(404).json({ mensaje: 'Cuenta destino no encontrada', resultado: null });
@@ -60,19 +60,14 @@ const registrarTransaccion = async (req, res) => {
   }
 };
 
-/// Listar transacciones
+// Listar transacciones
 const listarTransacciones = async (req, res) => {
   try {
-    const transacciones = await Transaccion1.findAll({
-      include: [
-        { model: Cuenta1, as: 'CuentaOrigen', attributes: ['numero_cuenta'] },
-        { model: Cuenta1, as: 'CuentaDestino', attributes: ['numero_cuenta'] }
-      ]
-    });
-    res.json(transacciones);
-  } catch (error) {
-    console.error('Error al listar transacciones:', error);
-    res.status(500).json({ error: 'Error al listar transacciones' });
+    const transacciones = await Transaccion1.findAll();
+    res.status(200).json({ mensaje: 'Transacciones listadas', resultado: transacciones });
+  } catch (err) {
+    console.error('Error en listarTransacciones:', err);
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
 
