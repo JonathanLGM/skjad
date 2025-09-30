@@ -97,13 +97,11 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.mensaje || 'Error en login');
 
-        alert(data.mensaje); // Login exitoso
-        // Guardar sesión en localStorage
-        localStorage.setItem('usuario', JSON.stringify({
-        username: data.resultado.username,
-        id_cliente: data.resultado.id_cliente
-        }));
+        // Guardar username y id_cliente en localStorage
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        usuario.id_cliente = Number(usuario.id_cliente); // fuerza a número
 
+        alert(data.mensaje); // Login exitoso
         window.location.href = 'menu.html';
       } catch (err) {
         alert('Error: ' + err.message);
