@@ -1,9 +1,9 @@
 const defineCuenta = (sequelize, DataTypes) => {
   return sequelize.define('Cuenta1', {
     id_cuenta: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false
     },
     estado: {
       type: DataTypes.STRING,

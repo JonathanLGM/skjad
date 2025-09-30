@@ -17,13 +17,19 @@ const defineTransaccion = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL(12, 2), // similar a saldo de cuenta
       allowNull: false
     },
-    id_cuenta_origen: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+   id_cuenta_origen: {
+    type: DataTypes.STRING,
+    references: {
+    model: 'Cuenta',
+    key: 'id_cuenta'
+      }
     },
     id_cuenta_destino: {
-      type: DataTypes.INTEGER,
-      allowNull: true
+      type: DataTypes.STRING,
+      references: {
+      model: 'Cuenta',
+      key: 'id_cuenta'
+      }
     },
     id_cajero: {
       type: DataTypes.INTEGER,
