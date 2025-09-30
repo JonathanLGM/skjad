@@ -6,119 +6,75 @@
   <title>Banco - Menú</title>
   <style>
     body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
-    .topbar { background: #004080; color: white; padding: 15px 30px; font-size: 1.5rem; }
-    .container { background: white; padding: 30px; max-width: 800px; margin: 50px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; margin-bottom: 20px; }
-    .account-info { text-align: center; margin-bottom: 30px; }
-    .account-info div { margin: 10px 0; font-size: 1.2rem; }
-    .btn { padding: 10px 20px; background: #004080; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    .btn:hover { background: #003366; }
-    .transactions { margin-top: 30px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
-    th { background: #004080; color: white; }
+    .topbar { background: #004080; color: white; padding: 15px 30px; font-size: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .container { background: white; padding: 30px; max-width: 600px; margin: 50px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
+    .btn { padding: 10px 15px; background: #004080; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+    .info-box { margin-top: 20px; text-align: left; }
+    .info-box h3 { margin-bottom: 10px; }
+    .info-box p { margin: 5px 0; }
   </style>
 </head>
 <body>
+  <!-- Barra superior -->
   <header class="topbar">
     <div class="logo">BancaTerritorial</div>
+    <button onclick="cerrarSesion()" class="btn">Cerrar Sesión</button>
   </header>
 
+  <!-- Contenedor principal -->
   <main>
     <div class="container">
-      <h2>Menú Principal</h2>
+      <h2>Bienvenido, <span id="usuarioNombre"></span></h2>
+      <p>Este es el menú principal de tu cuenta.</p>
 
-      <div class="account-info">
-        <div><strong>Número de Cuenta:</strong> <span id="numeroCuenta">---</span></div>
-        <div><strong>Saldo:</strong> $<span id="saldoCuenta">0</span></div>
-      </div>
-
-      <div style="text-align:center;">
-        <button class="btn" onclick="window.location.href='transaccion.html'">Hacer Transacción</button>
-      </div>
-
-      <div class="transactions">
-        <h3>Mis Transacciones</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Origen</th>
-              <th>Destino</th>
-              <th>Monto</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody id="transaccionesBody">
-            <tr><td colspan="5">Cargando...</td></tr>
-          </tbody>
-        </table>
+      <div class="info-box" id="cuentaInfo">
+        <h3>Información de la cuenta</h3>
+        <p><strong>Número de cuenta:</strong> <span id="numCuenta"></span></p>
+        <p><strong>Saldo:</strong> $<span id="saldo"></span></p>
+        <p><strong>Estado:</strong> <span id="estado"></span></p>
+        <p><strong>Fecha de apertura:</strong> <span id="fechaApertura"></span></p>
       </div>
     </div>
   </main>
 
   <script>
-    // ✅ Verificación de inicio de sesión
-    const idCliente = localStorage.getItem("id_cliente");
-    if (!idCliente || idCliente === "null" || idCliente === "undefined") {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario) {
       alert("Debes iniciar sesión");
-      window.location.href = "login.html";
-    }
+      window.location.href = 'index.html';
+    } else {
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Mostrar nombre
+        document.getElementById("usuarioNombre").textContent = usuario.username;
 
-    // ✅ Cargar datos de la cuenta del cliente logueado
-    async function cargarCuenta() {
-      try {
-        const res = await fetch(`/cuenta/porCliente/${idCliente}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.mensaje || "Error al obtener cuenta");
+        try {
+          // Consultar cuenta filtrando por id_cliente
+          const res = await fetch(`/cuenta/listar?id_cliente=${usuario.id_cliente}`);
+          const data = await res.json();
 
-        document.getElementById("numeroCuenta").textContent = data.resultado.id_cuenta;
-        document.getElementById("saldoCuenta").textContent = data.resultado.saldo;
+          if (!res.ok) throw new Error(data.mensaje || "Error al obtener cuenta");
 
-        localStorage.setItem("id_cuenta", data.resultado.id_cuenta); // guardar para usar en transacciones
-      } catch (err) {
-        console.error(err);
-        alert("Error cargando cuenta: " + err.message);
-      }
-    }
+          const cuenta = Array.isArray(data.resultado) ? data.resultado[0] : data.resultado;
 
-    // ✅ Cargar transacciones SOLO de la cuenta logueada
-    async function cargarTransacciones() {
-      try {
-        const idCuenta = localStorage.getItem("id_cuenta");
-        if (!idCuenta) return;
-
-        const res = await fetch(`/transaccion/porCuenta/${idCuenta}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.mensaje || "Error al obtener transacciones");
-
-        const tbody = document.getElementById("transaccionesBody");
-        tbody.innerHTML = "";
-
-        if (data.resultado.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='5'>No hay transacciones</td></tr>";
-          return;
+          if (cuenta) {
+            document.getElementById("numCuenta").textContent = cuenta.id_cuenta;
+            document.getElementById("saldo").textContent = cuenta.saldo;
+            document.getElementById("estado").textContent = cuenta.estado;
+            document.getElementById("fechaApertura").textContent = new Date(cuenta.fecha_apertura).toLocaleDateString();
+          } else {
+            document.getElementById("cuentaInfo").innerHTML = "<p>No se encontró una cuenta asociada.</p>";
+          }
+        } catch (err) {
+          console.error(err);
+          document.getElementById("cuentaInfo").innerHTML = "<p>Error al cargar información de la cuenta.</p>";
         }
-
-        data.resultado.forEach(tx => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${tx.id_transaccion}</td>
-            <td>${tx.id_cuenta_origen}</td>
-            <td>${tx.id_cuenta_destino}</td>
-            <td>$${tx.monto}</td>
-            <td>${new Date(tx.fecha).toLocaleString()}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        console.error(err);
-        alert("Error cargando transacciones: " + err.message);
-      }
+      });
     }
 
-    // ✅ Ejecutar al entrar
-    cargarCuenta().then(cargarTransacciones);
+    function cerrarSesion() {
+      localStorage.removeItem('usuario');
+      window.location.href = 'index.html';
+    }
   </script>
 </body>
 </html>
