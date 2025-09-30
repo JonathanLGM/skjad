@@ -8,6 +8,9 @@ router.post('/', cuentaControlador.registrarCuenta);
 // Obtener todas las cuentas
 router.get('/', cuentaControlador.listarCuentas);
 
+// 🔹 Nuevo: obtener cuenta por id_cliente
+router.get('/cliente/:id_cliente', cuentaControlador.obtenerCuentaPorCliente);
+
 // Obtener una cuenta por id
 router.get('/:id_cuenta', cuentaControlador.obtenerCuentaPorId);
 
@@ -17,7 +20,5 @@ router.put('/:id_cuenta', cuentaControlador.actualizarCuenta);
 // Eliminar cuenta
 router.delete('/:id_cuenta', cuentaControlador.borrarCuenta);
 
-// 🔹 Nuevo: obtener cuenta por id_cliente
-router.get('/cliente/:id_cliente', cuentaControlador.obtenerCuentaPorCliente);
 
 module.exports = router;
