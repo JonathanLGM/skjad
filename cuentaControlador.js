@@ -69,33 +69,11 @@ const borrarCuenta = async (req, res) => {
   }
 };
 
-// Controlador para listar cuentas de un cliente
-const listarPorCliente = async (req, res) => {
-  try {
-    const { id_cliente } = req.params;
-    const cuentas = await Cuenta1.findAll({ where: { id_cliente } });
-
-    if (cuentas.length === 0) {
-      return res.status(404).json({ mensaje: "No se encontraron cuentas para este cliente" });
-    }
-
-    res.json({ mensaje: "Cuentas encontradas", resultado: cuentas });
-  } catch (err) {
-    res.status(500).json({ mensaje: err.message });
-  }
-};
-
-module.exports = {
-  listarPorCliente
-};
-
-
 
 module.exports = {
   registrarCuenta,
   listarCuentas,
   obtenerCuentaPorId,
   actualizarCuenta,
-  borrarCuenta,
-  listarPorCliente
+  borrarCuenta
 };
