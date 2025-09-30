@@ -99,7 +99,11 @@
 
         alert(data.mensaje); // Login exitoso
         // Guardar sesión en localStorage
-        localStorage.setItem('usuario', JSON.stringify({ username }));
+        localStorage.setItem('usuario', JSON.stringify({
+        username: data.resultado.username,
+        id_cliente: data.resultado.id_cliente
+        }));
+
         window.location.href = 'menu.html';
       } catch (err) {
         alert('Error: ' + err.message);
