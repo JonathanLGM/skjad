@@ -7,13 +7,16 @@
   <style>
     body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
     .topbar { background: #004080; color: white; padding: 15px 30px; font-size: 1.5rem; }
-    .container { max-width: 800px; margin: 30px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { color: #004080; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    table, th, td { border: 1px solid #ccc; }
-    th, td { padding: 10px; text-align: center; }
-    .saldo { font-size: 1.2rem; margin: 15px 0; color: #333; }
-    .logout { margin-top: 20px; padding: 10px; background: red; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .container { background: white; padding: 30px; max-width: 800px; margin: 50px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; margin-bottom: 20px; }
+    .account-info { text-align: center; margin-bottom: 30px; }
+    .account-info div { margin: 10px 0; font-size: 1.2rem; }
+    .btn { padding: 10px 20px; background: #004080; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .btn:hover { background: #003366; }
+    .transactions { margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+    th { background: #004080; color: white; }
   </style>
 </head>
 <body>
@@ -21,81 +24,100 @@
     <div class="logo">BancaTerritorial</div>
   </header>
 
-  <main class="container">
-    <h2 id="bienvenida">Bienvenido</h2>
-    <p class="saldo" id="saldo">Saldo: $0</p>
+  <main>
+    <div class="container">
+      <h2>Menú Principal</h2>
 
-    <h3>Transacciones recientes</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Tipo</th>
-          <th>Monto</th>
-          <th>Fecha</th>
-        </tr>
-      </thead>
-      <tbody id="tablaTransacciones">
-        <tr><td colspan="4">Cargando...</td></tr>
-      </tbody>
-    </table>
+      <div class="account-info">
+        <div><strong>Número de Cuenta:</strong> <span id="numeroCuenta">---</span></div>
+        <div><strong>Saldo:</strong> $<span id="saldoCuenta">0</span></div>
+      </div>
 
-    <button class="logout" onclick="cerrarSesion()">Cerrar sesión</button>
+      <div style="text-align:center;">
+        <button class="btn" onclick="window.location.href='transaccion.html'">Hacer Transacción</button>
+      </div>
+
+      <div class="transactions">
+        <h3>Mis Transacciones</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Origen</th>
+              <th>Destino</th>
+              <th>Monto</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="transaccionesBody">
+            <tr><td colspan="5">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 
   <script>
-    // Verificar sesión
-    const usuario = localStorage.getItem("username");
     const idCliente = localStorage.getItem("id_cliente");
-
-    if (!usuario || !idCliente) {
+    if (!idCliente) {
       alert("Debes iniciar sesión");
       window.location.href = "login.html";
     }
 
-    document.getElementById("bienvenida").textContent = "Bienvenido, " + usuario;
-
-    // Obtener saldo y transacciones filtradas por id_cliente
-    async function cargarDatos() {
+    // Cargar datos de la cuenta
+    async function cargarCuenta() {
       try {
-        // 🔹 Consultar saldo
-        const saldoRes = await fetch(`/cuenta/saldo/${idCliente}`);
-        const saldoData = await saldoRes.json();
-        document.getElementById("saldo").textContent = "Saldo: $" + (saldoData.saldo || 0);
+        const res = await fetch(`/cuenta/porCliente/${idCliente}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje || "Error al obtener cuenta");
 
-        // 🔹 Consultar transacciones
-        const transRes = await fetch(`/transaccion/listar/${idCliente}`);
-        const transData = await transRes.json();
+        document.getElementById("numeroCuenta").textContent = data.resultado.id_cuenta;
+        document.getElementById("saldoCuenta").textContent = data.resultado.saldo;
 
-        const tbody = document.getElementById("tablaTransacciones");
-        tbody.innerHTML = "";
-
-        if (transData.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='4'>No hay transacciones para mostrar.</td></tr>";
-          return;
-        }
-
-        transData.forEach(t => {
-          const row = `<tr>
-            <td>${t.id_transaccion}</td>
-            <td>${t.tipo}</td>
-            <td>$${t.monto}</td>
-            <td>${new Date(t.fecha).toLocaleString()}</td>
-          </tr>`;
-          tbody.innerHTML += row;
-        });
+        localStorage.setItem("id_cuenta", data.resultado.id_cuenta); // Guardamos cuenta en localStorage
       } catch (err) {
-        console.error("Error al cargar datos:", err);
-        alert("Error al cargar saldo o transacciones");
+        console.error(err);
+        alert("Error cargando cuenta: " + err.message);
       }
     }
 
-    function cerrarSesion() {
-      localStorage.clear();
-      window.location.href = "login.html";
+    // Cargar transacciones
+    async function cargarTransacciones() {
+      try {
+        const idCuenta = localStorage.getItem("id_cuenta");
+        if (!idCuenta) return;
+
+        const res = await fetch(`/transaccion/porCuenta/${idCuenta}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje || "Error al obtener transacciones");
+
+        const tbody = document.getElementById("transaccionesBody");
+        tbody.innerHTML = "";
+
+        if (data.resultado.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='5'>No hay transacciones</td></tr>";
+          return;
+        }
+
+        data.resultado.forEach(tx => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${tx.id_transaccion}</td>
+            <td>${tx.id_cuenta_origen}</td>
+            <td>${tx.id_cuenta_destino}</td>
+            <td>$${tx.monto}</td>
+            <td>${new Date(tx.fecha).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Error cargando transacciones: " + err.message);
+      }
     }
 
-    cargarDatos();
+    // Ejecutar al entrar
+    cargarCuenta().then(cargarTransacciones);
   </script>
 </body>
 </html>
