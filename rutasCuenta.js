@@ -17,4 +17,7 @@ router.put('/:id_cuenta', cuentaControlador.actualizarCuenta);
 // Eliminar cuenta
 router.delete('/:id_cuenta', cuentaControlador.borrarCuenta);
 
+// Nueva ruta para listar cuentas de un cliente
+router.get('/listarPorCliente/:id_cliente', cuentaControlador.listarPorCliente);
+
 module.exports = router;

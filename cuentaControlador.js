@@ -69,8 +69,10 @@ const borrarCuenta = async (req, res) => {
   }
 };
 
-// Listar cuentas de un cliente específico
-router.get('/listarPorCliente/:id_cliente', async (req, res) => {
+const { Cuenta1 } = require('./db');
+
+// Controlador para listar cuentas de un cliente
+const listarPorCliente = async (req, res) => {
   try {
     const { id_cliente } = req.params;
     const cuentas = await Cuenta1.findAll({ where: { id_cliente } });
@@ -83,7 +85,12 @@ router.get('/listarPorCliente/:id_cliente', async (req, res) => {
   } catch (err) {
     res.status(500).json({ mensaje: err.message });
   }
-});
+};
+
+module.exports = {
+  listarPorCliente
+};
+
 
 
 module.exports = {
@@ -91,5 +98,6 @@ module.exports = {
   listarCuentas,
   obtenerCuentaPorId,
   actualizarCuenta,
-  borrarCuenta
+  borrarCuenta,
+  listarPorCliente
 };
