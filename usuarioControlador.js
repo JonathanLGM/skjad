@@ -1,10 +1,11 @@
-const { Usuario1, Cuenta1 } = require('./db'); // Importar modelos
+const { Usuario1, Cuenta1, sequelize } = require('./db'); // Importar modelos y sequelize
+const { Op } = require('sequelize');
 
-// Crear usuario con cuenta asociada
+// Crear usuario + cuenta
 const registrarUsuario = async (req, res) => {
-  const transaction = await Usuario1.sequelize.transaction();
+  const transaction = await sequelize.transaction();
   try {
-    const { username } = req.body;
+    const { username, fecha_inicio, id_cliente } = req.body;
 
     // Validar duplicados
     if (await Usuario1.findOne({ where: { username } })) {
@@ -14,32 +15,22 @@ const registrarUsuario = async (req, res) => {
     // Crear usuario
     const nuevoUsuario = await Usuario1.create(req.body, { transaction });
 
-    // Generar número de cuenta único (ejemplo: 10 dígitos)
-    let numeroCuenta;
-    let existe = true;
-    while (existe) {
-      numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000); // 10 dígitos
-      existe = await Cuenta1.findByPk(numeroCuenta, { transaction });
-    }
+    // Generar número de cuenta aleatorio de 10 dígitos
+    const numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000);
 
-    // Crear cuenta asociada
-    const nuevaCuenta = await Cuenta1.create({
-      id_cuenta: numeroCuenta,
+    // Crear cuenta ligada al usuario
+    await Cuenta1.create({
+      id_cuenta: numeroCuenta,       // ← este será el "número de cuenta"
       id_usuario: nuevoUsuario.id_usuario,
+      id_cliente: id_cliente,        // ← tomado del formulario
+      estado: 'activa',
       saldo: 0,
-      estado: 'activa'
-      // fecha_apertura se genera sola si en el modelo tiene defaultValue: DataTypes.NOW
+      fecha_apertura: fecha_inicio   // ← usas la fecha que metes en el form
     }, { transaction });
 
     await transaction.commit();
+    res.status(201).json({ mensaje: 'Usuario y cuenta creados', resultado: nuevoUsuario });
 
-    res.status(201).json({
-      mensaje: 'Usuario y cuenta creados',
-      resultado: {
-        usuario: nuevoUsuario,
-        cuenta: nuevaCuenta
-      }
-    });
   } catch (err) {
     await transaction.rollback();
     console.error('Error en registrarUsuario:', err);
