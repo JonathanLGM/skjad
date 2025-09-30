@@ -6,7 +6,6 @@
   <title>Banco - Login</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Pequeños ajustes para centrar formularios y botones */
     body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
     .topbar { background: #004080; color: white; padding: 15px 30px; font-size: 1.5rem; }
     .container { background: white; padding: 30px; max-width: 400px; margin: 50px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -77,7 +76,6 @@
     function showForm(formId, event) {
       document.querySelectorAll("form").forEach(f => f.classList.remove("active"));
       document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-
       document.getElementById(formId).classList.add("active");
       event.currentTarget.classList.add("active");
     }
@@ -97,10 +95,11 @@
         });
 
         const data = await res.json();
-
         if (!res.ok) throw new Error(data.mensaje || 'Error en login');
 
         alert(data.mensaje); // Login exitoso
+        // Guardar sesión en localStorage
+        localStorage.setItem('usuario', JSON.stringify({ username }));
         window.location.href = 'menu.html';
       } catch (err) {
         alert('Error: ' + err.message);
@@ -128,7 +127,6 @@
         });
 
         const data = await res.json();
-
         if (!res.ok) throw new Error(data.mensaje || 'Error al registrar');
 
         alert(data.mensaje); // Registro exitoso
