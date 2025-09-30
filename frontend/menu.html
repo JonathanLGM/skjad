@@ -58,13 +58,14 @@
   </main>
 
   <script>
+    // ✅ Verificación de inicio de sesión
     const idCliente = localStorage.getItem("id_cliente");
-    if (!idCliente) {
+    if (!idCliente || idCliente === "null" || idCliente === "undefined") {
       alert("Debes iniciar sesión");
       window.location.href = "login.html";
     }
 
-    // Cargar datos de la cuenta
+    // ✅ Cargar datos de la cuenta del cliente logueado
     async function cargarCuenta() {
       try {
         const res = await fetch(`/cuenta/porCliente/${idCliente}`);
@@ -74,14 +75,14 @@
         document.getElementById("numeroCuenta").textContent = data.resultado.id_cuenta;
         document.getElementById("saldoCuenta").textContent = data.resultado.saldo;
 
-        localStorage.setItem("id_cuenta", data.resultado.id_cuenta); // Guardamos cuenta en localStorage
+        localStorage.setItem("id_cuenta", data.resultado.id_cuenta); // guardar para usar en transacciones
       } catch (err) {
         console.error(err);
         alert("Error cargando cuenta: " + err.message);
       }
     }
 
-    // Cargar transacciones
+    // ✅ Cargar transacciones SOLO de la cuenta logueada
     async function cargarTransacciones() {
       try {
         const idCuenta = localStorage.getItem("id_cuenta");
@@ -116,7 +117,7 @@
       }
     }
 
-    // Ejecutar al entrar
+    // ✅ Ejecutar al entrar
     cargarCuenta().then(cargarTransacciones);
   </script>
 </body>
