@@ -17,4 +17,20 @@ router.put('/:id_cliente', clienteControlador.actualizarCliente);
 // Eliminar cliente
 router.delete('/:id_cliente', clienteControlador.borrarCliente);
 
+// Listar cuentas de un cliente específico
+router.get('/listarPorCliente/:id_cliente', async (req, res) => {
+  try {
+    const { id_cliente } = req.params;
+    const cuentas = await Cuenta1.findAll({ where: { id_cliente } });
+
+    if (cuentas.length === 0) {
+      return res.status(404).json({ mensaje: "No se encontraron cuentas para este cliente" });
+    }
+
+    res.json({ mensaje: "Cuentas encontradas", resultado: cuentas });
+  } catch (err) {
+    res.status(500).json({ mensaje: err.message });
+  }
+});
+
 module.exports = router;

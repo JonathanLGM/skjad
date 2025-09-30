@@ -44,16 +44,17 @@
       window.location.href = 'index.html';
     } else {
       document.addEventListener("DOMContentLoaded", async () => {
-        // Mostrar nombre
         document.getElementById("usuarioNombre").textContent = usuario.username;
 
         try {
-          // Consultar cuenta filtrando por id_cliente
-          const res = await fetch(`/cuenta/listar?id_cliente=${usuario.id_cliente}`);
+          // Buscar cuentas usando el id_cliente del usuario
+          const res = await fetch(`/cuenta/listarPorCliente/${usuario.id_cliente}`);
+
           const data = await res.json();
 
           if (!res.ok) throw new Error(data.mensaje || "Error al obtener cuenta");
 
+          // Puede haber varias cuentas, tomo la primera
           const cuenta = Array.isArray(data.resultado) ? data.resultado[0] : data.resultado;
 
           if (cuenta) {
@@ -62,7 +63,7 @@
             document.getElementById("estado").textContent = cuenta.estado;
             document.getElementById("fechaApertura").textContent = new Date(cuenta.fecha_apertura).toLocaleDateString();
           } else {
-            document.getElementById("cuentaInfo").innerHTML = "<p>No se encontró una cuenta asociada.</p>";
+            document.getElementById("cuentaInfo").innerHTML = "<p>No se encontró una cuenta asociada a este cliente.</p>";
           }
         } catch (err) {
           console.error(err);
