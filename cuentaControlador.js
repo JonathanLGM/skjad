@@ -69,8 +69,6 @@ const borrarCuenta = async (req, res) => {
   }
 };
 
-const { Cuenta1 } = require('./db');
-
 // Controlador para listar cuentas de un cliente
 const listarPorCliente = async (req, res) => {
   try {
