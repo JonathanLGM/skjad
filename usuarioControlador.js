@@ -1,7 +1,8 @@
-const { Usuario1 } = require('./db'); // Importar modelo Usuario1
+const { Usuario1, Cuenta1 } = require('./db'); // Importar modelos
 
-// Crear usuario
+// Crear usuario con cuenta asociada
 const registrarUsuario = async (req, res) => {
+  const transaction = await Usuario1.sequelize.transaction();
   try {
     const { username } = req.body;
 
@@ -10,9 +11,37 @@ const registrarUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: 'El usuario ya está registrado' });
     }
 
-    const nuevoUsuario = await Usuario1.create(req.body);
-    res.status(201).json({ mensaje: 'Usuario creado', resultado: nuevoUsuario });
+    // Crear usuario
+    const nuevoUsuario = await Usuario1.create(req.body, { transaction });
+
+    // Generar número de cuenta único (ejemplo: 10 dígitos)
+    let numeroCuenta;
+    let existe = true;
+    while (existe) {
+      numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000); // 10 dígitos
+      existe = await Cuenta1.findByPk(numeroCuenta, { transaction });
+    }
+
+    // Crear cuenta asociada
+    const nuevaCuenta = await Cuenta1.create({
+      id_cuenta: numeroCuenta,
+      id_usuario: nuevoUsuario.id_usuario,
+      saldo: 0,
+      estado: 'activa'
+      // fecha_apertura se genera sola si en el modelo tiene defaultValue: DataTypes.NOW
+    }, { transaction });
+
+    await transaction.commit();
+
+    res.status(201).json({
+      mensaje: 'Usuario y cuenta creados',
+      resultado: {
+        usuario: nuevoUsuario,
+        cuenta: nuevaCuenta
+      }
+    });
   } catch (err) {
+    await transaction.rollback();
     console.error('Error en registrarUsuario:', err);
     res.status(500).json({ mensaje: err.message, resultado: null });
   }

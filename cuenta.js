@@ -5,11 +5,6 @@ const defineCuenta = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    numero_cuenta: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: 'numero_cuenta'
-    },
     estado: {
       type: DataTypes.STRING,
       allowNull: false
