@@ -17,4 +17,7 @@ router.put('/:id_cuenta', cuentaControlador.actualizarCuenta);
 // Eliminar cuenta
 router.delete('/:id_cuenta', cuentaControlador.borrarCuenta);
 
+// 🔹 Nuevo: obtener cuenta por id_cliente
+router.get('/cliente/:id_cliente', cuentaControlador.obtenerCuentaPorCliente);
+
 module.exports = router;
