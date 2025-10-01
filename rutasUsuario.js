@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usuarioControlador = require('./usuarioControlador'); // ahora todo está en raíz
 const { Usuario1 } = require('./db'); // Modelo Usuario
+const bcrypt = require('bcrypt');
 
 // --- CRUD Usuario ---
 router.post('/registrar', usuarioControlador.registrarUsuario);
@@ -19,10 +20,9 @@ router.post('/login', async (req, res) => {
     const usuario = await Usuario1.findOne({ where: { username } });
     if (!usuario) return res.status(401).json({ mensaje: 'Usuario no encontrado' });
 
-    // Contraseña en texto plano (si tu proyecto así la guarda)
-    if (usuario.password !== password) {
-      return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
-    }
+    // ✅ Comparar contraseña encriptada
+    const passwordValida = await bcrypt.compare(password, usuario.password);
+    if (!passwordValida) return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
 
     res.status(200).json({ mensaje: 'Login exitoso', resultado: usuario });
   } catch (err) {
