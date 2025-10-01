@@ -119,17 +119,6 @@ async function obtenerCuentaPorUsername(username) {
   }
 }
 
-const usuario = JSON.parse(localStorage.getItem('usuario'));
-
-if (usuario && usuario.username) {
-  obtenerCuentaPorUsername(usuario.username).then(cuenta => {
-    console.log(cuenta);
-  });
-} else {
-  console.log('No hay usuario en cache');
-}
-
-
 module.exports = {
   registrarUsuario,
   listarUsuarios,
