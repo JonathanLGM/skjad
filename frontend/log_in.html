@@ -126,11 +126,8 @@ loginForm.addEventListener('submit', async (e) => {
     localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
 
     // 4️⃣ Redirigir a menú
-   if (usuarioConCuenta.rol === 'admin') {
-      window.location.href = 'menuadmin.html';
-    } else {
-      window.location.href = 'menu.html';
-    }
+    window.location.href = 'menu.html';
+
   } catch (err) {
     alert('Error: ' + err.message);
   }
