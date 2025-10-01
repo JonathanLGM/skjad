@@ -126,6 +126,7 @@ loginForm.addEventListener('submit', async (e) => {
     localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
 
     // 4️⃣ Redirigir a menú
+    const id_usuario = data.resultado.id_usuario;
     const usuarioDataRes = await fetch(`/usuario/${id_usuario}`);
     const usuarioData = await usuarioDataRes.json();
 
