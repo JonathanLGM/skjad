@@ -82,46 +82,62 @@
 
     // --- LOGIN ---
 const loginForm = document.getElementById('login');
+
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+
   const username = document.getElementById('loginUsername').value;
   const password = document.getElementById('loginPassword').value;
 
   try {
-    // 1️⃣ Primero hacemos el login normal
+    // 1️⃣ Hacer login
     const res = await fetch('/usuario/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
 
-    const data = await res.json();
+    // Leer la respuesta como texto primero para manejar HTML inesperado
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error("Respuesta no JSON:", text);
+      throw new Error("Error al hacer login, el servidor no devolvió JSON");
+    }
+
     if (!res.ok) throw new Error(data.mensaje || 'Error en login');
 
     alert(data.mensaje); // Login exitoso
 
-    // 2️⃣ Luego hacemos la consulta de la cuenta **antes de guardar en localStorage**
+    // 2️⃣ Consultar cuenta antes de guardar en localStorage
     const cuentaRes = await fetch(`/cuenta-por-username/${username}`);
-    const cuentaData = await cuentaRes.json();
-
-    if (!cuentaRes.ok || !cuentaData.resultado) {
-      alert("No se pudo obtener la información de la cuenta.");
-    } else {
-      console.log("Cuenta obtenida:", cuentaData.resultado);
-      // Aquí ya puedes usar los datos que necesites antes de guardar en localStorage
+    const cuentaText = await cuentaRes.text();
+    let cuentaData;
+    try {
+      cuentaData = JSON.parse(cuentaText);
+    } catch {
+      console.error("Respuesta de cuenta no JSON:", cuentaText);
+      throw new Error("No se pudo obtener información de la cuenta");
     }
 
-    // 3️⃣ Finalmente guardamos todo en localStorage
+    if (!cuentaRes.ok || !cuentaData.resultado) {
+      throw new Error("No se pudo obtener la cuenta del usuario");
+    }
+
+    console.log("Cuenta obtenida:", cuentaData.resultado);
+
+    // 3️⃣ Guardar todo en localStorage
     localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
 
-    // Redirigimos al menú
+    // 4️⃣ Redirigir a menú
     window.location.href = 'menu.html';
 
   } catch (err) {
     alert('Error: ' + err.message);
   }
 });
-
 
     // --- REGISTER ---
     const registerForm = document.getElementById('register');
