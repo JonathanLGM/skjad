@@ -99,18 +99,18 @@ const borrarUsuario = async (req, res) => {
 async function obtenerCuentaPorUsername(username) {
   try {
     const usuario = await Usuario1.findOne({
-      where: { username },           // WHERE u.username = '...'
+      where: { username },
       include: {
-        model: Cliente1,             // JOIN cliente cl ON u.id_cliente = cl.id_cliente
+        model: Cliente1,
         include: {
-          model: Cuenta1,            // JOIN cuenta c ON cl.id_cliente = c.id_cliente
-          attributes: ['id_cuenta', 'saldo'] // SELECT c.id_cuenta, c.saldo
+          model: Cuenta1,
+          attributes: ['id_cuenta', 'saldo']
         }
       }
     });
 
-    // Devuelve solo la primera cuenta si hay varias
-    const cuenta = usuario?.Cliente1?.Cuentas1[0] || null; // o usuario.Cliente1.Cuentas según tu relación
+    // Devuelve la cuenta si existe
+    const cuenta = usuario?.Cliente1?.Cuenta1 || null;
     return cuenta;
 
   } catch (err) {
@@ -118,6 +118,7 @@ async function obtenerCuentaPorUsername(username) {
     return null;
   }
 }
+
 
 // Ejemplo de uso:
 const username = 'Jonathanm05'; // reemplazar por el username que tengas en cache
