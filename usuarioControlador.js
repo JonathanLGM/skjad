@@ -96,8 +96,10 @@ const borrarUsuario = async (req, res) => {
   }
 };
 
-async function obtenerCuentaPorUsername(username) {
+const obtenerCuentaPorUsername = async (req, res) => {
   try {
+    const { username } = req.params;
+
     const usuario = await Usuario1.findOne({
       where: { username },
       include: {
@@ -109,15 +111,16 @@ async function obtenerCuentaPorUsername(username) {
       }
     });
 
-    // Devuelve la cuenta si existe
     const cuenta = usuario?.Cliente1?.Cuenta1 || null;
-    return cuenta;
+
+    // Devuelve JSON desde el inicio
+    res.json({ resultado: cuenta });
 
   } catch (err) {
     console.error("Error Sequelize:", err);
-    return null;
+    res.status(500).json({ mensaje: err.message, resultado: null });
   }
-}
+};
 
 module.exports = {
   registrarUsuario,
