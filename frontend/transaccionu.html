@@ -111,12 +111,15 @@
 
     const guardarTransaccion = async () => {
       const id_transaccion = document.getElementById('id_transaccion').value;
+      const monto = parseFloat(document.getElementById('monto').value);
+      const idCuentaDestino = document.getElementById('id_cuenta_destino').value || null;
+
       const transaccionData = {
         tipo: document.getElementById('tipo').value,
         fecha: document.getElementById('fecha').value,
-        monto: parseFloat(document.getElementById('monto').value),
+        monto: monto,
         id_cuenta_origen: id_cuenta,
-        id_cuenta_destino: document.getElementById('id_cuenta_destino').value || null,
+        id_cuenta_destino: idCuentaDestino,
         id_cajero: parseInt(document.getElementById('id_cajero').value)
       };
 
@@ -124,6 +127,10 @@
         alert('Completa todos los campos obligatorios');
         return;
       }
+
+      // 🔹 Confirmación antes de guardar
+      const confirmacion = confirm(`¿Seguro que quieres enviar ${monto} a la cuenta ${idCuentaDestino || "(no especificada)"}?`);
+      if (!confirmacion) return; // Si cancela, no se envía
 
       try {
         let res;
@@ -167,7 +174,7 @@
 
     function cerrarSesion() {
       localStorage.removeItem('usuario');
-      window.location.href = 'index.html';
+      window.location.href = 'log_in.html';
     }
   </script>
 </body>
