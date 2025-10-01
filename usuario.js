@@ -16,7 +16,7 @@ const defineUsuario = (sequelize, DataTypes) => {
     },
     rol: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     id_cliente: {
       type: DataTypes.INTEGER,
@@ -32,7 +32,7 @@ const defineUsuario = (sequelize, DataTypes) => {
     },
     estado: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     }
   }, {
     tableName: 'usuario',
