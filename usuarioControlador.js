@@ -1,4 +1,4 @@
-const { Usuario1, Cuenta1, sequelize } = require('./db'); // Importar modelos y sequelize
+const { Usuario1, Cuenta1, Cliente1, sequelize } = require('./db'); // Importar modelos y sequelize
 const { Op } = require('sequelize');
 
 // Crear usuario + cuenta
@@ -89,10 +89,42 @@ const borrarUsuario = async (req, res) => {
   }
 };
 
+async function obtenerCuentaPorUsername(username) {
+  try {
+    const usuario = await Usuario1.findOne({
+      where: { username },           // WHERE u.username = '...'
+      include: {
+        model: Cliente1,             // JOIN cliente cl ON u.id_cliente = cl.id_cliente
+        include: {
+          model: Cuenta1,            // JOIN cuenta c ON cl.id_cliente = c.id_cliente
+          attributes: ['id_cuenta', 'saldo'] // SELECT c.id_cuenta, c.saldo
+        }
+      }
+    });
+
+    // Devuelve solo la primera cuenta si hay varias
+    const cuenta = usuario?.Cliente1?.Cuentas1[0] || null; // o usuario.Cliente1.Cuentas según tu relación
+    return cuenta;
+
+  } catch (err) {
+    console.error("Error Sequelize:", err);
+    return null;
+  }
+}
+
+// Ejemplo de uso:
+const username = 'Jonathanm05'; // reemplazar por el username que tengas en cache
+obtenerCuentaPorUsername(username).then(cuenta => {
+  console.log(cuenta); // { id_cuenta: ..., saldo: ... } o null
+});
+
+
+
 module.exports = {
   registrarUsuario,
   listarUsuarios,
   obtenerUsuarioPorId,
   actualizarUsuario,
-  borrarUsuario
+  borrarUsuario,
+  obtenerCuentaPorUsername
 };

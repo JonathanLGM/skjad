@@ -12,6 +12,7 @@
     .info-box { margin-top: 20px; text-align: left; }
     .info-box h3 { margin-bottom: 10px; }
     .info-box p { margin: 5px 0; }
+    #debug { margin-top: 20px; background: #eee; padding: 10px; border-radius: 5px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -30,6 +31,9 @@
         <p><strong>Número de cuenta:</strong> <span id="numCuenta"></span></p>
         <p><strong>Saldo:</strong> $<span id="saldo"></span></p>
       </div>
+
+      <!-- Debug: mostrar el resultado de la consulta -->
+      <div id="debug"></div>
     </div>
   </main>
 
@@ -44,15 +48,15 @@
 
       document.addEventListener("DOMContentLoaded", async () => {
         try {
-          // Hacer fetch a tu endpoint que hace la consulta SQL usando Sequelize
-          // La consulta traducida sería algo como:
-          // Usuario.findOne({ where: { username }, include: { model: Cliente, include: { model: Cuenta, attributes: ['id_cuenta','saldo'] } } })
-
-          const res = await fetch(`/cuenta/usuario/${usuario.username}`);
+          // Llamar a la nueva ruta CRUD que creamos
+          const res = await fetch(`/usuario/cuenta-por-username/${usuario.username}`);
           if (!res.ok) throw new Error("Error al obtener la información de la cuenta");
 
           const data = await res.json();
-          const cuenta = data.resultado; // { id_cuenta, saldo }
+          const cuenta = data.resultado;
+
+          // Mostrar resultado crudo en pantalla (para debug)
+          document.getElementById("debug").textContent = JSON.stringify(cuenta, null, 2);
 
           if (!cuenta) {
             document.getElementById("cuentaInfo").innerHTML += `<p>No tienes cuentas registradas.</p>`;
@@ -64,7 +68,7 @@
 
         } catch (err) {
           console.error(err);
-          alert("Error al cargar información de la cuenta.");
+          document.getElementById("debug").textContent = 'Error: ' + err.message;
         }
       });
     }

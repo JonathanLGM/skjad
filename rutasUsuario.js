@@ -31,4 +31,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
+//
+
+// --- Obtener cuenta por username (misma estructura CRUD) ---
+router.get('/cuenta-por-username/:username', usuarioControlador.obtenerCuentaPorUsername);
+
+
 module.exports = router;
