@@ -23,10 +23,14 @@ const registrarUsuario = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Crear usuario con la contraseña encriptada
-    const nuevoUsuario = await Usuario1.create(
-      { username, password: hashedPassword, fecha_inicio, rol, estado, id_cliente },
-      { transaction }
-    );
+    const nuevoUsuario = await Usuario1.create({ 
+      username, 
+      password: hashedPassword, 
+      fecha_inicio, 
+      rol: 'usuario',  // ✅ Guardar automáticamente como "usuario"
+      estado: 'activa', 
+      id_cliente 
+    },{ transaction });
 
     // Generar número de cuenta aleatorio de 10 dígitos
     const numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000);
@@ -36,7 +40,6 @@ const registrarUsuario = async (req, res) => {
       id_cuenta: numeroCuenta,       
       id_usuario: nuevoUsuario.id_usuario,
       id_cliente: id_cliente,
-      rol: 'usuario',  // ✅ Guardar automáticamente como "usuario"
       estado: 'activa',
       saldo: 0,
       fecha_apertura: fecha_inicio
