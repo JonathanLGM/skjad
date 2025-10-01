@@ -126,12 +126,20 @@ loginForm.addEventListener('submit', async (e) => {
     localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
 
     // 4️⃣ Redirigir a menú
-    // Redirigir según rol
-    if (usuarioLogin.rol === 'admin') {
-        window.location.href = 'menuadmin.html';
-      }else {
-        window.location.href = 'menu.html';
+    const usuarioDataRes = await fetch(`/usuario/${id_usuario}`);
+    const usuarioData = await usuarioDataRes.json();
+
+    if (!usuarioDataRes.ok || !usuarioData.resultado) {
+      throw new Error("No se pudo obtener información del usuario");
     }
+
+    const rol = usuarioData.resultado.rol;
+    if (rol === 'admin') {
+      window.location.href = 'menuadmin.html';
+    } else {
+      window.location.href = 'menu.html';
+    }
+
 
   } catch (err) {
     alert('Error: ' + err.message);
