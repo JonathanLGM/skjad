@@ -112,7 +112,7 @@ loginForm.addEventListener('submit', async (e) => {
     alert(data.mensaje); // Login exitoso
 
     // 2️⃣ Consultar cuenta antes de guardar en localStorage
-    const cuentaRes = await fetch(`/cuenta-por-username/${username}`);
+    const cuentaRes = await fetch(`/usuario/cuenta-por-username/${username}`);
     const cuentaText = await cuentaRes.text();
     let cuentaData;
     try {
