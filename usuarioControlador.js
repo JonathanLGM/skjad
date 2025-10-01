@@ -117,7 +117,7 @@ const obtenerCuentaPorUsername = async (req, res) => {
         model: Cliente1,
         include: {
           model: Cuenta1,
-          attributes: ['id_cuenta', 'saldo']
+          attributes: ['id_cuenta', 'saldo', 'rol']
         }
       }
     });
