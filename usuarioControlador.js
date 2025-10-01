@@ -7,9 +7,15 @@ const registrarUsuario = async (req, res) => {
   try {
     const { username, fecha_inicio, id_cliente } = req.body;
 
-    // Validar duplicados
+    // Validar duplicados de username
     if (await Usuario1.findOne({ where: { username } })) {
       return res.status(400).json({ mensaje: 'El usuario ya está registrado' });
+    }
+
+    // Validar si el cliente ya tiene cuenta
+    const cuentaExistente = await Cuenta1.findOne({ where: { id_cliente } });
+    if (cuentaExistente) {
+      return res.status(400).json({ mensaje: 'El cliente ya tiene una cuenta registrada' });
     }
 
     // Crear usuario
@@ -20,12 +26,12 @@ const registrarUsuario = async (req, res) => {
 
     // Crear cuenta ligada al usuario
     await Cuenta1.create({
-      id_cuenta: numeroCuenta,       // ← este será el "número de cuenta"
+      id_cuenta: numeroCuenta,       
       id_usuario: nuevoUsuario.id_usuario,
-      id_cliente: id_cliente,        // ← tomado del formulario
+      id_cliente: id_cliente,
       estado: 'activa',
       saldo: 0,
-      fecha_apertura: fecha_inicio   // ← usas la fecha que metes en el form
+      fecha_apertura: fecha_inicio
     }, { transaction });
 
     await transaction.commit();
@@ -37,6 +43,7 @@ const registrarUsuario = async (req, res) => {
     res.status(500).json({ mensaje: err.message, resultado: null });
   }
 };
+
 
 // Listar usuarios
 const listarUsuarios = async (req, res) => {

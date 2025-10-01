@@ -19,6 +19,12 @@ const Cuenta1 = require('./cuenta')(sequelize, DataTypes);
 const Cajero1 = require('./cajero')(sequelize, DataTypes);
 const Transaccion1 = require('./transaccion')(sequelize, DataTypes);
 
+Usuario1.belongsTo(Cliente1, { foreignKey: 'id_cliente' });
+Cliente1.hasOne(Usuario1, { foreignKey: 'id_cliente' });
+
+Cuenta1.belongsTo(Cliente1, { foreignKey: 'id_cliente' });
+Cliente1.hasOne(Cuenta1, { foreignKey: 'id_cliente' });
+
 // exporta la instancia de sequelize y los modelos (todo en minúscula)
 module.exports = {
   sequelize,
