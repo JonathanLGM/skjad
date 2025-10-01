@@ -1,5 +1,6 @@
 const { Usuario1, Cuenta1, Cliente1, sequelize } = require('./db'); // Importar modelos y sequelize
 const { Op } = require('sequelize');
+const bcrypt = require('bcrypt'); // encriptador
 
 // Crear usuario + cuenta
 const registrarUsuario = async (req, res) => {
@@ -18,8 +19,14 @@ const registrarUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: 'El cliente ya tiene una cuenta registrada' });
     }
 
-    // Crear usuario
-    const nuevoUsuario = await Usuario1.create(req.body, { transaction });
+     // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    // Crear usuario con la contraseña encriptada
+    const nuevoUsuario = await Usuario1.create(
+      { ...req.body, password: hashedPassword },
+      { transaction }
+    );
 
     // Generar número de cuenta aleatorio de 10 dígitos
     const numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000);
