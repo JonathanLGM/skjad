@@ -15,13 +15,11 @@
   </style>
 </head>
 <body>
-  <!-- Barra superior -->
   <header class="topbar">
     <div class="logo">BancaTerritorial</div>
     <button onclick="cerrarSesion()" class="btn">Cerrar Sesión</button>
   </header>
 
-  <!-- Contenedor principal -->
   <main>
     <div class="container">
       <h2>Bienvenido, <span id="usuarioNombre"></span></h2>
@@ -31,60 +29,50 @@
         <h3>Información de la cuenta</h3>
         <p><strong>Número de cuenta:</strong> <span id="numCuenta"></span></p>
         <p><strong>Saldo:</strong> $<span id="saldo"></span></p>
-        <p><strong>Estado:</strong> <span id="estado"></span></p>
-        <p><strong>Fecha de apertura:</strong> <span id="fechaApertura"></span></p>
       </div>
     </div>
   </main>
 
   <script>
-  const usuario = JSON.parse(localStorage.getItem('usuario'));
-  if (!usuario) {
-    alert("Debes iniciar sesión");
-    window.location.href = 'index.html';
-  } else {
-    document.addEventListener("DOMContentLoaded", async () => {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+    if (!usuario) {
+      alert("Debes iniciar sesión");
+      window.location.href = 'index.html';
+    } else {
       document.getElementById("usuarioNombre").textContent = usuario.username;
 
-      try {
-        // Paso 1: obtener las cuentas de este cliente (filtrando por id_cliente)
-        const resp1 = await fetch(`/cuenta/listar`);
-        if (!resp1.ok) throw new Error("Error al obtener lista de cuentas");
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          // Hacer fetch a tu endpoint que hace la consulta SQL usando Sequelize
+          // La consulta traducida sería algo como:
+          // Usuario.findOne({ where: { username }, include: { model: Cliente, include: { model: Cuenta, attributes: ['id_cuenta','saldo'] } } })
 
-        const data1 = await resp1.json();
+          const res = await fetch(`/cuenta/usuario/${usuario.username}`);
+          if (!res.ok) throw new Error("Error al obtener la información de la cuenta");
 
-        // Buscar la cuenta del cliente actual
-        const cuentaCliente = data1.resultado.find(c => c.id_cliente === usuario.id_cliente);
+          const data = await res.json();
+          const cuenta = data.resultado; // { id_cuenta, saldo }
 
-        if (!cuentaCliente) {
-          document.querySelector(".container").innerHTML += `<p>No tienes cuentas registradas.</p>`;
-          return;
+          if (!cuenta) {
+            document.getElementById("cuentaInfo").innerHTML += `<p>No tienes cuentas registradas.</p>`;
+            return;
+          }
+
+          document.getElementById("numCuenta").textContent = cuenta.id_cuenta;
+          document.getElementById("saldo").textContent = cuenta.saldo.toLocaleString();
+
+        } catch (err) {
+          console.error(err);
+          alert("Error al cargar información de la cuenta.");
         }
+      });
+    }
 
-        // Paso 2: obtener detalles de esa cuenta con /cuenta/:id_cuenta
-        const resp2 = await fetch(`/cuenta/${cuentaCliente.id_cuenta}`);
-        if (!resp2.ok) throw new Error("Error al obtener información de la cuenta");
-
-        const cuenta = await resp2.json();
-
-        // Mostrar info
-        document.querySelector(".container").innerHTML += `
-          <p><b>Número de cuenta:</b> ${cuenta.resultado.id_cuenta}</p>
-          <p><b>Saldo:</b> ${cuenta.resultado.saldo}</p>
-        `;
-
-      } catch (err) {
-        console.error(err);
-        alert("Error al cargar información de la cuenta.");
-      }
-    });
-  }
-
-  function cerrarSesion() {
-    localStorage.removeItem('usuario');
-    window.location.href = 'index.html';
-  }
-</script>
-
+    function cerrarSesion() {
+      localStorage.removeItem('usuario');
+      window.location.href = 'index.html';
+    }
+  </script>
 </body>
 </html>
