@@ -36,6 +36,7 @@ const registrarUsuario = async (req, res) => {
       id_cuenta: numeroCuenta,       
       id_usuario: nuevoUsuario.id_usuario,
       id_cliente: id_cliente,
+      rol: 'usuario',  // ✅ Guardar automáticamente como "usuario"
       estado: 'activa',
       saldo: 0,
       fecha_apertura: fecha_inicio
