@@ -99,7 +99,7 @@
 
         alert(data.mensaje); // Login exitoso
         // Guardar sesión en localStorage
-        localStorage.setItem('usuario', JSON.stringify({ username }));
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
         window.location.href = 'menu.html';
       } catch (err) {
         alert('Error: ' + err.message);
