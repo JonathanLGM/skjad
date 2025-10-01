@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt'); // encriptador
 const registrarUsuario = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
-    const { username, fecha_inicio, id_cliente } = req.body;
+    const { username, password, fecha_inicio, rol, estado, id_cliente } = req.body;
 
     // Validar duplicados de username
     if (await Usuario1.findOne({ where: { username } })) {
@@ -19,12 +19,12 @@ const registrarUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: 'El cliente ya tiene una cuenta registrada' });
     }
 
-     // Encriptar la contraseña
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Crear usuario con la contraseña encriptada
     const nuevoUsuario = await Usuario1.create(
-      { ...req.body, password: hashedPassword },
+      { username, password: hashedPassword, fecha_inicio, rol, estado, id_cliente },
       { transaction }
     );
 
