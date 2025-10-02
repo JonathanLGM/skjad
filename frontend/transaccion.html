@@ -15,8 +15,33 @@
       background: #004080;
       color: white;
       padding: 15px 30px;
-      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .topbar h3 {
+      margin: 0;
+      color: white;
       text-align: center;
+      flex-grow: 1;
+      font-size: 1.5rem;
+    }
+    .back-btn {
+      background: white;
+      color: #004080;
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+    .back-btn:hover {
+      background: #f0f0f0;
     }
     .container {
       max-width: 700px;
@@ -74,18 +99,19 @@
   </style>
 </head>
 <body>
-<header class="topbar d-flex align-items-center justify-content-between px-3">
-  <!-- Botón alineado a la izquierda -->
-  <button class="btn btn-light btn-sm" onclick="window.location.href='menu.html'">
-    ⬅ Volver al Menú
-  </button>
+  <header class="topbar">
+    <!-- Botón de volver alineado a la izquierda -->
+    <a href="menu.html" class="back-btn">
+      ⬅ Volver al Menú
+    </a>
 
-  <!-- Título centrado -->
-  <h3 class="m-0 text-white text-center flex-grow-1">Transacciones Bancarias</h3>
+    <!-- Título centrado -->
+    <h3>Transacciones Bancarias</h3>
 
-  <!-- Espaciador invisible para balancear el título -->
-  <div style="width:120px;"></div>
-</header>
+    <!-- Espaciador invisible para balancear (opcional, pero space-between lo maneja) -->
+    <div style="width: 120px;"></div>
+  </header>
+  
   <main class="container">
     <h2>Registrar / Actualizar Transacción</h2>
 
