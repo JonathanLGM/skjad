@@ -74,19 +74,21 @@
   </style>
 </head>
 <body>
-  <header class="topbar">Transacciones Bancarias</header>
+ <header class="bg-primary text-white d-flex align-items-center justify-content-between p-3">
+  <!-- Botón a la izquierda -->
+  <button class="btn btn-light btn-sm" onclick="window.location.href='menu.html'">
+    ⬅ Volver al Menú
+  </button>
+
+  <!-- Título centrado -->
+  <h3 class="m-0 text-center flex-grow-1">Transacciones Bancarias</h3>
+
+  <!-- Espacio vacío a la derecha para balancear -->
+  <div style="width: 80px;"></div>
+</header>
 
   <main class="container">
     <h2>Registrar / Actualizar Transacción</h2>
-    <div style="margin-top: 20px;">
-      <button onclick="window.location.href='menu.html'"
-        style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        ⬅ Volver al Menú Principal
-      </button>
-    </div>
-    <button class="boton-volver" onclick="window.location.href='menu.html'">
-      ⬅ Volver al Menú Principal
-    </button>
 
     <div class="input-box">
       <input type="hidden" id="id_transaccion">
