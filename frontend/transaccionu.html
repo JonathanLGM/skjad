@@ -112,7 +112,10 @@
     const guardarTransaccion = async () => {
       const id_transaccion = document.getElementById('id_transaccion').value;
       const monto = parseFloat(document.getElementById('monto').value);
-      const idCuentaDestino = document.getElementById('id_cuenta_destino').value || null;
+
+      // ✅ Cuenta destino puede ser null
+      const idCuentaDestinoInput = document.getElementById('id_cuenta_destino').value.trim();
+      const idCuentaDestino = idCuentaDestinoInput === "" ? null : idCuentaDestinoInput;
 
       const transaccionData = {
         tipo: document.getElementById('tipo').value,
