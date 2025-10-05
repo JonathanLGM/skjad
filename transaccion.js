@@ -5,10 +5,6 @@ const defineTransaccion = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    tipo: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
     fecha: {
       type: DataTypes.DATEONLY, // como fecha_apertura en cuenta.js
       allowNull: false

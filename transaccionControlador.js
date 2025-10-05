@@ -4,7 +4,7 @@ const { Transaccion1, Cuenta1, sequelize } = require('./db'); // Importamos tamb
 const registrarTransaccion = async (req, res) => {
   const t = await sequelize.transaction(); // Iniciamos transacción de Sequelize
   try {
-    const { tipo, fecha, monto, id_cuenta_origen, id_cuenta_destino, id_cajero } = req.body;
+    const {fecha, monto, id_cuenta_origen, id_cuenta_destino, id_cajero } = req.body;
 
     // 1. Validar monto negativo
     if (monto <= 0) {
@@ -34,7 +34,6 @@ const registrarTransaccion = async (req, res) => {
 
     // 5. Crear transacción en la tabla
     const nuevaTransaccion = await Transaccion1.create({
-      tipo,
       fecha,
       monto,
       id_cuenta_origen,
