@@ -79,9 +79,7 @@
 
     <div>
       <input type="hidden" id="id_cuenta">
-      <input type="text" id="numero_cuenta" placeholder="Número de Cuenta">
       <input type="number" step="0.01" id="saldo" placeholder="Saldo">
-      <input type="text" id="tipo_cuenta" placeholder="Tipo de Cuenta">
       <input type="text" id="estado" placeholder="Estado">
       <input type="date" id="fecha_apertura" placeholder="Fecha de Apertura">
       <button id="guardarBtn">Guardar Cambios</button>
@@ -111,9 +109,7 @@
 
         if (cuenta) {
           document.getElementById('id_cuenta').value = cuenta.id_cuenta;
-          document.getElementById('numero_cuenta').value = cuenta.numero_cuenta;
           document.getElementById('saldo').value = cuenta.saldo;
-          document.getElementById('tipo_cuenta').value = cuenta.tipo_cuenta;
           document.getElementById('estado').value = cuenta.estado;
           document.getElementById('fecha_apertura').value = cuenta.fecha_apertura ? cuenta.fecha_apertura.split('T')[0] : '';
         } else {
@@ -131,9 +127,7 @@
     const guardarCambios = async () => {
       const id_cuenta = document.getElementById('id_cuenta').value;
       const cuentaData = {
-        numero_cuenta: document.getElementById('numero_cuenta').value,
         saldo: parseFloat(document.getElementById('saldo').value),
-        tipo_cuenta: document.getElementById('tipo_cuenta').value,
         estado: document.getElementById('estado').value,
         fecha_apertura: document.getElementById('fecha_apertura').value
       };
