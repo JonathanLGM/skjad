@@ -7,6 +7,8 @@ const registrarCuenta = async (req, res) => {
     // Generar número de cuenta aleatorio de 10 dígitos
     const id_cuenta = Math.floor(1000000000 + Math.random() * 9000000000);
 
+    req.body.id_cuenta = id_cuenta;
+    
     // Validar duplicados
     if (await Cuenta1.findOne({ where: { id_cuenta } })) {
       return res.status(400).json({ mensaje: 'El número de cuenta ya está registrado' });
