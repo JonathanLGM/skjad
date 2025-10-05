@@ -30,7 +30,6 @@
 
       <div>
         <input type="hidden" id="id_transaccion">
-        <input type="text" id="tipo" placeholder="Tipo (depósito, retiro, transferencia)">
         <input type="date" id="fecha">
         <input type="number" id="monto" placeholder="Monto">
       
@@ -46,7 +45,6 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Tipo</th>
             <th>Fecha</th>
             <th>Monto</th>
             <th>Cuenta Origen</th>
@@ -93,7 +91,6 @@
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${t.id_transaccion}</td>
-            <td>${t.tipo}</td>
             <td>${new Date(t.fecha).toLocaleDateString()}</td>
             <td>${t.monto}</td>
             <td>${t.id_cuenta_origen}</td>
@@ -118,7 +115,6 @@
       const idCuentaDestino = idCuentaDestinoInput === "" ? null : idCuentaDestinoInput;
 
       const transaccionData = {
-        tipo: document.getElementById('tipo').value,
         fecha: document.getElementById('fecha').value,
         monto: monto,
         id_cuenta_origen: id_cuenta,
@@ -164,7 +160,6 @@
 
     const limpiarFormulario = () => {
       document.getElementById('id_transaccion').value = '';
-      document.getElementById('tipo').value = '';
       document.getElementById('fecha').value = '';
       document.getElementById('monto').value = '';
       document.getElementById('id_cuenta_destino').value = '';
