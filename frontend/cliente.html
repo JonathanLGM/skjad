@@ -2,51 +2,198 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>CRUD Cliente</title>
+  <title>Gestión de Clientes</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-    input, button { padding: 5px; margin: 5px 0; width: 100%; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #f4f4f4; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar {
+      background: #004080;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar h3 {
+      margin: 0;
+      color: white;
+      text-align: center;
+      flex-grow: 1;
+      font-size: 1.5rem;
+    }
+
+    .back-btn {
+      background: white;
+      color: #004080;
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .container {
+      max-width: 700px;
+      background: white;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .input-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-box input {
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 5px;
+    }
+
+    .btn {
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      background: #004080;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background: #003366;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #004080;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f2f2f2;
+    }
+
+    /* Botones de acción blancos, uno debajo del otro */
+    .acciones button {
+      background: white;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 3px 0;
+    }
+
+    .acciones button:hover {
+      background: #f0f0f0;
+    }
   </style>
 </head>
 <body>
-  <h1>CRUD Cliente</h1>
+  <header class="topbar">
+    <a href="menuadmin.html" class="back-btn">⬅ Volver al Menú</a>
+    <h3>Gestión de Clientes</h3>
+    <div style="width: 120px;"></div>
+  </header>
 
-  <!-- Formulario para crear o actualizar -->
-  <div>
+  <main class="container">
+    <h2>Registrar / Editar Cliente</h2>
+
     <input type="hidden" id="id_cliente">
-    <input type="text" id="nombre" placeholder="Nombre">
-    <input type="text" id="apellido" placeholder="Apellido">
-    <input type="text" id="documento" placeholder="Documento">
-    <input type="text" id="telefono" placeholder="Teléfono">
-    <input type="text" id="direccion" placeholder="Dirección">
-    <input type="email" id="correo" placeholder="Correo">
-    <input type="number" id="id_barrio" placeholder="ID Barrio">
-    <button id="guardarBtn">Guardar Cliente</button>
-  </div>
+    
+    <div class="input-box">
+      <label>Nombre</label>
+      <input type="text" id="nombre" placeholder="Nombre">
+    </div>
 
-  <!-- Tabla de clientes -->
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Documento</th>
-        <th>Teléfono</th>
-        <th>Dirección</th>
-        <th>Correo</th>
-        <th>ID Barrio</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="clientesTable"></tbody>
-  </table>
+    <div class="input-box">
+      <label>Apellido</label>
+      <input type="text" id="apellido" placeholder="Apellido">
+    </div>
+
+    <div class="input-box">
+      <label>Documento</label>
+      <input type="text" id="documento" placeholder="Documento">
+    </div>
+
+    <div class="input-box">
+      <label>Teléfono</label>
+      <input type="text" id="telefono" placeholder="Teléfono">
+    </div>
+
+    <div class="input-box">
+      <label>Dirección</label>
+      <input type="text" id="direccion" placeholder="Dirección">
+    </div>
+
+    <div class="input-box">
+      <label>Correo</label>
+      <input type="email" id="correo" placeholder="Correo">
+    </div>
+
+    <div class="input-box">
+      <label>ID Barrio</label>
+      <input type="number" id="id_barrio" placeholder="ID Barrio">
+    </div>
+
+    <button class="btn" id="guardarBtn">Guardar Cliente</button>
+
+    <h2>Clientes Registrados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Documento</th>
+          <th>Teléfono</th>
+          <th>Dirección</th>
+          <th>Correo</th>
+          <th>ID Barrio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="clientesTable"></tbody>
+    </table>
+  </main>
 
   <script>
-    // ✅ URL base correcta
     const backendUrl = "/cliente";
 
     const obtenerClientes = async () => {
@@ -56,6 +203,7 @@
         const data = await res.json();
         const tbody = document.getElementById('clientesTable');
         tbody.innerHTML = '';
+
         if (data.resultado && Array.isArray(data.resultado)) {
           data.resultado.forEach(cliente => {
             const tr = document.createElement('tr');
@@ -68,17 +216,16 @@
               <td>${cliente.direccion || ''}</td>
               <td>${cliente.correo}</td>
               <td>${cliente.id_barrio}</td>
-              <td>
+              <td class="acciones">
                 <a href="editarCliente.html?id=${cliente.id_cliente}">
-                <button>Editar</button>
-                </a>
+                  <button>Editar</button>
+                </a><br>
                 <button onclick="eliminarCliente(${cliente.id_cliente})">Eliminar</button>
               </td>
             `;
             tbody.appendChild(tr);
           });
         } else {
-          console.warn("La respuesta no contiene un array de clientes en 'resultado':", data);
           tbody.innerHTML = '<tr><td colspan="9">No hay clientes para mostrar.</td></tr>';
         }
       } catch (error) {
@@ -160,7 +307,6 @@
     };
 
     document.getElementById('guardarBtn').addEventListener('click', guardarCliente);
-
     obtenerClientes();
   </script>
 </body>
