@@ -3,10 +3,10 @@ const { Cuenta1 } = require('./db'); // Importar modelo Cuenta1
 // Crear cuenta
 const registrarCuenta = async (req, res) => {
   try {
-    const { numero_cuenta } = req.body;
+    const { id_cuenta } = req.body;
 
     // Validar duplicados
-    if (await Cuenta1.findOne({ where: { numero_cuenta } })) {
+    if (await Cuenta1.findOne({ where: { id_cuenta } })) {
       return res.status(400).json({ mensaje: 'El número de cuenta ya está registrado' });
     }
 
