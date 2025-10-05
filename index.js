@@ -2,22 +2,25 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./db');
+const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
-// Sirve archivos estáticos desde la carpeta 'frontend'
+// Sirve archivos estáticos (solo index y assets públicos)
 app.use(express.static('frontend'));
 
 // Puerto dinámico de Render
 const PORT = process.env.PORT || 3000;
 
-// Verificar conexión a la base de datos a través de Sequelize
+// Verificar conexión a la base de datos
 sequelize.authenticate()
-  .then(() => console.log('✅ Conectado a la base de datos (Sequelize) correctamente en Render'))
+  .then(() => console.log('✅ Conectado a la base de datos correctamente'))
   .catch(err => {
-    console.error('❌ Error de conexión a la base de datos (Sequelize):', err);
+    console.error('❌ Error de conexión a la base de datos:', err);
     process.exit(1);
   });
 
@@ -38,28 +41,43 @@ app.get('/barrios', async (req, res) => {
   }
 });
 
-// Ruta raíz para cargar cliente.html
+// Middleware para proteger rutas HTML
+const protegerRuta = (req, res, next) => {
+  const acceso = req.cookies.accesoApp;
+  if (acceso !== '12345') {
+    return res.redirect('/'); // redirige a login si no tiene cookie
+  }
+  next();
+};
+
+// Ruta raíz: al cargar log_in.html, ponemos cookie de acceso temporal
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/frontend/log_in.html');
+  res.cookie('accesoApp', '12345', { httpOnly: true });
+  res.sendFile(path.join(__dirname, 'frontend', 'log_in.html'));
 });
 
-// Rutas CRUD de Cliente
+// Rutas HTML “protegidas”
+app.get('/menuadmin.html', protegerRuta, (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'menuadmin.html'));
+});
+
+app.get('/menuusuario.html', protegerRuta, (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'menuusuario.html'));
+});
+
+// Rutas CRUD existentes
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
 
-// 🚀 Rutas CRUD de Usuario (agregado)
 const usuarioRouter = require('./rutasUsuario');
 app.use('/usuario', usuarioRouter);
 
-// 🚀 Rutas CRUD de Cuenta (nuevo)
 const cuentaRouter = require('./rutasCuenta');
 app.use('/cuenta', cuentaRouter);
 
-// 🚀 Rutas CRUD de Cajero (nuevo)
 const cajeroRouter = require('./rutasCajero');
 app.use('/cajero', cajeroRouter);
 
-// 🚀 Rutas CRUD de Transaccion (nuevo)
 const transaccionRouter = require('./rutasTransaccion');
 app.use('/transaccion', transaccionRouter);
 
@@ -67,11 +85,3 @@ app.use('/transaccion', transaccionRouter);
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
-
-// NUEVO: Función middleware reutilizable
-const protegerRuta = (req, res, next) => {
-  if (!req.session.admin) {
-    return res.redirect('/');
-  }
-  next();
-};
