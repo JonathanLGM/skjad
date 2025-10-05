@@ -103,37 +103,66 @@
     <h3>Gestión de Usuarios</h3>
     <div style="width: 120px;"></div>
   </header>
-  <h1>CRUD Usuario</h1>
 
-  <!-- Formulario -->
-  <div>
+  <main class="container">
+    <h2>Registrar / Editar Usuario</h2>
+
     <input type="hidden" id="id_usuario">
-    <input type="text" id="username" placeholder="Usuario">
-    <input type="password" id="password" placeholder="Contraseña">
-    <input type="date" id="fecha_inicio" placeholder="Fecha Inicio">
-    <input type="date" id="fecha_final" placeholder="Fecha Final">
-    <input type="text" id="rol" placeholder="Rol">
-    <input type="text" id="estado" placeholder="Estado">
-    <input type="number" id="id_cliente" placeholder="ID Cliente">
-    <button id="guardarBtn">Guardar Usuario</button>
-  </div>
 
-  <!-- Tabla -->
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Usuario</th>
-        <th>Rol</th>
-        <th>Estado</th>
-        <th>Fecha Inicio</th>
-        <th>Fecha Final</th>
-        <th>ID Cliente</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="usuariosTable"></tbody>
-  </table>
+    <div class="input-box">
+      <label>Usuario</label>
+      <input type="text" id="username" placeholder="Usuario">
+    </div>
+
+    <div class="input-box">
+      <label>Contraseña</label>
+      <input type="password" id="password" placeholder="Contraseña">
+    </div>
+
+    <div class="input-box">
+      <label>Fecha Inicio</label>
+      <input type="date" id="fecha_inicio">
+    </div>
+
+    <div class="input-box">
+      <label>Fecha Final</label>
+      <input type="date" id="fecha_final">
+    </div>
+
+    <div class="input-box">
+      <label>Rol</label>
+      <input type="text" id="rol" placeholder="Ej: admin, cliente">
+    </div>
+
+    <div class="input-box">
+      <label>Estado</label>
+      <input type="text" id="estado" placeholder="Activo / Inactivo">
+    </div>
+
+    <div class="input-box">
+      <label>ID Cliente</label>
+      <input type="number" id="id_cliente" placeholder="ID Cliente asociado">
+    </div>
+
+    <button class="btn" id="guardarBtn">Guardar Usuario</button>
+
+    <h2>Usuarios Registrados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Final</th>
+          <th>ID Cliente</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="usuariosTable"></tbody>
+    </table>
+  </main>
 
   <script>
     const backendUrl = "/usuario";
@@ -244,7 +273,6 @@
     };
 
     document.getElementById('guardarBtn').addEventListener('click', guardarUsuario);
-
     obtenerUsuarios();
   </script>
 </body>
