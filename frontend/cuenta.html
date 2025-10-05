@@ -2,139 +2,180 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Gestión de Cuentas</title>
+  <title>Cuentas - Banco</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f3f6fb;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
       margin: 0;
       padding: 0;
     }
 
-    h1 {
-      text-align: center;
-      background-color: #004aad;
+    .topbar {
+      background: #004080;
       color: white;
-      padding: 15px;
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar h3 {
       margin: 0;
+      color: white;
+      text-align: center;
+      flex-grow: 1;
+      font-size: 1.5rem;
+    }
+
+    .back-btn {
+      background: white;
+      color: #004080;
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: #f0f0f0;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 700px;
       background: white;
-      margin: 40px auto;
-      padding: 25px 30px;
+      margin: 30px auto;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    input, button {
-      font-size: 15px;
-      padding: 10px;
-      margin: 6px 0;
-      width: 100%;
-      border: 1px solid #ccc;
+    .input-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-box input {
+      padding: 12px;
       border-radius: 6px;
-      box-sizing: border-box;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 5px;
     }
 
-    input:focus {
-      outline: none;
-      border-color: #004aad;
-      box-shadow: 0 0 4px #004aad50;
-    }
-
-    button {
-      background-color: #004aad;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+    .btn {
+      padding: 12px;
+      border-radius: 6px;
       border: none;
+      background: #004080;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
       transition: 0.3s;
+      margin-top: 10px;
     }
 
-    button:hover {
-      background-color: #003a8c;
+    .btn:hover {
+      background: #003366;
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-top: 25px;
+      margin-top: 20px;
     }
 
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid #ccc;
       padding: 10px;
       text-align: center;
     }
 
     th {
-      background-color: #004aad;
+      background: #004080;
       color: white;
     }
 
     tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    .botones {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .botones button {
-      flex: 1;
+      background: #f2f2f2;
     }
 
     .acciones button {
-      width: auto;
+      margin: 3px;
       padding: 6px 10px;
-      font-size: 14px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
     }
 
-    a button {
-      background-color: #0078ff;
-    }
-
-    a button:hover {
-      background-color: #0066d6;
+    .acciones button:first-child {
+      background: #0078ff;
+      color: white;
     }
 
     .acciones button:last-child {
-      background-color: #d9534f;
+      background: #d9534f;
+      color: white;
     }
 
-    .acciones button:last-child:hover {
-      background-color: #b52b27;
+    .acciones button:hover {
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
-  <h1>Gestión de Cuentas Bancarias</h1>
+  <header class="topbar">
+    <a href="menuadmin.html" class="back-btn">⬅ Volver al Menú</a>
+    <h3>Gestión de Cuentas</h3>
+    <div style="width: 120px;"></div>
+  </header>
 
-  <div class="container">
-    <!-- Formulario -->
-    <div>
-      <input type="hidden" id="id_cuenta">
+  <main class="container">
+    <h2>Registrar / Editar Cuenta</h2>
+
+    <input type="hidden" id="id_cuenta">
+
+    <div class="input-box">
+      <label>Número de Cuenta</label>
       <input type="text" id="numero_cuenta" placeholder="Número de Cuenta">
-      <input type="text" id="estado" placeholder="Estado (activa, inactiva, bloqueada)">
-      <input type="number" id="saldo" placeholder="Saldo">
-      <input type="date" id="fecha_apertura" placeholder="Fecha de Apertura">
-      <input type="number" id="id_cliente" placeholder="ID Cliente">
-      <div class="botones">
-        <button id="guardarBtn">Guardar Cuenta</button>
-        <button onclick="window.location.href='menuadmin.html'" style="background:#6c757d;">Volver</button>
-      </div>
     </div>
 
-    <!-- Tabla -->
+    <div class="input-box">
+      <label>Estado</label>
+      <input type="text" id="estado" placeholder="Activa / Inactiva / Bloqueada">
+    </div>
+
+    <div class="input-box">
+      <label>Saldo</label>
+      <input type="number" id="saldo" placeholder="Saldo">
+    </div>
+
+    <div class="input-box">
+      <label>Fecha de Apertura</label>
+      <input type="date" id="fecha_apertura">
+    </div>
+
+    <div class="input-box">
+      <label>ID Cliente</label>
+      <input type="number" id="id_cliente" placeholder="ID del Cliente">
+    </div>
+
+    <button class="btn" id="guardarBtn">Guardar Cuenta</button>
+
+    <h2>Cuentas Registradas</h2>
     <table>
       <thead>
         <tr>
           <th>ID</th>
-          <th>Número</th>
           <th>Estado</th>
           <th>Saldo</th>
           <th>Fecha Apertura</th>
@@ -144,7 +185,7 @@
       </thead>
       <tbody id="cuentasTable"></tbody>
     </table>
-  </div>
+  </main>
 
   <script>
     const backendUrl = "/cuenta";
@@ -162,7 +203,6 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
               <td>${cuenta.id_cuenta}</td>
-              <td>${cuenta.numero_cuenta}</td>
               <td>${cuenta.estado}</td>
               <td>$${cuenta.saldo.toLocaleString()}</td>
               <td>${new Date(cuenta.fecha_apertura).toLocaleDateString()}</td>
@@ -188,14 +228,13 @@
     const guardarCuenta = async () => {
       const id_cuenta = document.getElementById('id_cuenta').value;
       const cuentaData = {
-        numero_cuenta: document.getElementById('numero_cuenta').value,
         estado: document.getElementById('estado').value,
         saldo: parseFloat(document.getElementById('saldo').value),
         fecha_apertura: document.getElementById('fecha_apertura').value,
         id_cliente: parseInt(document.getElementById('id_cliente').value)
       };
 
-      if (!cuentaData.numero_cuenta || !cuentaData.estado || isNaN(cuentaData.saldo) || !cuentaData.fecha_apertura || isNaN(cuentaData.id_cliente)) {
+      if (!cuentaData.estado || isNaN(cuentaData.saldo) || !cuentaData.fecha_apertura || isNaN(cuentaData.id_cliente)) {
         alert('Por favor, completa todos los campos obligatorios.');
         return;
       }
@@ -244,7 +283,6 @@
 
     const limpiarFormulario = () => {
       document.getElementById('id_cuenta').value = '';
-      document.getElementById('numero_cuenta').value = '';
       document.getElementById('estado').value = '';
       document.getElementById('saldo').value = '';
       document.getElementById('fecha_apertura').value = '';
