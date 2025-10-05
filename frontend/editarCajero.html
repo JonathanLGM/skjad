@@ -4,14 +4,64 @@
     <meta charset="UTF-8">
     <title>Editar Cajero</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        input, button { padding: 5px; margin: 5px 0; width: 100%; }
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #003366;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 48%;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>Editar Cajero</h1>
+    <div class="container">
+        <h1>Editar Cajero</h1>
 
-    <div>
         <input type="hidden" id="id_cajero">
         <input type="text" id="direccion" placeholder="Dirección">
         <input type="number" step="0.000001" id="latitud" placeholder="Latitud">
@@ -19,8 +69,11 @@
         <input type="text" id="estado" placeholder="Estado">
         <input type="number" id="id_barrio" placeholder="ID Barrio">
         <input type="number" id="id_tipo" placeholder="ID Tipo">
-        <button id="guardarBtn">Guardar Cambios</button>
-        <button onclick="window.history.back()">Cancelar</button>
+
+        <div class="btns">
+            <button id="guardarBtn">Guardar Cambios</button>
+            <button onclick="window.history.back()">Cancelar</button>
+        </div>
     </div>
 
     <script>
