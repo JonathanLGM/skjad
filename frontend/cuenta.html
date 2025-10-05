@@ -2,55 +2,156 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>CRUD Cuenta</title>
+  <title>Gestión de Cuentas</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-    input, button { padding: 5px; margin: 5px 0; width: 100%; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #f4f4f4; }
-    .botones { display: flex; gap: 10px; margin-top: 10px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f6fb;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      background-color: #004aad;
+      color: white;
+      padding: 15px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      background: white;
+      margin: 40px auto;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    input, button {
+      font-size: 15px;
+      padding: 10px;
+      margin: 6px 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #004aad;
+      box-shadow: 0 0 4px #004aad50;
+    }
+
+    button {
+      background-color: #004aad;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #003a8c;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 25px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #004aad;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .botones {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .botones button {
+      flex: 1;
+    }
+
+    .acciones button {
+      width: auto;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+
+    a button {
+      background-color: #0078ff;
+    }
+
+    a button:hover {
+      background-color: #0066d6;
+    }
+
+    .acciones button:last-child {
+      background-color: #d9534f;
+    }
+
+    .acciones button:last-child:hover {
+      background-color: #b52b27;
+    }
   </style>
 </head>
 <body>
-  <h1>CRUD Cuenta</h1>
+  <h1>Gestión de Cuentas Bancarias</h1>
 
-  <!-- Formulario para crear -->
-  <div>
-    <input type="hidden" id="id_cuenta">
-    <input type="text" id="numero_cuenta" placeholder="Número de Cuenta">
-    <input type="text" id="estado" placeholder="Estado (activa, inactiva, bloqueada)">
-    <input type="number" id="saldo" placeholder="Saldo">
-    <input type="date" id="fecha_apertura" placeholder="Fecha de Apertura">
-    <input type="number" id="id_cliente" placeholder="ID Cliente">
-    <div class="botones">
-      <button id="guardarBtn">Guardar Cuenta</button>
-      <button onclick="window.location.href='menuadmin.html'">Volver</button>
+  <div class="container">
+    <!-- Formulario -->
+    <div>
+      <input type="hidden" id="id_cuenta">
+      <input type="text" id="numero_cuenta" placeholder="Número de Cuenta">
+      <input type="text" id="estado" placeholder="Estado (activa, inactiva, bloqueada)">
+      <input type="number" id="saldo" placeholder="Saldo">
+      <input type="date" id="fecha_apertura" placeholder="Fecha de Apertura">
+      <input type="number" id="id_cliente" placeholder="ID Cliente">
+      <div class="botones">
+        <button id="guardarBtn">Guardar Cuenta</button>
+        <button onclick="window.location.href='menuadmin.html'" style="background:#6c757d;">Volver</button>
+      </div>
     </div>
+
+    <!-- Tabla -->
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número</th>
+          <th>Estado</th>
+          <th>Saldo</th>
+          <th>Fecha Apertura</th>
+          <th>ID Cliente</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="cuentasTable"></tbody>
+    </table>
   </div>
 
-  <!-- Tabla de cuentas -->
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Número</th>
-        <th>Estado</th>
-        <th>Saldo</th>
-        <th>Fecha Apertura</th>
-        <th>ID Cliente</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="cuentasTable"></tbody>
-  </table>
-
   <script>
-    const backendUrl = "/cuenta"; // Ahora GET /cuenta devuelve todas las cuentas
+    const backendUrl = "/cuenta";
 
     const obtenerCuentas = async () => {
       try {
-        const res = await fetch(backendUrl); // GET /cuenta
+        const res = await fetch(backendUrl);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const tbody = document.getElementById('cuentasTable');
@@ -63,10 +164,10 @@
               <td>${cuenta.id_cuenta}</td>
               <td>${cuenta.numero_cuenta}</td>
               <td>${cuenta.estado}</td>
-              <td>${cuenta.saldo}</td>
+              <td>$${cuenta.saldo.toLocaleString()}</td>
               <td>${new Date(cuenta.fecha_apertura).toLocaleDateString()}</td>
               <td>${cuenta.id_cliente}</td>
-              <td>
+              <td class="acciones">
                 <a href="editarCuenta.html?id=${cuenta.id_cuenta}">
                   <button>Editar</button>
                 </a>
@@ -81,7 +182,6 @@
       } catch (error) {
         console.error("Error al obtener cuentas:", error);
         alert("Error al cargar cuentas: " + error.message);
-        document.getElementById('cuentasTable').innerHTML = '<tr><td colspan="7">Error al cargar cuentas.</td></tr>';
       }
     };
 
@@ -103,14 +203,12 @@
       try {
         let res;
         if (id_cuenta) {
-          // Actualizar
           res = await fetch(`${backendUrl}/${id_cuenta}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cuentaData)
           });
         } else {
-          // Crear
           res = await fetch(backendUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -154,7 +252,6 @@
     };
 
     document.getElementById('guardarBtn').addEventListener('click', guardarCuenta);
-
     obtenerCuentas();
   </script>
 </body>
