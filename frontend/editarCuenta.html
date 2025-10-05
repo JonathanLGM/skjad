@@ -132,7 +132,7 @@
         fecha_apertura: document.getElementById('fecha_apertura').value
       };
 
-      if (!cuentaData.numero_cuenta || isNaN(cuentaData.saldo) || !cuentaData.tipo_cuenta || !cuentaData.estado || !cuentaData.fecha_apertura) {
+      if ( isNaN(cuentaData.saldo) || !cuentaData.estado || !cuentaData.fecha_apertura) {
         alert('Por favor, completa todos los campos obligatorios.');
         return;
       }
