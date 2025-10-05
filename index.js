@@ -67,3 +67,11 @@ app.use('/transaccion', transaccionRouter);
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
+
+// NUEVO: Función middleware reutilizable
+const protegerRuta = (req, res, next) => {
+  if (!req.session.usuario) {
+    return res.redirect('/');
+  }
+  next();
+};

@@ -85,6 +85,10 @@
   </main>
 
   <script>
+    app.get('/menuadmin', protegerRuta, (req, res) => {
+    res.sendFile(__dirname + '/frontend/menuadmin.html');
+    });
+    
     // 🔐 Verificar sesión
     window.addEventListener('DOMContentLoaded', () => {
       const usuarioGuardado = localStorage.getItem('usuario');
