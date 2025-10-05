@@ -95,6 +95,19 @@
     tr:nth-child(even) {
       background: #f2f2f2;
     }
+    /* Botones de acción */
+    .action-btn {
+      background: #004080;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .action-btn:hover {
+      background: #003366;
+    }
   </style>
 </head>
 <body>
@@ -187,9 +200,9 @@
               <td>${usuario.id_cliente}</td>
               <td>
                 <a href="editarUsuario.html?id=${usuario.id_usuario}">
-                  <button>Editar</button>
+                  <button class="action-btn">Editar</button>
                 </a>
-                <button onclick="eliminarUsuario(${usuario.id_usuario})">Eliminar</button>
+                <button class="action-btn" onclick="eliminarUsuario(${usuario.id_usuario})">Eliminar</button>
               </td>
             `;
             tbody.appendChild(tr);
