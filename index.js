@@ -70,7 +70,7 @@ app.listen(PORT, () => {
 
 // NUEVO: Función middleware reutilizable
 const protegerRuta = (req, res, next) => {
-  if (!req.session.usuario) {
+  if (!req.session.admin) {
     return res.redirect('/');
   }
   next();
