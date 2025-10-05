@@ -123,8 +123,7 @@
 <body>
   <header class="topbar">
     <a href="menu.html" class="back-btn">⬅ Volver al Menú</a>
-    <h3>Transacciones Bancarias</h3>
-    <button class="back-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+    <h3>Transacciones Usuario</h3>
   </header>
 
   <main class="container">
@@ -285,10 +284,6 @@
     document.getElementById('guardarBtn').addEventListener('click', guardarTransaccion);
     obtenerTransacciones();
 
-    function cerrarSesion() {
-      localStorage.removeItem('usuario');
-      window.location.href = 'log_in.html';
-    }
   </script>
 </body>
 </html>
