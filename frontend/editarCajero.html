@@ -1,158 +1,199 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Editar Cajero</title>
-    <style>
-        body {
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+  <meta charset="UTF-8">
+  <title>Banco - Editar Cajero</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
 
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 400px;
-            text-align: center;
-        }
+    .topbar {
+      background: #004080;
+      color: #fff;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
 
-        h1 {
-            color: #003366;
-            margin-bottom: 20px;
-        }
+    .container {
+      background: #fff;
+      max-width: 450px;
+      margin: 60px auto;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
 
-        input {
-            width: 100%;
-            padding: 8px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+    h1 {
+      color: #004080;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 1.5em;
+    }
 
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 48%;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 15px;
-        }
+    label {
+      color: #004080;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+      box-sizing: border-box;
+      transition: 0.2s;
+    }
 
-        .btns {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-    </style>
+    input:focus {
+      border-color: #004080;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0,64,128,0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #004080;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #0059b3;
+    }
+
+    .cancelar {
+      background: #ccc;
+      color: #333;
+    }
+
+    .cancelar:hover {
+      background: #aaa;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Editar Cajero</h1>
 
-        <input type="hidden" id="id_cajero">
-        <input type="text" id="direccion" placeholder="Dirección">
-        <input type="number" step="0.000001" id="latitud" placeholder="Latitud">
-        <input type="number" step="0.000001" id="longitud" placeholder="Longitud">
-        <input type="text" id="estado" placeholder="Estado">
-        <input type="number" id="id_barrio" placeholder="ID Barrio">
-        <input type="number" id="id_tipo" placeholder="ID Tipo">
+  <div class="topbar">Banco - Panel de Administración</div>
 
-        <div class="btns">
-            <button id="guardarBtn">Guardar Cambios</button>
-            <button onclick="window.history.back()">Cancelar</button>
-        </div>
-    </div>
+  <div class="container">
+    <h1>Editar Cajero</h1>
 
-    <script>
-        const backendUrl = "/cajero";
+    <input type="hidden" id="id_cajero">
 
-        // Cargar datos de un cajero por ID
-        const cargarDatosCajero = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
+    <label>Dirección</label>
+    <input type="text" id="direccion" placeholder="Dirección">
 
-            if (!id) {
-                alert('ID de cajero no proporcionado.');
-                window.history.back();
-                return;
-            }
+    <label>Latitud</label>
+    <input type="number" step="0.000001" id="latitud" placeholder="Latitud">
 
-            try {
-                const res = await fetch(`${backendUrl}/${id}`);
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
-                const cajero = data.resultado;
+    <label>Longitud</label>
+    <input type="number" step="0.000001" id="longitud" placeholder="Longitud">
 
-                if (cajero) {
-                    document.getElementById('id_cajero').value = cajero.id_cajero;
-                    document.getElementById('direccion').value = cajero.direccion;
-                    document.getElementById('latitud').value = cajero.latitud;
-                    document.getElementById('longitud').value = cajero.longitud;
-                    document.getElementById('estado').value = cajero.estado;
-                    document.getElementById('id_barrio').value = cajero.id_barrio;
-                    document.getElementById('id_tipo').value = cajero.id_tipo;
-                } else {
-                    alert('Cajero no encontrado para edición.');
-                    window.history.back();
-                }
-            } catch (error) {
-                console.error("Error al cargar datos del cajero:", error);
-                alert("Error al cargar datos del cajero para edición: " + error.message);
-                window.history.back();
-            }
-        };
+    <label>Estado</label>
+    <input type="text" id="estado" placeholder="Estado">
 
-        // Guardar cambios del cajero
-        const guardarCambios = async () => {
-            const id_cajero = document.getElementById('id_cajero').value;
-            const cajeroData = {
-                direccion: document.getElementById('direccion').value,
-                latitud: parseFloat(document.getElementById('latitud').value),
-                longitud: parseFloat(document.getElementById('longitud').value),
-                estado: document.getElementById('estado').value,
-                id_barrio: parseInt(document.getElementById('id_barrio').value),
-                id_tipo: parseInt(document.getElementById('id_tipo').value)
-            };
+    <label>ID Barrio</label>
+    <input type="number" id="id_barrio" placeholder="ID Barrio">
 
-            if (!cajeroData.direccion || isNaN(cajeroData.latitud) || isNaN(cajeroData.longitud) ||
-                !cajeroData.estado || isNaN(cajeroData.id_barrio) || isNaN(cajeroData.id_tipo)) {
-                alert('Por favor, completa todos los campos obligatorios.');
-                return;
-            }
+    <label>ID Tipo</label>
+    <input type="number" id="id_tipo" placeholder="ID Tipo">
 
-            try {
-                const res = await fetch(`${backendUrl}/${id_cajero}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(cajeroData)
-                });
+    <button id="guardarBtn">Guardar Cambios</button>
+    <button class="cancelar" onclick="window.history.back()">Cancelar</button>
+  </div>
 
-                const result = await res.json();
-                if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
-                
-                alert(result.mensaje);
-                window.location.href = 'cajero.html'; // Redirige al listado de cajeros
-            } catch (error) {
-                console.error("Error al guardar cambios:", error);
-                alert("Error al guardar cambios: " + error.message);
-            }
-        };
+  <script>
+    const backendUrl = "/cajero";
 
-        document.getElementById('guardarBtn').addEventListener('click', guardarCambios);
-        cargarDatosCajero();
-    </script>
+    // Cargar datos de un cajero por ID
+    const cargarDatosCajero = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      if (!id) {
+        alert('ID de cajero no proporcionado.');
+        window.history.back();
+        return;
+      }
+
+      try {
+        const res = await fetch(`${backendUrl}/${id}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const cajero = data.resultado;
+
+        if (cajero) {
+          document.getElementById('id_cajero').value = cajero.id_cajero;
+          document.getElementById('direccion').value = cajero.direccion;
+          document.getElementById('latitud').value = cajero.latitud;
+          document.getElementById('longitud').value = cajero.longitud;
+          document.getElementById('estado').value = cajero.estado;
+          document.getElementById('id_barrio').value = cajero.id_barrio;
+          document.getElementById('id_tipo').value = cajero.id_tipo;
+        } else {
+          alert('Cajero no encontrado para edición.');
+          window.history.back();
+        }
+      } catch (error) {
+        console.error("Error al cargar datos del cajero:", error);
+        alert("Error al cargar datos del cajero para edición: " + error.message);
+        window.history.back();
+      }
+    };
+
+    // Guardar cambios del cajero
+    const guardarCambios = async () => {
+      const id_cajero = document.getElementById('id_cajero').value;
+      const cajeroData = {
+        direccion: document.getElementById('direccion').value,
+        latitud: Number(parseFloat(document.getElementById('latitud').value).toFixed(6)),
+        longitud: Number(parseFloat(document.getElementById('longitud').value).toFixed(6)),
+        estado: document.getElementById('estado').value,
+        id_barrio: parseInt(document.getElementById('id_barrio').value),
+        id_tipo: parseInt(document.getElementById('id_tipo').value)
+      };
+
+      if (!cajeroData.direccion || isNaN(cajeroData.latitud) || isNaN(cajeroData.longitud) ||
+          !cajeroData.estado || isNaN(cajeroData.id_barrio) || isNaN(cajeroData.id_tipo)) {
+        alert('Por favor, completa todos los campos obligatorios.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${backendUrl}/${id_cajero}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cajeroData)
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.mensaje || `HTTP error! status: ${res.status}`);
+
+        alert(result.mensaje);
+        window.location.href = 'cajero.html'; // Redirige al listado de cajeros
+      } catch (error) {
+        console.error("Error al guardar cambios:", error);
+        alert("Error al guardar cambios: " + error.message);
+      }
+    };
+
+    document.getElementById('guardarBtn').addEventListener('click', guardarCambios);
+    cargarDatosCajero();
+  </script>
 </body>
 </html>
