@@ -3,6 +3,11 @@ const { Cuenta1 } = require('./db'); // Importar modelo Cuenta1
 // Crear cuenta
 const registrarCuenta = async (req, res) => {
   try {
+
+    // Generar número de cuenta aleatorio de 10 dígitos
+    const numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000);
+     id_cuenta: numeroCuenta
+     
     const { id_cuenta } = req.body;
 
     // Validar duplicados
