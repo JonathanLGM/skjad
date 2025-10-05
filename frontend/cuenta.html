@@ -9,6 +9,7 @@
     table { border-collapse: collapse; width: 100%; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #f4f4f4; }
+    .botones { display: flex; gap: 10px; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -22,7 +23,10 @@
     <input type="number" id="saldo" placeholder="Saldo">
     <input type="date" id="fecha_apertura" placeholder="Fecha de Apertura">
     <input type="number" id="id_cliente" placeholder="ID Cliente">
-    <button id="guardarBtn">Guardar Cuenta</button>
+    <div class="botones">
+      <button id="guardarBtn">Guardar Cuenta</button>
+      <button onclick="window.location.href='menuadmin.html'">Volver</button>
+    </div>
   </div>
 
   <!-- Tabla de cuentas -->
