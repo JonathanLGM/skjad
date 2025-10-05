@@ -24,7 +24,7 @@ sequelize.authenticate()
     process.exit(1);
   });
 
-// --- Configuración de Pool de pg ---
+// Configuración de Pool de pg
 const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -41,22 +41,19 @@ app.get('/barrios', async (req, res) => {
   }
 });
 
-// Middleware para proteger rutas HTML
+// ----------------- MIDDLEWARE PROTEGER RUTAS -----------------
+// Siempre bloquea: nunca le damos el token a nadie
 const protegerRuta = (req, res, next) => {
-  const acceso = req.cookies.accesoApp;
-  if (acceso !== '12345') {
-    return res.redirect('/'); // redirige a login si no tiene cookie
-  }
-  next();
+  // La condición nunca se cumple → nadie puede pasar
+  return res.redirect('/'); 
 };
 
-// Ruta raíz: al cargar log_in.html, ponemos cookie de acceso temporal
+// Ruta raíz: log_in.html
 app.get('/', (req, res) => {
-  res.cookie('accesoApp', '12345', { httpOnly: true });
   res.sendFile(path.join(__dirname, 'frontend', 'log_in.html'));
 });
 
-// Rutas HTML “protegidas”
+// Rutas HTML “protegidas” (nadie puede acceder escribiendo URL)
 app.get('/menuadmin.html', protegerRuta, (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'menuadmin.html'));
 });
