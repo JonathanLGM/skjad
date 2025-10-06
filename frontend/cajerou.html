@@ -168,7 +168,6 @@
     .btn-accion:hover {
       background: #218838;
     }
-
   </style>
 </head>
 <body>
@@ -187,9 +186,8 @@
 
     <div class="saldo">
       <p>Saldo disponible</p>
-      <h3 id="saldo"></h3>
+      <h3 id="saldo">Cargando...</h3>
     </div>
-
 
     <div class="monto">
       <p>Monto a <span id="textoOperacion">retirar</span>:</p>
@@ -224,7 +222,36 @@
   <script>
     let operacion = 'retiro';
     let monto = 0;
-    let saldo = 15420.50;
+    let saldo = 0;
+
+    // 🔹 Trae el saldo real del usuario logueado
+    document.addEventListener("DOMContentLoaded", async () => {
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      if (!usuario) {
+        alert("Debes iniciar sesión");
+        window.location.href = 'log_in.html';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/usuario/cuenta-por-username/${usuario.username}`);
+        if (!res.ok) throw new Error("Error al obtener la cuenta");
+
+        const data = await res.json();
+        const cuenta = data.resultado;
+
+        if (cuenta) {
+          saldo = parseFloat(cuenta.saldo);
+        } else {
+          saldo = 0;
+        }
+      } catch (err) {
+        console.error(err);
+        saldo = 0;
+      }
+
+      actualizarVista();
+    });
 
     function actualizarVista() {
       document.getElementById("tituloOperacion").textContent = operacion === 'retiro' ? 'Retiro de Efectivo' : 'Consignación';
@@ -282,8 +309,6 @@
       monto = 0;
       actualizarVista();
     }
-
-    actualizarVista();
   </script>
 </body>
 </html>
