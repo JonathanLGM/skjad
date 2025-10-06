@@ -224,7 +224,7 @@
     let monto = 0;
     let saldo = 0;
 
-    // 🔹 Trae el saldo real del usuario logueado
+    // 🔹 Cargar saldo real desde la base de datos
     document.addEventListener("DOMContentLoaded", async () => {
       const usuario = JSON.parse(localStorage.getItem('usuario'));
       if (!usuario) {
@@ -236,15 +236,9 @@
       try {
         const res = await fetch(`/usuario/cuenta-por-username/${usuario.username}`);
         if (!res.ok) throw new Error("Error al obtener la cuenta");
-
         const data = await res.json();
         const cuenta = data.resultado;
-
-        if (cuenta) {
-          saldo = parseFloat(cuenta.saldo);
-        } else {
-          saldo = 0;
-        }
+        saldo = cuenta ? parseFloat(cuenta.saldo) : 0;
       } catch (err) {
         console.error(err);
         saldo = 0;
@@ -288,26 +282,72 @@
       actualizarVista();
     }
 
-    function confirmarOperacion() {
+    async function confirmarOperacion() {
       if (monto <= 0) {
         alert('Ingrese un monto válido.');
         return;
       }
 
-      if (operacion === 'retiro') {
-        if (monto > saldo) {
-          alert('Saldo insuficiente.');
-          return;
-        }
-        saldo -= monto;
-        alert(`Has retirado $${monto.toLocaleString()}`);
-      } else {
-        saldo += monto;
-        alert(`Has consignado $${monto.toLocaleString()}`);
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      if (!usuario) {
+        alert("Debes iniciar sesión");
+        window.location.href = 'log_in.html';
+        return;
       }
 
-      monto = 0;
-      actualizarVista();
+      try {
+        const resCuenta = await fetch(`/usuario/cuenta-por-username/${usuario.username}`);
+        if (!resCuenta.ok) throw new Error("Error al obtener la cuenta");
+        const dataCuenta = await resCuenta.json();
+        const cuenta = dataCuenta.resultado;
+
+        if (!cuenta) {
+          alert("No se encontró la cuenta del usuario.");
+          return;
+        }
+
+        const id_cuenta = cuenta.id_cuenta;
+        let url = '';
+
+        if (operacion === 'retiro') {
+          if (monto > saldo) {
+            alert('Saldo insuficiente.');
+            return;
+          }
+          url = '/transaccion/retirar';
+        } else {
+          url = '/transaccion/consignar';
+        }
+
+        const resOperacion = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_cuenta, monto })
+        });
+
+        const data = await resOperacion.json();
+
+        if (!resOperacion.ok) {
+          alert(data.mensaje || "Error en la operación");
+          return;
+        }
+
+        // 🔹 Actualizar saldo local y mostrar mensaje
+        if (operacion === 'retiro') {
+          saldo -= monto;
+          alert(`Has retirado $${monto.toLocaleString()}`);
+        } else {
+          saldo += monto;
+          alert(`Has consignado $${monto.toLocaleString()}`);
+        }
+
+        monto = 0;
+        actualizarVista();
+
+      } catch (err) {
+        console.error(err);
+        alert("Error al procesar la operación.");
+      }
     }
   </script>
 </body>
