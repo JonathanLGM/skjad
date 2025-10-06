@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cajero - BancaTerritorial</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0e1a2b;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #14243d;
+      width: 100%;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    header h2 {
+      margin: 0;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    header button {
+      background: #1f3b67;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+
+    header button:hover {
+      background: #315d9c;
+    }
+
+    .cajero-container {
+      background: #1a2b47;
+      border-radius: 15px;
+      padding: 25px;
+      margin-top: 40px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background: #243b61;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    .tab.active {
+      background: #007bff;
+    }
+
+    .saldo {
+      background: #0e1f36;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .saldo h3 {
+      margin: 5px 0;
+      color: #00baff;
+    }
+
+    .monto {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .monto input {
+      background: #0e1f36;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      text-align: center;
+      border-radius: 8px;
+      padding: 10px;
+      width: 80%;
+    }
+
+    .botones-rapidos {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .botones-rapidos button {
+      background: #243b61;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .botones-rapidos button:hover {
+      background: #007bff;
+    }
+
+    .teclado {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .teclado button {
+      background: #243b61;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 15px 0;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .teclado button:hover {
+      background: #007bff;
+    }
+
+    .btn-accion {
+      background: #28a745;
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-accion:hover {
+      background: #218838;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <button onclick="window.location.href='menu.html'">⬅ Volver</button>
+    <h2 id="tituloOperacion">Retiro de Efectivo</h2>
+    <div style="width:70px;"></div>
+  </header>
+
+  <div class="cajero-container">
+    <div class="tabs">
+      <button class="tab active" id="tab-retiro" onclick="cambiarOperacion('retiro')">Retiro</button>
+      <button class="tab" id="tab-consignar" onclick="cambiarOperacion('consignar')">Consignar</button>
+    </div>
+
+    <div class="saldo">
+      <p>Saldo disponible</p>
+      <h3 id="saldo">$15,420.50</h3>
+    </div>
+
+    <div class="monto">
+      <p>Monto a <span id="textoOperacion">retirar</span>:</p>
+      <input type="text" id="monto" value="$0.00" readonly>
+    </div>
+
+    <div class="botones-rapidos">
+      <button onclick="agregarMonto(200)">$200</button>
+      <button onclick="agregarMonto(500)">$500</button>
+      <button onclick="agregarMonto(1000)">$1000</button>
+      <button onclick="agregarMonto(2000)">$2000</button>
+    </div>
+
+    <div class="teclado">
+      <button onclick="teclear(1)">1</button>
+      <button onclick="teclear(2)">2</button>
+      <button onclick="teclear(3)">3</button>
+      <button onclick="teclear(4)">4</button>
+      <button onclick="teclear(5)">5</button>
+      <button onclick="teclear(6)">6</button>
+      <button onclick="teclear(7)">7</button>
+      <button onclick="teclear(8)">8</button>
+      <button onclick="teclear(9)">9</button>
+      <button onclick="borrar()">⌫</button>
+      <button onclick="teclear(0)">0</button>
+      <button onclick="limpiar()">C</button>
+    </div>
+
+    <button class="btn-accion" onclick="confirmarOperacion()">Confirmar</button>
+  </div>
+
+  <script>
+    let operacion = 'retiro';
+    let monto = 0;
+    let saldo = 15420.50;
+
+    function actualizarVista() {
+      document.getElementById("tituloOperacion").textContent = operacion === 'retiro' ? 'Retiro de Efectivo' : 'Consignación';
+      document.getElementById("textoOperacion").textContent = operacion === 'retiro' ? 'retirar' : 'consignar';
+      document.getElementById("saldo").textContent = `$${saldo.toLocaleString('es-CO', {minimumFractionDigits:2})}`;
+      document.getElementById("monto").value = `$${monto.toLocaleString('es-CO', {minimumFractionDigits:2})}`;
+    }
+
+    function cambiarOperacion(tipo) {
+      operacion = tipo;
+      monto = 0;
+      document.getElementById("tab-retiro").classList.toggle("active", tipo === 'retiro');
+      document.getElementById("tab-consignar").classList.toggle("active", tipo === 'consignar');
+      actualizarVista();
+    }
+
+    function teclear(num) {
+      monto = monto * 10 + num;
+      actualizarVista();
+    }
+
+    function borrar() {
+      monto = Math.floor(monto / 10);
+      actualizarVista();
+    }
+
+    function limpiar() {
+      monto = 0;
+      actualizarVista();
+    }
+
+    function agregarMonto(cantidad) {
+      monto += cantidad;
+      actualizarVista();
+    }
+
+    function confirmarOperacion() {
+      if (monto <= 0) {
+        alert('Ingrese un monto válido.');
+        return;
+      }
+
+      if (operacion === 'retiro') {
+        if (monto > saldo) {
+          alert('Saldo insuficiente.');
+          return;
+        }
+        saldo -= monto;
+        alert(`Has retirado $${monto.toLocaleString()}`);
+      } else {
+        saldo += monto;
+        alert(`Has consignado $${monto.toLocaleString()}`);
+      }
+
+      monto = 0;
+      actualizarVista();
+    }
+
+    actualizarVista();
+  </script>
+</body>
+</html>
