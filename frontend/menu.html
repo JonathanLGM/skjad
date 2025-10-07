@@ -94,10 +94,9 @@
         <p><strong>Saldo:</strong> $<span id="saldo"></span></p>
       </div>
 
-      <!-- Botón para ir a transacciones -->
+      <!-- Botones dentro del mismo contenedor -->
       <button class="btn" onclick="irATransacciones()">Ver Transacciones</button>
-    </div>
-      <button class="btn" onclick="irCajero()">cajero</button>
+      <button class="btn" onclick="irCajero()">Cajero</button>
     </div>
   </main>
 
@@ -125,7 +124,6 @@
 
           document.getElementById("numCuenta").textContent = cuenta.id_cuenta;
           document.getElementById("saldo").textContent = parseFloat(cuenta.saldo).toLocaleString();
-
         } catch (err) {
           console.error(err);
           alert('Error al cargar la cuenta: ' + err.message);
@@ -141,6 +139,7 @@
     function irATransacciones() {
       window.location.href = 'transaccionu.html';
     }
+
     function irCajero() {
       window.location.href = 'cajerou.html';
     }
