@@ -43,9 +43,10 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/frontend/log_in.html');
 });
 
-// 🚀 Rutas CRUD de Usuario (agregado)
-const usuarioRouter = require('./rutasUsuario');
-app.use('/usuario', usuarioRouter);
+
+
+// --- LOGIN ---
+router.post('/login', usuarioControlador.loginUsuario);
 
 // 🔒 Middleware global para proteger lo que sigue
 const verificarToken = require('./middleware');
@@ -55,7 +56,9 @@ app.use(verificarToken);
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
 
-
+// 🚀 Rutas CRUD de Usuario (agregado)
+const usuarioRouter = require('./rutasUsuario');
+app.use('/usuario', usuarioRouter);
 
 // 🚀 Rutas CRUD de Cuenta (nuevo)
 const cuentaRouter = require('./rutasCuenta');

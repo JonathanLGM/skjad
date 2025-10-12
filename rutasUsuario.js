@@ -20,10 +20,7 @@ const log_in = async (req, res) => {
   }
   res.json({ mensaje: 'Inicio de sesión exitoso' });
 };
-
-
-//
-
+router.post('/login', log_in);
 // --- Obtener cuenta por username (misma estructura CRUD) ---
 router.get('/cuenta-por-username/:username', usuarioControlador.obtenerCuentaPorUsername);
 
