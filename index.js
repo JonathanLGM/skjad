@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./db');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -30,7 +31,7 @@ const pool = new Pool({
 
 // Ruta raíz -> log_in.html
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'frontend', 'log_in.html'));
+  res.sendFile(path.join(__dirname, 'frontend', 'log_in.html'));
 });
 
 // 🚀 Rutas CRUD de Usuario
