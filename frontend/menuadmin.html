@@ -6,71 +6,17 @@
   <title>Banco - Menú Admin</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-
-    .topbar {
-      background: #004080;
-      color: white;
-      padding: 15px 30px;
-      font-size: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logout-btn {
-      background: #ff4d4d;
-      border: none;
-      color: white;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: #cc0000;
-    }
-
-    .container {
-      background: white;
-      padding: 30px;
-      max-width: 400px;
-      margin: 50px auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .btn {
-      padding: 15px;
-      background: #004080;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-
-    .btn:hover {
-      background: #003366;
-    }
+    body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+    .topbar { background: #004080; color: white; padding: 15px 30px; font-size: 1.5rem; }
+    .container { background: white; padding: 30px; max-width: 400px; margin: 50px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 15px; }
+    .btn { padding: 15px; background: #004080; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: background 0.3s; }
+    .btn:hover { background: #003366; }
   </style>
 </head>
 <body>
   <!-- Barra superior -->
   <header class="topbar">
     Menú Administrador
-    <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
   </header>
 
   <!-- Contenedor principal -->
@@ -80,25 +26,8 @@
       <button class="btn" onclick="window.location.href='cuenta.html'">Cuentas</button>
       <button class="btn" onclick="window.location.href='usuario.html'">Usuarios</button>
       <button class="btn" onclick="window.location.href='transaccion.html'">Transacciones</button>
-      <button class="btn" onclick="window.location.href='cajero.html'">Cajero</button>
+      <button class="btn" onclick="window.location.href='cajero.html'">Cejero</button>
     </div>
   </main>
-
-  <script>
-     const usuario = JSON.parse(localStorage.getItem('usuario'));
-     const token = localStorage.getItem('token');
-
-     if (!usuario || !token || usuario.info?.rol !== 'admin') {
-        alert('Debes iniciar sesión como administrador');
-        window.location.href = 'log_in.html';
-      }
-    // 🚪 Botón Cerrar sesión
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('usuario');
-      localStorage.removeItem('token');
-      alert('Sesión cerrada correctamente.');
-      window.location.href = 'log_in.html';
-    });
-  </script>
 </body>
 </html>

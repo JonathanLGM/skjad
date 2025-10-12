@@ -5,88 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Banco - Menú</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-
-    .topbar {
-      background: #004080;
-      color: white;
-      padding: 15px 30px;
-      font-size: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .btn-logout {
-      background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s, transform 0.1s;
-    }
-
-    .btn-logout:hover {
-      background-color: #cc0000;
-      transform: scale(1.05);
-    }
-
-    .container {
-      background: white;
-      padding: 30px;
-      max-width: 600px;
-      margin: 50px auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    .btn {
-      padding: 12px 20px;
-      background: #004080;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 20px;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
-
-    .btn:hover {
-      background: #003366;
-    }
-
-    .info-box {
-      margin-top: 20px;
-      text-align: left;
-    }
-
-    .info-box h3 {
-      margin-bottom: 10px;
-    }
-
-    .info-box p {
-      margin: 5px 0;
-    }
+    body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+    .topbar { background: #004080; color: white; padding: 15px 30px; font-size: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .container { background: white; padding: 30px; max-width: 600px; margin: 50px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
+    .btn { padding: 12px 20px; background: #004080; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 1rem; transition: 0.3s; }
+    .btn:hover { background: #003366; }
+    .info-box { margin-top: 20px; text-align: left; }
+    .info-box h3 { margin-bottom: 10px; }
+    .info-box p { margin: 5px 0; }
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="logo">BancaTerritorial</div>
-    <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+    <button onclick="cerrarSesion()" class="btn">Cerrar Sesión</button>
   </header>
 
   <main>
     <div class="container">
       <h2>Bienvenido, <span id="usuarioNombre"></span></h2>
+      <p>Este es el menú principal de tu cuenta.</p>
 
       <div class="info-box" id="cuentaInfo">
         <h3>Información de la cuenta</h3>
@@ -94,9 +32,8 @@
         <p><strong>Saldo:</strong> $<span id="saldo"></span></p>
       </div>
 
-      <!-- Botones dentro del mismo contenedor -->
+      <!-- Botón para ir a transacciones -->
       <button class="btn" onclick="irATransacciones()">Ver Transacciones</button>
-      <button class="btn" onclick="irCajero()">Cajero</button>
     </div>
   </main>
 
@@ -105,12 +42,13 @@
 
     if (!usuario) {
       alert("Debes iniciar sesión");
-      window.location.href = 'log_in.html';
+      window.location.href = 'index.html';
     } else {
       document.getElementById("usuarioNombre").textContent = usuario.username;
 
       document.addEventListener("DOMContentLoaded", async () => {
         try {
+          // Llamar a la ruta para obtener la cuenta
           const res = await fetch(`/usuario/cuenta-por-username/${usuario.username}`);
           if (!res.ok) throw new Error("Error al obtener la información de la cuenta");
 
@@ -124,6 +62,7 @@
 
           document.getElementById("numCuenta").textContent = cuenta.id_cuenta;
           document.getElementById("saldo").textContent = parseFloat(cuenta.saldo).toLocaleString();
+
         } catch (err) {
           console.error(err);
           alert('Error al cargar la cuenta: ' + err.message);
@@ -132,20 +71,12 @@
     }
 
     function cerrarSesion() {
-  // Borrar usuario y token
-  localStorage.removeItem('usuario');
-  localStorage.removeItem('token');
-  alert('Sesión cerrada correctamente.');
-  // Redirigir a login
-  window.location.href = 'log_in.html';
-}
+      localStorage.removeItem('usuario');
+      window.location.href = 'index.html';
+    }
 
     function irATransacciones() {
       window.location.href = 'transaccionu.html';
-    }
-
-    function irCajero() {
-      window.location.href = 'cajerou.html';
     }
   </script>
 </body>
