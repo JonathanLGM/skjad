@@ -44,6 +44,9 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/frontend/log_in.html');
 });
 
+// 🔒 Middleware global para proteger lo que sigue
+app.use(verificarToken);
+
 // Rutas CRUD de Cliente
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
@@ -63,8 +66,6 @@ app.use('/cajero', cajeroRouter);
 // 🚀 Rutas CRUD de Transaccion (nuevo)
 const transaccionRouter = require('./rutasTransaccion');
 app.use('/transaccion', transaccionRouter);
-
-const verificarToken = require('./middleware/verificarToken');
 
 // ✅ Ejemplo de ruta protegida (puedes crear más así)
 app.get('/perfil-seguro', verificarToken, (req, res) => {
