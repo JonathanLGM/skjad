@@ -133,25 +133,31 @@ const obtenerCuentaPorUsername = async (req, res) => {
   }
 };
 
-// --- 🟢 LOGIN con bcrypt ---
+const SECRET_USER = 'KJh82kjsdf87sd9fsd7f87sd98fsd87';
+const SECRET_ADMIN = 'JH98fsd87sdf87sdf7sdf87sd8f7sd8f';
+
 const loginUsuario = async (req, res) => {
   try {
-    const { username, password } = req.body; // usa los mismos nombres que en registrarUsuario
+    const { username, password } = req.body;
 
     const usuario = await Usuario1.findOne({ where: { username } });
 
-    if (!usuario) {
-      return res.status(400).json({ error: 'Usuario no encontrado' });
-    }
+    if (!usuario) return res.status(400).json({ error: 'Usuario no encontrado' });
 
-    // Comparar contraseñas
     const contrasenaValida = await bcrypt.compare(password, usuario.password);
+    if (!contrasenaValida) return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-    if (!contrasenaValida) {
-      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    // Generar token según rol
+    let token;
+    if (usuario.rol === 'admin') {
+      token = jwt.sign({ id_usuario: usuario.id_usuario, rol: usuario.rol }, SECRET_ADMIN, { expiresIn: '1h' });
+    } else {
+      token = jwt.sign({ id_usuario: usuario.id_usuario, rol: usuario.rol }, SECRET_USER, { expiresIn: '1h' });
     }
 
-    res.json({ mensaje: 'Inicio de sesión exitoso', usuario });
+    // Devuelve usuario + token
+    res.json({ mensaje: 'Inicio de sesión exitoso', usuario, token });
+
   } catch (error) {
     console.error('Error en login:', error);
     res.status(500).json({ error: 'Error al iniciar sesión' });

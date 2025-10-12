@@ -69,16 +69,6 @@
   <script>
 
     // --- LOGIN ---
-/*
-  Script robusto para:
-  1) POST /usuario/login      -> espera JSON o texto con JSON
-  2) GET /usuario/cuenta-por-username/:username
-  3) Guarda usuario + cuenta en localStorage
-  4) GET /usuario/:id_usuario -> obtiene rol
-  5) Redirige según rol a menuadmin.html o menu.html
-  Maneja distintos formatos de respuesta (resultado, usuario, token, etc.)
-*/
-
 const loginForm = document.getElementById('login');
 
 loginForm.addEventListener('submit', async (e) => {
@@ -88,165 +78,36 @@ loginForm.addEventListener('submit', async (e) => {
   const password = document.getElementById('loginPassword').value;
 
   try {
-    // 1) Login: POST a /usuario/login
+    // 1) POST login
     const res = await fetch('/usuario/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
 
-    // leer como texto por si el servidor mezcla HTML
-    const text = await res.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (parseErr) {
-      console.error('Respuesta no JSON en /usuario/login:', text);
-      throw new Error('El servidor no devolvió JSON válido al iniciar sesión');
-    }
+    const data = await res.json();
 
     if (!res.ok) {
-      // Si el servidor manda { error: '...' } o { mensaje: '...' }
-      const msg = data.error || data.mensaje || data.message || 'Error en login';
+      const msg = data.error || data.mensaje || 'Error en login';
       throw new Error(msg);
     }
 
-    // Guardar token si lo envían
-    if (data.token) {
-      try {
-        localStorage.setItem('token', data.token);
-      } catch (err) {
-        console.warn('No se pudo guardar token en localStorage:', err);
-      }
-    }
+    // 2) Guardar token en localStorage
+    if (!data.token) throw new Error('El servidor no devolvió token');
+    localStorage.setItem('token', data.token);
 
-    // 2) Obtener id_usuario robustamente (varias formas posibles)
-    // Posibles ubicaciones: data.resultado.id_usuario, data.usuario.id_usuario, data.id_usuario, data.usuario.id
-    const id_usuario =
-      (data.resultado && (data.resultado.id_usuario || data.resultado.id)) ||
-      (data.usuario && (data.usuario.id_usuario || data.usuario.id)) ||
-      data.id_usuario ||
-      data.id ||
-      null;
+    // 3) Guardar info básica del usuario
+    const usuario = data.usuario || {};
+    localStorage.setItem('usuario', JSON.stringify({ username, rol: usuario.rol }));
 
-    // Si el backend NO devuelve id_usuario en la respuesta del login,
-    // intentaremos obtener el id desde otra ruta más tarde. Pero lo ideal es tenerlo.
-    // Seguimos igualmente: consultamos la cuenta por username como tu flujo.
-    // 3) Consultar cuenta por username
-    const cuentaRes = await fetch(`/usuario/cuenta-por-username/${encodeURIComponent(username)}`, {
-      headers: data.token ? { 'Authorization': 'Bearer ' + data.token } : {}
-    });
-
-    const cuentaText = await cuentaRes.text();
-    let cuentaData;
-    try {
-      cuentaData = JSON.parse(cuentaText);
-    } catch (err) {
-      console.error('Respuesta no JSON en /usuario/cuenta-por-username:', cuentaText);
-      throw new Error('No se pudo obtener la información de la cuenta (respuesta inválida)');
-    }
-
-    if (!cuentaRes.ok) {
-      const msg = cuentaData.error || cuentaData.mensaje || 'Error al obtener cuenta';
-      throw new Error(msg);
-    }
-
-    if (!cuentaData.resultado) {
-      throw new Error('No se encontró cuenta para ese usuario');
-    }
-
-    // 4) Guardar usuario + cuenta en localStorage (mantener coherencia con tu flujo)
-    const usuarioParaStorage = { username, cuenta: cuentaData.resultado };
-    // si el login devolvió usuario completo, lo guardamos también
-    if (data.usuario) usuarioParaStorage.info = data.usuario;
-    try {
-      localStorage.setItem('usuario', JSON.stringify(usuarioParaStorage));
-    } catch (err) {
-      console.warn('No se pudo guardar usuario en localStorage:', err);
-    }
-
-    // 5) Si no tenemos id_usuario, intentar obtenerlo por username con /usuario/por-username (opcional)
-    // (si tu backend tiene esa ruta; si no, se usa el id obtenido del login)
-    let final_id_usuario = id_usuario;
-
-    if (!final_id_usuario) {
-      // Intentar /usuario/por-username/:username o /usuario/username/:username — probamos una ruta razonable
-      // Si no existen, este fetch fallará y seguimos (luego usaremos data.usuario.rol si viene en login)
-      try {
-        const tryPaths = [
-          `/usuario/por-username/${encodeURIComponent(username)}`,
-          `/usuario/username/${encodeURIComponent(username)}`
-        ];
-        for (const path of tryPaths) {
-          const r = await fetch(path, {
-            headers: data.token ? { 'Authorization': 'Bearer ' + data.token } : {}
-          });
-          if (!r.ok) continue;
-          const t = await r.text();
-          const parsed = JSON.parse(t);
-          // buscar id en parsed.resultado o parsed.usuario
-          const possibleId =
-            (parsed.resultado && (parsed.resultado.id_usuario || parsed.resultado.id)) ||
-            (parsed.usuario && (parsed.usuario.id_usuario || parsed.usuario.id)) ||
-            parsed.id_usuario || parsed.id;
-          if (possibleId) {
-            final_id_usuario = possibleId;
-            break;
-          }
-        }
-      } catch (err) {
-        // No hacemos nada; puede no existir esa ruta
-        console.info('No se obtuvo id por rutas alternativas (no es crítico si ya tenemos rol):', err);
-      }
-    }
-
-    // 6) Obtener rol: priorizamos lo que venga en data (login), sino pedimos /usuario/:id
-    let rol = null;
-    if (data.usuario && (data.usuario.rol || data.usuario.role)) {
-      rol = data.usuario.rol || data.usuario.role;
-    }
-
-    if (!rol && final_id_usuario) {
-      // pedir /usuario/:id
-      const usuarioRes = await fetch(`/usuario/${final_id_usuario}`, {
-        headers: data.token ? { 'Authorization': 'Bearer ' + data.token } : {}
-      });
-      const usuarioText = await usuarioRes.text();
-      let usuarioJson;
-      try {
-        usuarioJson = JSON.parse(usuarioText);
-      } catch {
-        console.error('/usuario/:id devolvió no-JSON:', usuarioText);
-        throw new Error('No se pudo leer la información del usuario para saber el rol');
-      }
-      if (!usuarioRes.ok) {
-        const msg = usuarioJson.error || usuarioJson.mensaje || 'Error al obtener usuario';
-        throw new Error(msg);
-      }
-      // formato: usuarioJson.resultado.rol o usuarioJson.resultado.role o usuarioJson.usuario.rol
-      rol = (usuarioJson.resultado && (usuarioJson.resultado.rol || usuarioJson.resultado.role)) ||
-            (usuarioJson.usuario && (usuarioJson.usuario.rol || usuarioJson.usuario.role)) ||
-            usuarioJson.rol || usuarioJson.role || null;
-    }
-
-    // 7) Si aún no tenemos rol, podemos usar un fallback: redirigir a menu por defecto
-    if (!rol) {
-      console.warn('No se pudo determinar rol del usuario. Redirigiendo a menu por defecto.');
-      window.location.href = 'menu.html';
-      return;
-    }
-
-    // 8) Redirección final
-    if (rol === 'admin' || rol === 'ADMIN' || rol === 'Administrador' || rol === 'administrador') {
-      window.location.href = 'menuadmin.html';
-    } else {
-      window.location.href = 'menu.html';
-    }
+    // 4) Redirigir según rol
+    const rol = usuario.rol?.toLowerCase();
+    if (rol === 'admin') window.location.href = '/menuadmin.html';
+    else window.location.href = '/menu.html';
 
   } catch (err) {
-    // Mostrar mensaje claro al usuario
-    alert('Error: ' + (err.message || err));
-    console.error('Error en flujo de login:', err);
+    alert('Error al iniciar sesión: ' + (err.message || err));
+    console.error('Login error:', err);
   }
 });
     // --- REGISTER ---
