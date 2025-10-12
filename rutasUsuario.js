@@ -10,7 +10,7 @@ router.get('/listar', usuarioControlador.listarUsuarios);
 router.get('/:id_usuario', usuarioControlador.obtenerUsuarioPorId);
 router.put('/:id_usuario', usuarioControlador.actualizarUsuario);
 router.delete('/:id_usuario', usuarioControlador.borrarUsuario);
-router.post('/login', log_in);
+router.post('/login', usuarioControlador.loginUsuario);
 router.post('/logout', usuarioControlador.logoutUsuario);
 // --- Obtener cuenta por username (misma estructura CRUD) ---
 router.get('/cuenta-por-username/:username', usuarioControlador.obtenerCuentaPorUsername);
