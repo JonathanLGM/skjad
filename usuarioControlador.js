@@ -133,6 +133,27 @@ const obtenerCuentaPorUsername = async (req, res) => {
   }
 };
 
+// --- Obtener rol por username ---
+const obtenerRolPorUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const usuario = await Usuario1.findOne({
+      where: { username },
+      attributes: ['rol']
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado', resultado: null });
+    }
+
+    res.status(200).json({ mensaje: 'Rol obtenido', resultado: usuario.rol });
+  } catch (err) {
+    console.error('Error en obtenerRolPorUsername:', err);
+    res.status(500).json({ mensaje: err.message, resultado: null });
+  }
+};
+
 const SECRET_USER = 'KJh82kjsdf87sd9fsd7f87sd98fsd87';
 const SECRET_ADMIN = 'JH98fsd87sdf87sdf7sdf87sd8f7sd8f';
 
@@ -184,4 +205,5 @@ module.exports = {
   obtenerCuentaPorUsername,
   loginUsuario,
   logoutUsuario,
+  obtenerRolPorUsername
 };

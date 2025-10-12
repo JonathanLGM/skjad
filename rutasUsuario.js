@@ -14,6 +14,6 @@ router.post('/login', usuarioControlador.loginUsuario);
 router.post('/logout', usuarioControlador.logoutUsuario);
 // --- Obtener cuenta por username (misma estructura CRUD) ---
 router.get('/cuenta-por-username/:username', usuarioControlador.obtenerCuentaPorUsername);
-
+router.get('/rol/:username', usuarioControlador.obtenerRolPorUsername);
 
 module.exports = router;

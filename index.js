@@ -38,8 +38,7 @@ app.get('/', (req, res) => {
 const usuarioRouter = require('./rutasUsuario');
 app.use('/usuario', usuarioRouter);
 
-// 🔒 Middleware para proteger HTML según rol
-const verificarToken = require('./middleware'); // tu middleware actualizado
+
 
 // --- Rutas de HTML protegidas ---
 // Admin
