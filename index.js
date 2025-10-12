@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./db');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -15,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 
 // Verificar conexión a la base de datos a través de Sequelize
 sequelize.authenticate()
-  .then(() => console.log('✅ Conectado a la base de datos (Sequelize) correctamente en Render'))
+  .then(() => console.log('✅ Conectado a la base de datos (Sequelize) correctamente'))
   .catch(err => {
     console.error('❌ Error de conexión a la base de datos (Sequelize):', err);
     process.exit(1);
@@ -28,6 +29,46 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+// Ruta raíz -> log_in.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'log_in.html'));
+});
+
+// 🚀 Rutas CRUD de Usuario
+const usuarioRouter = require('./rutasUsuario');
+app.use('/usuario', usuarioRouter);
+
+// 🔒 Middleware para proteger HTML según rol
+const verificarToken = require('./middleware'); // tu middleware actualizado
+
+// --- Rutas de HTML protegidas ---
+// Admin
+app.get('/menuadmin.html', verificarToken('admin'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'menuadmin.html'));
+});
+
+// Usuario
+app.get('/menu.html', verificarToken('usuario'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'menu.html'));
+});
+
+// Rutas CRUD de Cliente
+const clienteRouter = require('./rutasCliente');
+app.use('/cliente', clienteRouter);
+
+// Rutas CRUD de Cuenta
+const cuentaRouter = require('./rutasCuenta');
+app.use('/cuenta', cuentaRouter);
+
+// Rutas CRUD de Cajero
+const cajeroRouter = require('./rutasCajero');
+app.use('/cajero', cajeroRouter);
+
+// Rutas CRUD de Transaccion
+const transaccionRouter = require('./rutasTransaccion');
+app.use('/transaccion', transaccionRouter);
+
+// Ruta de prueba de barrios
 app.get('/barrios', async (req, res) => {
   try {
     const result = await pool.query('SELECT nombre FROM barrio LIMIT 10;');
@@ -36,48 +77,6 @@ app.get('/barrios', async (req, res) => {
     console.error('Error en la consulta:', err);
     res.status(500).json({ error: 'Error en la consulta' });
   }
-});
-
-// Ruta raíz para cargar cliente.html
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/frontend/log_in.html');
-});
-
-
-
-// 🚀 Rutas CRUD de Usuario (agregado)
-const usuarioRouter = require('./rutasUsuario');
-app.use('/usuario', usuarioRouter);
-
-
-
-// 🔒 Middleware global para proteger lo que sigue
-const verificarToken = require('./middleware');
-app.use(verificarToken);
-
-// Rutas CRUD de Cliente
-const clienteRouter = require('./rutasCliente');
-app.use('/cliente', clienteRouter);
-
-
-// 🚀 Rutas CRUD de Cuenta (nuevo)
-const cuentaRouter = require('./rutasCuenta');
-app.use('/cuenta', cuentaRouter);
-
-// 🚀 Rutas CRUD de Cajero (nuevo)
-const cajeroRouter = require('./rutasCajero');
-app.use('/cajero', cajeroRouter);
-
-// 🚀 Rutas CRUD de Transaccion (nuevo)
-const transaccionRouter = require('./rutasTransaccion');
-app.use('/transaccion', transaccionRouter);
-
-// ✅ Ejemplo de ruta protegida (puedes crear más así)
-app.get('/perfil-seguro', verificarToken, (req, res) => {
-  res.json({
-    mensaje: `Acceso permitido a usuario con rol: ${req.user.rol}`,
-    datos: req.user
-  });
 });
 
 // Levantar servidor
