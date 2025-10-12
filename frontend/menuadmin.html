@@ -89,6 +89,7 @@
     // 🚪 Botón Cerrar sesión
     document.getElementById('logoutBtn').addEventListener('click', () => {
       localStorage.removeItem('usuario');
+      localStorage.removeItem('token');
       alert('Sesión cerrada correctamente.');
       window.location.href = 'log_in.html';
     });
