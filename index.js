@@ -59,9 +59,6 @@ app.use(verificarToken);
 const clienteRouter = require('./rutasCliente');
 app.use('/cliente', clienteRouter);
 
-// 🚀 Rutas CRUD de Usuario (agregado)
-const usuarioRouter = require('./rutasUsuario');
-app.use('/usuario', usuarioRouter);
 
 // 🚀 Rutas CRUD de Cuenta (nuevo)
 const cuentaRouter = require('./rutasCuenta');
