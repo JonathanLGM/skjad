@@ -30,7 +30,7 @@ const pool = new Pool({
 
 // Ruta raíz -> log_in.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'log_in.html'));
+  res.sendFile(join(__dirname, 'frontend', 'log_in.html'));
 });
 
 // 🚀 Rutas CRUD de Usuario
