@@ -85,31 +85,7 @@
   </main>
 
   <script>
-    app.get('/menuadmin', protegerRuta, (req, res) => {
-    res.sendFile(__dirname + '/frontend/menuadmin.html');
-    });
     
-    // 🔐 Verificar sesión
-    window.addEventListener('DOMContentLoaded', () => {
-      const usuarioGuardado = localStorage.getItem('usuario');
-      if (!usuarioGuardado) {
-        alert('Debes iniciar sesión primero.');
-        window.location.href = 'login.html';
-        return;
-      }
-
-      try {
-        const usuario = JSON.parse(usuarioGuardado);
-        if (!usuario || !usuario.username) {
-          throw new Error();
-        }
-      } catch {
-        // Si el JSON está corrupto o no válido, borra y redirige
-        localStorage.removeItem('usuario');
-        window.location.href = 'log_in.html';
-      }
-    });
-
     // 🚪 Botón Cerrar sesión
     document.getElementById('logoutBtn').addEventListener('click', () => {
       localStorage.removeItem('usuario');
