@@ -133,27 +133,24 @@ const obtenerCuentaPorUsername = async (req, res) => {
   }
 };
 
-// log in seguro
-
+// --- 🟢 LOGIN con bcrypt ---
 const loginUsuario = async (req, res) => {
   try {
-    const { nombre_usuario, contrasena } = req.body;
+    const { username, password } = req.body; // usa los mismos nombres que en registrarUsuario
 
-    // Buscar usuario
-    const usuario = await Usuario.findOne({ where: { nombre_usuario } });
+    const usuario = await Usuario1.findOne({ where: { username } });
 
     if (!usuario) {
       return res.status(400).json({ error: 'Usuario no encontrado' });
     }
 
-    // Comparar contraseña encriptada con bcrypt
-    const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
+    // Comparar contraseñas
+    const contrasenaValida = await bcrypt.compare(password, usuario.password);
 
     if (!contrasenaValida) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
-    // Si llega aquí, el login es correcto
     res.json({ mensaje: 'Inicio de sesión exitoso', usuario });
   } catch (error) {
     console.error('Error en login:', error);
@@ -161,19 +158,13 @@ const loginUsuario = async (req, res) => {
   }
 };
 
-
 // --- LOGOUT ---
 const logoutUsuario = async (req, res) => {
   try {
-    // Aquí podrías agregar lógica de blacklist si la implementas
-    return res
-      .status(200)
-      .json({ mensaje: 'Sesión cerrada correctamente' });
+    return res.status(200).json({ mensaje: 'Sesión cerrada correctamente' });
   } catch (err) {
     console.error('Error logoutUsuario:', err);
-    return res
-      .status(500)
-      .json({ mensaje: 'Error en logout', resultado: null });
+    return res.status(500).json({ mensaje: 'Error en logout', resultado: null });
   }
 };
 
@@ -186,5 +177,5 @@ module.exports = {
   borrarUsuario,
   obtenerCuentaPorUsername,
   loginUsuario,
-  logoutUsuario
+  logoutUsuario,
 };
