@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const { SECRET_USER, SECRET_ADMIN } = require('../z');
 
+// secrets.js
+const SECRET_USER = 'KJh82kjsdf87sd9fsd7f87sd98fsd87';   // clave segura inventada
+const SECRET_ADMIN = 'JH98fsd87sdf87sdf7sdf87sd8f7sd8f';
+
 // Middleware para verificar token JWT
 const verificarToken = (req, res, next) => {
   try {
