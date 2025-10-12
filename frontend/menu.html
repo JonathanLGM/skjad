@@ -132,9 +132,13 @@
     }
 
     function cerrarSesion() {
-      localStorage.removeItem('usuario');
-      window.location.href = 'log_in.html';
-    }
+  // Borrar usuario y token
+  localStorage.removeItem('usuario');
+  localStorage.removeItem('token');
+
+  // Redirigir a login
+  window.location.href = 'log_in.html';
+}
 
     function irATransacciones() {
       window.location.href = 'transaccionu.html';
