@@ -37,15 +37,15 @@
 
       <!-- Login -->
       <form id="login" class="active">
-  <div class="input-box">
-    <input type="text" id="loginUsername" placeholder="Usuario" required>
-  </div>
-  <div class="input-box">
-    <input type="password" id="loginPassword" placeholder="Contraseña" required>
-  </div>
-  <button type="submit" class="btn">Ingresar</button>
-  <div class="extra"><a href="#">¿Olvidaste tu contraseña?</a></div>
-</form>
+        <div class="input-box">
+          <input type="text" id="loginUsername" placeholder="Usuario" required>
+        </div>
+        <div class="input-box">
+          <input type="password" id="loginPassword" placeholder="Contraseña" required>
+        </div>
+        <button type="submit" class="btn">Ingresar</button>
+        <div class="extra"><a href="#">¿Olvidaste tu contraseña?</a></div>
+      </form>
 
       <!-- Register -->
       <form id="register">
@@ -67,6 +67,12 @@
   </main>
 
   <script>
+    function showForm(formId, event) {
+      document.querySelectorAll("form").forEach(f => f.classList.remove("active"));
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.getElementById(formId).classList.add("active");
+      event.currentTarget.classList.add("active");
+    }
 
     // --- LOGIN ---
 const loginForm = document.getElementById('login');
@@ -74,42 +80,73 @@ const loginForm = document.getElementById('login');
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const username = document.getElementById('loginUsername').value.trim();
+  const username = document.getElementById('loginUsername').value;
   const password = document.getElementById('loginPassword').value;
 
   try {
-    // 1) POST login
+    // 1️⃣ Hacer login
     const res = await fetch('/usuario/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      const msg = data.error || data.mensaje || 'Error en login';
-      throw new Error(msg);
+    // Leer la respuesta como texto primero para manejar HTML inesperado
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error("Respuesta no JSON:", text);
+      throw new Error("Error al hacer login, el servidor no devolvió JSON");
     }
 
-    // 2) Guardar token en localStorage
-    if (!data.token) throw new Error('El servidor no devolvió token');
-    localStorage.setItem('token', data.token);
+    if (!res.ok) throw new Error(data.mensaje || 'Error en login');
 
-    // 3) Guardar info básica del usuario
-    const usuario = data.usuario || {};
-    localStorage.setItem('usuario', JSON.stringify({ username, rol: usuario.rol }));
+    alert(data.mensaje); // Login exitoso
 
-    // 4) Redirigir según rol
-    const rol = usuario.rol?.toLowerCase();
-    if (rol === 'admin') window.location.href = '/menuadmin.html';
-    else window.location.href = '/menu.html';
+    // 2️⃣ Consultar cuenta antes de guardar en localStorage
+    const cuentaRes = await fetch(`/usuario/cuenta-por-username/${username}`);
+    const cuentaText = await cuentaRes.text();
+    let cuentaData;
+    try {
+      cuentaData = JSON.parse(cuentaText);
+    } catch {
+      console.error("Respuesta de cuenta no JSON:", cuentaText);
+      throw new Error("No se pudo obtener información de la cuenta");
+    }
+
+    if (!cuentaRes.ok || !cuentaData.resultado) {
+      throw new Error("No se pudo obtener la cuenta del usuario");
+    }
+
+    console.log("Cuenta obtenida:", cuentaData.resultado);
+
+    // 3️⃣ Guardar todo en localStorage
+    localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
+
+    // 4️⃣ Redirigir a menú
+    const id_usuario = data.resultado.id_usuario;
+    const usuarioDataRes = await fetch(`/usuario/${id_usuario}`);
+    const usuarioData = await usuarioDataRes.json();
+
+    if (!usuarioDataRes.ok || !usuarioData.resultado) {
+      throw new Error("No se pudo obtener información del usuario");
+    }
+
+    const rol = usuarioData.resultado.rol;
+    if (rol === 'admin') {
+      window.location.href = 'menuadmin.html';
+    } else {
+      window.location.href = 'menu.html';
+    }
+
 
   } catch (err) {
-    alert('Error al iniciar sesión: ' + (err.message || err));
-    console.error('Login error:', err);
+    alert('Error: ' + err.message);
   }
 });
+
     // --- REGISTER ---
     const registerForm = document.getElementById('register');
     registerForm.addEventListener('submit', async (e) => {

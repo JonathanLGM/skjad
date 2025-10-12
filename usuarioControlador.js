@@ -1,7 +1,7 @@
 const { Usuario1, Cuenta1, Cliente1, sequelize } = require('./db'); // Importar modelos y sequelize
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt'); // encriptador
-const jwt = require('jsonwebtoken');
+
 // Crear usuario + cuenta
 const registrarUsuario = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -133,77 +133,11 @@ const obtenerCuentaPorUsername = async (req, res) => {
   }
 };
 
-// --- Obtener rol por username ---
-const obtenerRolPorUsername = async (req, res) => {
-  try {
-    const { username } = req.params;
-
-    const usuario = await Usuario1.findOne({
-      where: { username },
-      attributes: ['rol']
-    });
-
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado', resultado: null });
-    }
-
-    res.status(200).json({ mensaje: 'Rol obtenido', resultado: usuario.rol });
-  } catch (err) {
-    console.error('Error en obtenerRolPorUsername:', err);
-    res.status(500).json({ mensaje: err.message, resultado: null });
-  }
-};
-
-const SECRET_USER = 'KJh82kjsdf87sd9fsd7f87sd98fsd87';
-const SECRET_ADMIN = 'JH98fsd87sdf87sdf7sdf87sd8f7sd8f';
-
-const loginUsuario = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    const usuario = await Usuario1.findOne({ where: { username } });
-
-    if (!usuario) return res.status(400).json({ error: 'Usuario no encontrado' });
-
-    const contrasenaValida = await bcrypt.compare(password, usuario.password);
-    if (!contrasenaValida) return res.status(401).json({ error: 'Contraseña incorrecta' });
-
-    // Generar token según rol
-    let token;
-    if (usuario.rol === 'admin') {
-      token = jwt.sign({ id_usuario: usuario.id_usuario, rol: usuario.rol }, SECRET_ADMIN, { expiresIn: '1h' });
-    } else {
-      token = jwt.sign({ id_usuario: usuario.id_usuario, rol: usuario.rol }, SECRET_USER, { expiresIn: '1h' });
-    }
-
-    // Devuelve usuario + token
-    res.json({ mensaje: 'Inicio de sesión exitoso', usuario, token });
-
-  } catch (error) {
-    console.error('Error en login:', error);
-    res.status(500).json({ error: 'Error al iniciar sesión' });
-  }
-};
-
-// --- LOGOUT ---
-const logoutUsuario = async (req, res) => {
-  try {
-    return res.status(200).json({ mensaje: 'Sesión cerrada correctamente' });
-  } catch (err) {
-    console.error('Error logoutUsuario:', err);
-    return res.status(500).json({ mensaje: 'Error en logout', resultado: null });
-  }
-};
-
-
 module.exports = {
   registrarUsuario,
   listarUsuarios,
   obtenerUsuarioPorId,
   actualizarUsuario,
   borrarUsuario,
-  obtenerCuentaPorUsername,
-  loginUsuario,
-  logoutUsuario,
-  obtenerRolPorUsername
+  obtenerCuentaPorUsername
 };
