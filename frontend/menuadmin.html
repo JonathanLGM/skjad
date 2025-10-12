@@ -85,7 +85,13 @@
   </main>
 
   <script>
-    
+     const usuario = JSON.parse(localStorage.getItem('usuario'));
+     const token = localStorage.getItem('token');
+
+     if (!usuario || !token || usuario.info?.rol !== 'admin') {
+        alert('Debes iniciar sesión como administrador');
+        window.location.href = 'log_in.html';
+      }
     // 🚪 Botón Cerrar sesión
     document.getElementById('logoutBtn').addEventListener('click', () => {
       localStorage.removeItem('usuario');
