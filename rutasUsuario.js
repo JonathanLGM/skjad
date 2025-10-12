@@ -10,17 +10,8 @@ router.get('/listar', usuarioControlador.listarUsuarios);
 router.get('/:id_usuario', usuarioControlador.obtenerUsuarioPorId);
 router.put('/:id_usuario', usuarioControlador.actualizarUsuario);
 router.delete('/:id_usuario', usuarioControlador.borrarUsuario);
-
-
-const log_in = async (req, res) => {
-  const { usuario, contraseña } = req.body;
-  const user = await Usuario.findOne({ where: { usuario } });
-  if (!user || user.contraseña !== contraseña) {
-    return res.status(401).json({ error: 'Credenciales incorrectas' });
-  }
-  res.json({ mensaje: 'Inicio de sesión exitoso' });
-};
 router.post('/login', log_in);
+router.post('/logout', usuarioControlador.logoutUsuario);
 // --- Obtener cuenta por username (misma estructura CRUD) ---
 router.get('/cuenta-por-username/:username', usuarioControlador.obtenerCuentaPorUsername);
 
