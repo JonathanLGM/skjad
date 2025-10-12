@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./db');
-const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -37,20 +36,6 @@ app.get('/', (req, res) => {
 // 🚀 Rutas CRUD de Usuario
 const usuarioRouter = require('./rutasUsuario');
 app.use('/usuario', usuarioRouter);
-
-// 🔒 Middleware para proteger HTML según rol
-const verificarToken = require('./middleware'); // tu middleware actualizado
-
-// --- Rutas de HTML protegidas ---
-// Admin
-app.get('/menuadmin.html', verificarToken('admin'), (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'menuadmin.html'));
-});
-
-// Usuario
-app.get('/menu.html', verificarToken('usuario'), (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'menu.html'));
-});
 
 // Rutas CRUD de Cliente
 const clienteRouter = require('./rutasCliente');
