@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
 });
 
 // 🔒 Middleware global para proteger lo que sigue
-const { verificarToken } = require('./middleware');
+const verificarToken = require('./middleware');
 app.use(verificarToken);
 
 // Rutas CRUD de Cliente
