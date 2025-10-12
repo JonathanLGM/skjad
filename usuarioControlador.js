@@ -140,7 +140,17 @@ const loginUsuario = async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password)
       return res.status(400).json({ mensaje: 'Usuario y contraseña requeridos', resultado: null });
-
+      // Buscar usuario con sus relaciones
+      const usuario = await Usuario1.findOne({
+        where: { username },
+        include: {
+        model: Cliente1,
+        include: {
+        model: Cuenta1,
+        attributes: ['id_cuenta', 'saldo']
+        }
+      }
+    });
     if (!usuario)
       return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos', resultado: null });
 

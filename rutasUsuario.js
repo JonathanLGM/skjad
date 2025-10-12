@@ -11,25 +11,16 @@ router.get('/:id_usuario', usuarioControlador.obtenerUsuarioPorId);
 router.put('/:id_usuario', usuarioControlador.actualizarUsuario);
 router.delete('/:id_usuario', usuarioControlador.borrarUsuario);
 
-// --- Login ---
-router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).json({ mensaje: 'Faltan datos' });
 
-  try {
-    const usuario = await Usuario1.findOne({ where: { username } });
-    if (!usuario) return res.status(401).json({ mensaje: 'Usuario no encontrado' });
-
-    // ✅ Comparar contraseña encriptada
-    const passwordValida = await bcrypt.compare(password, usuario.password);
-    if (!passwordValida) return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
-
-    res.status(200).json({ mensaje: 'Login exitoso', resultado: usuario });
-  } catch (err) {
-    console.error('Error en login:', err);
-    res.status(500).json({ mensaje: err.message });
+const log_in = async (req, res) => {
+  const { usuario, contraseña } = req.body;
+  const user = await Usuario.findOne({ where: { usuario } });
+  if (!user || user.contraseña !== contraseña) {
+    return res.status(401).json({ error: 'Credenciales incorrectas' });
   }
-});
+  res.json({ mensaje: 'Inicio de sesión exitoso' });
+};
+
 
 //
 
