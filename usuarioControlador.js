@@ -1,7 +1,7 @@
 const { Usuario1, Cuenta1, Cliente1, sequelize } = require('./db'); // Importar modelos y sequelize
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt'); // encriptador
-
+const jwt = require('jsonwebtoken');
 // Crear usuario + cuenta
 const registrarUsuario = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -133,11 +133,76 @@ const obtenerCuentaPorUsername = async (req, res) => {
   }
 };
 
+// log in seguro
+
+const loginUsuario = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password)
+      return res.status(400).json({ mensaje: 'Usuario y contraseña requeridos', resultado: null });
+
+    if (!usuario)
+      return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos', resultado: null });
+
+    const match = await bcrypt.compare(password, usuario.password);
+    if (!match)
+      return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos', resultado: null });
+
+    const rol = usuario.rol || 'usuario';
+    const clave = rol === 'admin' ? SECRET_ADMIN : SECRET_USER;
+
+    const payload = {
+      id_usuario: usuario.id_usuario,
+      rol,
+      iat: Math.floor(Date.now() / 1000)
+    };
+
+    const token = jwt.sign(payload, clave, { expiresIn: '1h' });
+
+    const cuenta = usuario?.Cliente1?.Cuenta1 || null;
+
+    const resultado = {
+      id_usuario: usuario.id_usuario,
+      username: usuario.username,
+      rol,
+      num_cuenta: cuenta ? cuenta.id_cuenta : null,
+      saldo: cuenta ? cuenta.saldo : null
+    };
+
+    return res.status(200).json({
+      mensaje: `Bienvenido ${usuario.username}`,
+      token,
+      resultado
+    });
+  } catch (err) {
+    console.error('Error loginUsuario:', err);
+    return res.status(500).json({ mensaje: 'Error al iniciar sesión', resultado: null });
+  }
+};
+
+// --- LOGOUT ---
+const logoutUsuario = async (req, res) => {
+  try {
+    // Aquí podrías agregar lógica de blacklist si la implementas
+    return res
+      .status(200)
+      .json({ mensaje: 'Sesión cerrada correctamente' });
+  } catch (err) {
+    console.error('Error logoutUsuario:', err);
+    return res
+      .status(500)
+      .json({ mensaje: 'Error en logout', resultado: null });
+  }
+};
+
+
 module.exports = {
   registrarUsuario,
   listarUsuarios,
   obtenerUsuarioPorId,
   actualizarUsuario,
   borrarUsuario,
-  obtenerCuentaPorUsername
+  obtenerCuentaPorUsername,
+  loginUsuario,
+  logoutUsuario
 };

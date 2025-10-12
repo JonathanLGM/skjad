@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./db');
+const verificarToken = require('./middleware/verificarToken'); // ✅ Nuevo middleware
 
 const app = express();
 app.use(cors());
@@ -62,6 +63,14 @@ app.use('/cajero', cajeroRouter);
 // 🚀 Rutas CRUD de Transaccion (nuevo)
 const transaccionRouter = require('./rutasTransaccion');
 app.use('/transaccion', transaccionRouter);
+
+// ✅ Ejemplo de ruta protegida (puedes crear más así)
+app.get('/perfil-seguro', verificarToken, (req, res) => {
+  res.json({
+    mensaje: `Acceso permitido a usuario con rol: ${req.user.rol}`,
+    datos: req.user
+  });
+});
 
 // Levantar servidor
 app.listen(PORT, () => {
