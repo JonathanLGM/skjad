@@ -64,6 +64,8 @@ app.use('/cajero', cajeroRouter);
 const transaccionRouter = require('./rutasTransaccion');
 app.use('/transaccion', transaccionRouter);
 
+const verificarToken = require('./middleware/verificarToken');
+
 // ✅ Ejemplo de ruta protegida (puedes crear más así)
 app.get('/perfil-seguro', verificarToken, (req, res) => {
   res.json({
