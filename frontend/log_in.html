@@ -74,78 +74,53 @@
       event.currentTarget.classList.add("active");
     }
 
-    // --- LOGIN ---
-const loginForm = document.getElementById('login');
+    const loginForm = document.getElementById('loginForm');
 
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-  const username = document.getElementById('loginUsername').value;
-  const password = document.getElementById('loginPassword').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
 
-  try {
-    // 1️⃣ Hacer login
-    const res = await fetch('/usuario/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.mensaje || 'Error al iniciar sesión');
+          return;
+        }
+
+        // Guarda el token y username
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', username);
+
+        // 🔹 Llama al backend para obtener la cuenta
+        const cuentaResponse = await fetch(`/cuenta/username/${username}`, {
+          headers: { 'Authorization': `Bearer ${data.token}` }
+        });
+
+        const cuentaData = await cuentaResponse.json();
+        console.log('Cuenta del usuario:', cuentaData.resultado);
+
+        // Redirección según el rol
+        const rol = data.usuario?.rol;
+        if (rol === 'admin') {
+          window.location.href = 'menuadmin.html';
+        } else {
+          window.location.href = 'menu.html';
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al iniciar sesión');
+      }
     });
-
-    // Leer la respuesta como texto primero para manejar HTML inesperado
-    const text = await res.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      console.error("Respuesta no JSON:", text);
-      throw new Error("Error al hacer login, el servidor no devolvió JSON");
-    }
-
-    if (!res.ok) throw new Error(data.mensaje || 'Error en login');
-
-    alert(data.mensaje); // Login exitoso
-
-    // 2️⃣ Consultar cuenta antes de guardar en localStorage
-    const cuentaRes = await fetch(`/usuario/cuenta-por-username/${username}`);
-    const cuentaText = await cuentaRes.text();
-    let cuentaData;
-    try {
-      cuentaData = JSON.parse(cuentaText);
-    } catch {
-      console.error("Respuesta de cuenta no JSON:", cuentaText);
-      throw new Error("No se pudo obtener información de la cuenta");
-    }
-
-    if (!cuentaRes.ok || !cuentaData.resultado) {
-      throw new Error("No se pudo obtener la cuenta del usuario");
-    }
-
-    console.log("Cuenta obtenida:", cuentaData.resultado);
-
-    // 3️⃣ Guardar todo en localStorage
-    localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
-
-    // 4️⃣ Redirigir a menú
-    const id_usuario = data.resultado.id_usuario;
-    const usuarioDataRes = await fetch(`/usuario/${id_usuario}`);
-    const usuarioData = await usuarioDataRes.json();
-
-    if (!usuarioDataRes.ok || !usuarioData.resultado) {
-      throw new Error("No se pudo obtener información del usuario");
-    }
-
-    const rol = usuarioData.resultado.rol;
-    if (rol === 'admin') {
-      window.location.href = 'menuadmin.html';
-    } else {
-      window.location.href = 'menu.html';
-    }
-
-
-  } catch (err) {
-    alert('Error: ' + err.message);
-  }
-});
 
     // --- REGISTER ---
     const registerForm = document.getElementById('register');
