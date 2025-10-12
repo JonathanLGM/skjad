@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./db');
-const verificarToken = require('./middleware/verificarToken'); // ✅ Nuevo middleware
 
 const app = express();
 app.use(cors());
