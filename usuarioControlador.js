@@ -137,58 +137,30 @@ const obtenerCuentaPorUsername = async (req, res) => {
 
 const loginUsuario = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    if (!username || !password)
-      return res.status(400).json({ mensaje: 'Usuario y contraseña requeridos', resultado: null });
-      // Buscar usuario con sus relaciones
-      const usuario = await Usuario1.findOne({
-        where: { username },
-        include: {
-        model: Cliente1,
-        include: {
-        model: Cuenta1,
-        attributes: ['id_cuenta', 'saldo']
-        }
-      }
-    });
-    if (!usuario)
-      return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos', resultado: null });
+    const { nombre_usuario, contrasena } = req.body;
 
-    const match = await bcrypt.compare(password, usuario.password);
-    if (!match)
-      return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos', resultado: null });
+    // Buscar usuario
+    const usuario = await Usuario.findOne({ where: { nombre_usuario } });
 
-    const rol = usuario.rol || 'usuario';
-    const clave = rol === 'admin' ? SECRET_ADMIN : SECRET_USER;
+    if (!usuario) {
+      return res.status(400).json({ error: 'Usuario no encontrado' });
+    }
 
-    const payload = {
-      id_usuario: usuario.id_usuario,
-      rol,
-      iat: Math.floor(Date.now() / 1000)
-    };
+    // Comparar contraseña encriptada con bcrypt
+    const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
 
-    const token = jwt.sign(payload, clave, { expiresIn: '1h' });
+    if (!contrasenaValida) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
 
-    const cuenta = usuario?.Cliente1?.Cuenta1 || null;
-
-    const resultado = {
-      id_usuario: usuario.id_usuario,
-      username: usuario.username,
-      rol,
-      num_cuenta: cuenta ? cuenta.id_cuenta : null,
-      saldo: cuenta ? cuenta.saldo : null
-    };
-
-    return res.status(200).json({
-      mensaje: `Bienvenido ${usuario.username}`,
-      token,
-      resultado
-    });
-  } catch (err) {
-    console.error('Error loginUsuario:', err);
-    return res.status(500).json({ mensaje: 'Error al iniciar sesión', resultado: null });
+    // Si llega aquí, el login es correcto
+    res.json({ mensaje: 'Inicio de sesión exitoso', usuario });
+  } catch (error) {
+    console.error('Error en login:', error);
+    res.status(500).json({ error: 'Error al iniciar sesión' });
   }
 };
+
 
 // --- LOGOUT ---
 const logoutUsuario = async (req, res) => {
