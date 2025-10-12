@@ -45,8 +45,11 @@ app.get('/', (req, res) => {
 
 
 
-// --- LOGIN ---
-router.post('/login', usuarioControlador.loginUsuario);
+// 🚀 Rutas CRUD de Usuario (agregado)
+const usuarioRouter = require('./rutasUsuario');
+app.use('/usuario', usuarioRouter);
+
+
 
 // 🔒 Middleware global para proteger lo que sigue
 const verificarToken = require('./middleware');
