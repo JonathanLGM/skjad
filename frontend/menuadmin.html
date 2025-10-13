@@ -29,5 +29,21 @@
       <button class="btn" onclick="window.location.href='cajero.html'">Cejero</button>
     </div>
   </main>
+  <script>
+    // Verificar si el usuario es admin
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const rol = localStorage.getItem('rol');
+
+    if (!usuario || rol !== 'admin') {
+      alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
+      window.location.href = 'log_in.html';
+    }
+
+    function cerrarSesion() {
+      // Borrar usuario y token
+      localStorage.removeItem('usuario');
+      // Redirigir a login
+      window.location.href = 'log_in.html';
+    }
 </body>
 </html>

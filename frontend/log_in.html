@@ -124,6 +124,8 @@ loginForm.addEventListener('submit', async (e) => {
 
     // 3️⃣ Guardar todo en localStorage
     localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
+    // Guardar el rol directamente en localStorage
+    localStorage.setItem('rol', rol);
 
     // 4️⃣ Redirigir a menú
     const id_usuario = data.resultado.id_usuario;
