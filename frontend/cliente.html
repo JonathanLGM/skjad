@@ -193,7 +193,12 @@
 
   <script>
     const backendUrl = "/cliente";
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
 
+    if (!usuario || usuario.rol !== 'admin') {
+      alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
+      window.location.href = 'log_in.html';
+    }
     const obtenerClientes = async () => {
       try {
         const res = await fetch(`${backendUrl}/listarcliente`);
