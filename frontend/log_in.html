@@ -122,11 +122,7 @@ loginForm.addEventListener('submit', async (e) => {
 
     console.log("Cuenta obtenida:", cuentaData.resultado);
 
-    // 3️⃣ Guardar todo en localStorage
-    localStorage.setItem('usuario', JSON.stringify({ username, cuenta: cuentaData.resultado }));
-    // Guardar el rol directamente en localStorage
-
-    // 4️⃣ Redirigir a menú
+    // 3️⃣ Obtener el rol del usuario
     const id_usuario = data.resultado.id_usuario;
     const usuarioDataRes = await fetch(`/usuario/${id_usuario}`);
     const usuarioData = await usuarioDataRes.json();
@@ -136,17 +132,26 @@ loginForm.addEventListener('submit', async (e) => {
     }
 
     const rol = usuarioData.resultado.rol;
+
+    // 4️⃣ Guardar todo en localStorage (username, cuenta y rol)
+    localStorage.setItem('usuario', JSON.stringify({
+      username,
+      cuenta: cuentaData.resultado,
+      rol
+    }));
+
+    // 5️⃣ Redirigir según rol
     if (rol === 'admin') {
       window.location.href = 'menuadmin.html';
     } else {
       window.location.href = 'menu.html';
     }
-    rol = usuarioData.resultado.rol;
 
   } catch (err) {
     alert('Error: ' + err.message);
   }
 });
+
 
     // --- REGISTER ---
     const registerForm = document.getElementById('register');
