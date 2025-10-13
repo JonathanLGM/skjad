@@ -30,14 +30,13 @@
     </div>
   </main>
   <script>
-    // Verificar si el usuario es admin
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    const rol = localStorage.getItem('rol');
+   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-    if (!usuario || rol !== 'admin') {
-      alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
-      window.location.href = 'log_in.html';
-    }
+// Validar rol desde usuario.rol
+if (!usuario || usuario.rol !== 'admin') {
+  alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
+  window.location.href = 'log_in.html';
+}
 
     function cerrarSesion() {
       // Borrar usuario y token
