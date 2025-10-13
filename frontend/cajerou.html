@@ -220,6 +220,11 @@
   </div>
 
   <script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario || usuario.rol !== 'usuario') {
+      alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
+      window.location.href = 'log_in.html';
+    }
     let operacion = 'retiro';
     let monto = 0;
     let saldo = 0;
