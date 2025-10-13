@@ -101,6 +101,10 @@
   </main>
 
   <script>
+     if (!usuario || usuario.rol !== 'usuario') {
+      alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
+      window.location.href = 'log_in.html';
+    }
     const usuario = JSON.parse(localStorage.getItem('usuario'));
 
     if (!usuario) {
