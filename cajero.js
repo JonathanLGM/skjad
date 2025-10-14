@@ -31,6 +31,7 @@ const defineCajero = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'cajero',
+    timestamps: false 
   });
 };
 
