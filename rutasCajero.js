@@ -19,6 +19,6 @@ router.put('/:id_cajero', cajeroControlador.actualizarCajero);
 router.delete('/:id_cajero', cajeroControlador.borrarCajero);
 
 // ✅ NUEVA RUTA: obtener cajeros en formato GeoJSON (para el mapa)
-router.get('/geojson/todos', cajeroControlador.obtenerCajerosGeoJSON);
+router.get('/geojson', cajeroControlador.obtenerCajerosGeoJSON);
 
 module.exports = router;
