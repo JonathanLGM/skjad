@@ -81,27 +81,27 @@ const borrarCajero = async (req, res) => {
 // cajeroControlador.js
 const obtenerCajerosGeoJSON = async (req, res) => {
   try {
-    const [resultado] = await sequelize.query(`
-      SELECT jsonb_build_object(
-        'type', 'FeatureCollection',
-        'features', jsonb_agg(
-          jsonb_build_object(
-            'type', 'Feature',
-            'geometry', ST_AsGeoJSON(ubicacion)::jsonb,
-            'properties', jsonb_build_object(
-              'id_cajero', id_cajero,
-              'direccion', direccion,
-              'estado', estado
-            )
-          )
-        )
-      ) AS geojson
-      FROM cajero;
-    `);
+    const cajeros = await Cajero1.findAll();
 
-    res.json(resultado.geojson);
+    const geojson = {
+      type: 'FeatureCollection',
+      features: cajeros.map(c => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [parseFloat(c.longitud), parseFloat(c.latitud)]
+        },
+        properties: {
+          id_cajero: c.id_cajero,
+          direccion: c.direccion,
+          estado: c.estado
+        }
+      }))
+    };
+
+    res.json(geojson);
   } catch (error) {
-    console.error(error);
+    console.error('❌ Error en obtenerCajerosGeoJSON:', error);
     res.status(500).json({ mensaje: 'Error obteniendo cajeros en formato GeoJSON' });
   }
 };
