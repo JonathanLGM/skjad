@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const cajeroControlador = require('./cajeroControlador'); // igual que cliente, está en raíz
 
+router.get('/geojson', cajeroControlador.obtenerCajerosGeoJSON);
+
 // Crear cajero
 router.post('/', cajeroControlador.registrarCajero);
 
@@ -18,7 +20,5 @@ router.put('/:id_cajero', cajeroControlador.actualizarCajero);
 // Eliminar cajero
 router.delete('/:id_cajero', cajeroControlador.borrarCajero);
 
-// ✅ NUEVA RUTA: obtener cajeros en formato GeoJSON (para el mapa)
-router.get('/geojson', cajeroControlador.obtenerCajerosGeoJSON);
 
 module.exports = router;
