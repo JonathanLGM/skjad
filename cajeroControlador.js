@@ -1,4 +1,4 @@
-const { Cajero1, sequelize } = require('./db'); // Importar modelo Cajero1
+const { Cajero1 } = require('./db'); // Importar modelo Cajero1
 
 // Crear cajero
 const registrarCajero = async (req, res) => {
