@@ -48,13 +48,13 @@
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Cargar cajeros desde el backend
+    // Función para cargar cajeros y la ubicación del usuario
     async function cargarCajeros() {
       try {
+        // 1️⃣ Cargar cajeros
         const res = await fetch('/cajero/geojson');
         const data = await res.json();
 
-        // Agregar los cajeros al mapa
         L.geoJSON(data, {
           onEachFeature: function (feature, layer) {
             const props = feature.properties;
@@ -63,8 +63,48 @@
                <b>Dirección:</b> ${props.direccion || 'N/A'}<br>
                <b>Estado:</b> ${props.estado || 'Desconocido'}`
             );
+          },
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, {
+              icon: L.icon({
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/1673/1673221.png', // rojo para cajeros
+                iconSize: [25, 25],
+                iconAnchor: [12, 25],
+                popupAnchor: [0, -25]
+              })
+            });
           }
         }).addTo(map);
+
+        // 2️⃣ Obtener ubicación del usuario
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+
+              // Marcador del usuario (color diferente)
+              const usuarioMarker = L.marker([lat, lng], {
+                icon: L.icon({
+                  iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png', // azul para usuario
+                  iconSize: [30, 30],
+                  iconAnchor: [15, 30],
+                  popupAnchor: [0, -30]
+                })
+              }).addTo(map);
+
+              usuarioMarker.bindPopup("<b>¡Aquí estás tú!</b>").openPopup();
+
+              // Centrar el mapa en la ubicación del usuario
+              map.setView([lat, lng], 12);
+            },
+            function (error) {
+              console.error("Error obteniendo ubicación:", error);
+              alert("No se pudo obtener tu ubicación.");
+            }
+          );
+        }
+
       } catch (err) {
         console.error('Error cargando cajeros:', err);
         alert('Error cargando los cajeros desde el servidor');
