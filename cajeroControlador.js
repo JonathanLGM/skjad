@@ -1,4 +1,4 @@
-const { Cajero1 } = require('./db'); // Importar modelo Cajero1
+const { Cajero1, sequelize } = require('./db'); // Importar modelo Cajero1
 
 // Crear cajero
 const registrarCajero = async (req, res) => {
@@ -79,8 +79,6 @@ const borrarCajero = async (req, res) => {
 };
 
 // cajeroControlador.js
-const { sequelize } = require('../config/db');
-
 const obtenerCajerosGeoJSON = async (req, res) => {
   try {
     const [resultado] = await sequelize.query(`
