@@ -1,4 +1,4 @@
-const { Cajero1 } = require('./db'); // Importar modelo Cajero1
+const { Cajero1, sequelize } = require('./db'); // Importar modelo Cajero1
 
 // Crear cajero
 const registrarCajero = async (req, res) => {
@@ -78,10 +78,43 @@ const borrarCajero = async (req, res) => {
   }
 };
 
+// cajeroControlador.js
+const { sequelize } = require('../config/db');
+
+const obtenerCajerosGeoJSON = async (req, res) => {
+  try {
+    const [resultado] = await sequelize.query(`
+      SELECT jsonb_build_object(
+        'type', 'FeatureCollection',
+        'features', jsonb_agg(
+          jsonb_build_object(
+            'type', 'Feature',
+            'geometry', ST_AsGeoJSON(ubicacion)::jsonb,
+            'properties', jsonb_build_object(
+              'id_cajero', id_cajero,
+              'direccion', direccion,
+              'estado', estado
+            )
+          )
+        )
+      ) AS geojson
+      FROM cajero;
+    `);
+
+    res.json(resultado.geojson);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error obteniendo cajeros en formato GeoJSON' });
+  }
+};
+
+module.exports = { obtenerCajerosGeoJSON };
+
 module.exports = {
   registrarCajero,
   listarCajeros,
   obtenerCajeroPorId,
   actualizarCajero,
-  borrarCajero
+  borrarCajero,
+  obtenerCajerosGeoJSON
 };

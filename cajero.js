@@ -1,5 +1,5 @@
 const defineCajero = (sequelize, DataTypes) => {
-  return sequelize.define('Cajero1', {
+  const Cajero = sequelize.define('Cajero1', {
     id_cajero: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -28,11 +28,35 @@ const defineCajero = (sequelize, DataTypes) => {
     id_tipo: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    ubicacion: {
+      type: DataTypes.GEOMETRY('POINT', 4326),
+      allowNull: true
     }
   }, {
     tableName: 'cajero',
-    timestamps: false 
+    timestamps: false,
+    hooks: {
+      beforeCreate: (cajero) => {
+        if (cajero.latitud && cajero.longitud) {
+          cajero.ubicacion = {
+            type: 'Point',
+            coordinates: [parseFloat(cajero.longitud), parseFloat(cajero.latitud)]
+          };
+        }
+      },
+      beforeUpdate: (cajero) => {
+        if (cajero.latitud && cajero.longitud) {
+          cajero.ubicacion = {
+            type: 'Point',
+            coordinates: [parseFloat(cajero.longitud), parseFloat(cajero.latitud)]
+          };
+        }
+      }
+    }
   });
+
+  return Cajero;
 };
 
 module.exports = defineCajero;

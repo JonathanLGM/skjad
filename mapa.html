@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa de Cajeros</title>
+  
+  <!-- Estilos de Leaflet -->
+  <link 
+    rel="stylesheet" 
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+e2FKW3VSMJQ7wHTJ3ZlDj5xSUsm4cT+3X1BfC7jk="
+    crossorigin=""
+  />
+  
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <!-- Script de Leaflet -->
+  <script 
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-pG8zGkNf3G5Dfu3rNq0h2Qf0OdZ4rjFl3pM1Y1Yy0Gk="
+    crossorigin="">
+  </script>
+
+  <script>
+    // Crear el mapa
+    const map = L.map('map').setView([4.60971, -74.08175], 12); // Bogotá por defecto
+
+    // Capa base de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Cargar cajeros desde el backend
+    fetch('/api/cajero/listarcajero')
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(cajero => {
+          if (cajero.latitud && cajero.longitud) {
+            const marker = L.marker([cajero.latitud, cajero.longitud]).addTo(map);
+            marker.bindPopup(`<b>${cajero.nombre}</b><br>${cajero.ubicacion}`);
+          }
+        });
+      })
+      .catch(err => console.error('Error cargando cajeros:', err));
+
+    // Ejemplo: trazar ruta entre dos puntos (usa servicio público OSRM)
+    function trazarRuta(origen, destino) {
+      const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          const route = data.routes[0].geometry;
+          const linea = L.geoJSON(route, {
+            style: { color: 'blue', weight: 4 }
+          }).addTo(map);
+          map.fitBounds(linea.getBounds());
+        });
+    }
+
+    // Ejemplo: trazar ruta entre dos cajeros (coordenadas de ejemplo)
+    const origen = { lat: 4.60971, lng: -74.08175 };
+    const destino = { lat: 4.65, lng: -74.1 };
+    trazarRuta(origen, destino);
+  </script>
+</body>
+</html>
