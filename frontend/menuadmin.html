@@ -1,249 +1,183 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Banca Territorial Admin</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banca Territorial - Panel de Administración</title>
   <style>
-    /* Fondo general */
     body {
       margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background-color: #e7e9fb;
-    }
-
-    /* Ventana morada superior */
-    .window {
-      background-color: #7164e0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff; /* Fondo blanco total */
       height: 100vh;
-      padding: 20px;
+      overflow-x: hidden;
     }
 
-    /* Barra superior tipo navegador */
-    .navbar {
-      background-color: #0a2e73;
+    header {
+      background-color: #002a5c;
       color: white;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 25px;
-      border-radius: 6px 6px 0 0;
+      font-size: 1rem;
     }
 
-    .navbar h1 {
-      font-size: 1.2rem;
-      margin: 0;
+    header span {
+      font-weight: bold;
     }
 
-    .navbar h1 span {
-      font-weight: 300;
-    }
-
-    .logout-btn {
-      background-color: #e74c3c;
-      color: white;
+    .btn-logout {
+      background-color: #e63946;
       border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      color: white;
       cursor: pointer;
-      font-weight: 500;
-      transition: 0.3s;
+      transition: background 0.3s;
     }
 
-    .logout-btn:hover {
-      background-color: #c0392b;
+    .btn-logout:hover {
+      background-color: #c62828;
     }
 
-    /* Contenedor principal */
-    .dashboard {
-      background: white;
-      border-radius: 0 0 10px 10px;
+    .main-container {
+      background-color: #ffffff;
+      min-height: calc(100vh - 70px);
       padding: 40px;
-      text-align: center;
-      margin-top: -4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .dashboard h2 {
-      color: #0a2e73;
-      font-size: 1.6rem;
-      margin-bottom: 5px;
-    }
-
-    .dashboard p {
-      color: #555;
-      margin-bottom: 40px;
-    }
-
-    /* Grid principal */
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 25px;
-      justify-items: center;
-      margin-bottom: 40px;
-    }
-
-    /* Tarjetas */
-    .card {
-      background: white;
-      border-radius: 15px;
-      padding: 25px;
-      width: 160px;
-      height: 130px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      color: #002a5c;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #555;
+      margin-top: 0;
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 30px;
+      justify-content: center;
+      width: 80%;
+      max-width: 1000px;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
 
-    .card i {
+    .icon {
       font-size: 2rem;
       margin-bottom: 10px;
-      color: #fff;
-      background: #0a2e73;
-      padding: 15px;
-      border-radius: 12px;
     }
 
-    .card h3 {
-      color: #0a2e73;
-      margin: 0;
-      font-size: 1rem;
-    }
+    .card.clientes .icon { color: #1e40af; }
+    .card.cuentas .icon { color: #065f46; }
+    .card.usuarios .icon { color: #0d9488; }
+    .card.transacciones .icon { color: #2563eb; }
+    .card.cajero .icon { color: #1e3a8a; }
+    .card.mapa .icon { color: #7e22ce; }
 
-    /* Colores personalizados para cada tarjeta */
-    .clientes i { background: #2563eb; }
-    .cuentas i { background: #047857; }
-    .usuarios i { background: #0e7490; }
-    .transacciones i { background: #1d4ed8; }
-    .cajero i { background: #1e40af; }
-    .mapa i { background: #4c1d95; }
-
-    /* Contadores inferiores */
     .stats {
       display: flex;
+      gap: 20px;
       justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
       margin-top: 40px;
+      flex-wrap: wrap;
     }
 
-    .stat-box {
-      background: #fff;
-      border-radius: 12px;
+    .stat-card {
+      background-color: white;
+      border-left: 5px solid #2563eb;
       padding: 20px 40px;
-      min-width: 250px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       text-align: center;
-      border-left: 6px solid #2563eb;
+      min-width: 260px;
     }
 
-    .stat-box h4 {
-      color: #555;
-      margin: 5px 0;
-      font-weight: 500;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-    }
+    .stat-card.green { border-left-color: #16a34a; }
+    .stat-card.yellow { border-left-color: #eab308; }
 
-    .stat-box p {
-      font-size: 1.1rem;
+    .stat-card p {
       font-weight: bold;
-      color: #0a2e73;
-      margin: 0;
+      margin: 8px 0 0 0;
+      color: #002a5c;
     }
-
-    .clientes-stat { border-color: #0ea5e9; }
-    .cuentas-stat { border-color: #10b981; }
-    .cajeros-stat { border-color: #fbbf24; }
-
   </style>
 </head>
 <body>
-  <div class="window">
-    <div class="navbar">
-      <h1>Banca Territorial <span>Admin</span></h1>
-      <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+  <header>
+    <div><span>Banca Territorial</span> Admin</div>
+    <button class="btn-logout">Cerrar Sesión</button>
+  </header>
+
+  <div class="main-container">
+    <h2>Panel de Administración</h2>
+    <p>Gestiona todos los aspectos del sistema bancario</p>
+
+    <div class="grid">
+      <div class="card clientes">
+        <div class="icon">👥</div>
+        <p>Clientes</p>
+      </div>
+      <div class="card cuentas">
+        <div class="icon">💳</div>
+        <p>Cuentas</p>
+      </div>
+      <div class="card usuarios">
+        <div class="icon">🧑‍💻</div>
+        <p>Usuarios</p>
+      </div>
+      <div class="card transacciones">
+        <div class="icon">📈</div>
+        <p>Transacciones</p>
+      </div>
+      <div class="card cajero">
+        <div class="icon">🏦</div>
+        <p>Cajero</p>
+      </div>
+      <div class="card mapa">
+        <div class="icon">🗺️</div>
+        <p>Mapa</p>
+      </div>
     </div>
 
-    <div class="dashboard">
-      <h2>Panel de Administración</h2>
-      <p>Gestiona todos los aspectos del sistema bancario</p>
-
-      <div class="menu-grid">
-        <div class="card clientes" onclick="window.location.href='cliente.html'">
-          <i class="fas fa-users"></i>
-          <h3>Clientes</h3>
-        </div>
-
-        <div class="card cuentas" onclick="window.location.href='cuenta.html'">
-          <i class="fas fa-credit-card"></i>
-          <h3>Cuentas</h3>
-        </div>
-
-        <div class="card usuarios" onclick="window.location.href='usuario.html'">
-          <i class="fas fa-user-shield"></i>
-          <h3>Usuarios</h3>
-        </div>
-
-        <div class="card transacciones" onclick="window.location.href='transaccion.html'">
-          <i class="fas fa-chart-line"></i>
-          <h3>Transacciones</h3>
-        </div>
-
-        <div class="card cajero" onclick="window.location.href='cajero.html'">
-          <i class="fas fa-building-columns"></i>
-          <h3>Cajero</h3>
-        </div>
-
-        <div class="card mapa" onclick="window.location.href='mapa.html'">
-          <i class="fas fa-map-marked-alt"></i>
-          <h3>Mapa</h3>
-        </div>
+    <div class="stats">
+      <div class="stat-card blue">
+        <small>CLIENTES</small>
+        <p>PONGA EL NUMERO DE CLIENTES NENE</p>
       </div>
-
-      <div class="stats">
-        <div class="stat-box clientes-stat">
-          <h4>Clientes</h4>
-          <p>PONGA EL NUMERO DE CLIENTES NENE</p>
-        </div>
-
-        <div class="stat-box cuentas-stat">
-          <h4>Cuentas activas</h4>
-          <p>NUMERO DE CUENTAS ACTIVAS</p>
-        </div>
-
-        <div class="stat-box cajeros-stat">
-          <h4>Cajeros</h4>
-          <p>NUMERO DE CAJEROS</p>
-        </div>
+      <div class="stat-card green">
+        <small>CUENTAS ACTIVAS</small>
+        <p>NUMERO DE CUENTAS ACTIVAS</p>
+      </div>
+      <div class="stat-card yellow">
+        <small>CAJEROS</small>
+        <p>NUMERO DE CAJEROS</p>
       </div>
     </div>
   </div>
-
-  <script>
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-
-    if (!usuario || usuario.rol !== 'admin') {
-      alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
-      window.location.href = 'log_in.html';
-    }
-
-    function cerrarSesion() {
-      localStorage.removeItem('usuario');
-      window.location.href = 'log_in.html';
-    }
-  </script>
 </body>
 </html>
