@@ -71,11 +71,15 @@
 
     /* Grid principal */
     .menu-grid {
-    grid-template-columns: repeat(3, 1fr);
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+    display: grid; /* 👈 esto es lo que faltaba */
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    gap: 30px; /* espacio entre tarjetas */
+    justify-content: center; /* centra el contenido */
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto; /* centra el grid en la pantalla */
     }
+
 
 
     /* Tarjetas */
