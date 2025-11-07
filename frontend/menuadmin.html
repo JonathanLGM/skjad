@@ -11,11 +11,11 @@
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background-color: #ffffff; /* FONDO BLANCO */
+      background-color: #ffffff;
       min-height: 100vh;
     }
 
-    /* Barra superior tipo navegador */
+    /* Barra superior */
     .navbar {
       background-color: #0a2e73;
       color: white;
@@ -71,18 +71,16 @@
 
     /* Grid principal */
     .menu-grid {
-    display: grid; /* 👈 esto es lo que faltaba */
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
-    gap: 30px; /* espacio entre tarjetas */
-    justify-content: center; /* centra el contenido */
-    align-items: center;
-    max-width: 900px;
-    margin: 0 auto; /* centra el grid en la pantalla */
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      justify-content: center;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto;
     }
 
-
-
-    /* Tarjetas */
+    /* Tarjetas del menú */
     .card {
       background: white;
       border-radius: 15px;
@@ -118,7 +116,7 @@
       font-size: 1rem;
     }
 
-    /* Colores personalizados para cada tarjeta */
+    /* Colores de las tarjetas principales */
     .clientes i { background: #2563eb; }
     .cuentas i { background: #047857; }
     .usuarios i { background: #0e7490; }
@@ -126,7 +124,7 @@
     .cajero i { background: #1e40af; }
     .mapa i { background: #4c1d95; }
 
-    /* Contadores inferiores */
+    /* Estadísticas inferiores */
     .stats {
       display: flex;
       justify-content: center;
@@ -138,31 +136,54 @@
     .stat-box {
       background: #fff;
       border-radius: 12px;
-      padding: 20px 40px;
-      min-width: 250px;
+      padding: 20px 30px;
+      min-width: 270px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 20px;
       border-left: 6px solid #2563eb;
+    }
+
+    .stat-icon {
+      background: #2563eb;
+      color: white;
+      font-size: 1.8rem;
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-content {
+      text-align: left;
     }
 
     .stat-box h4 {
       color: #555;
-      margin: 5px 0;
-      font-weight: 500;
+      margin: 0 0 5px;
+      font-weight: 600;
       text-transform: uppercase;
       font-size: 0.9rem;
     }
 
     .stat-box p {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: bold;
       color: #0a2e73;
       margin: 0;
     }
 
+    /* Colores personalizados por tipo */
     .clientes-stat { border-color: #0ea5e9; }
+    .clientes-stat .stat-icon { background: #0ea5e9; }
+
     .cuentas-stat { border-color: #10b981; }
+    .cuentas-stat .stat-icon { background: #10b981; }
+
     .cajeros-stat { border-color: #fbbf24; }
+    .cajeros-stat .stat-icon { background: #fbbf24; color: #000; }
   </style>
 </head>
 <body>
@@ -207,27 +228,42 @@
       </div>
     </div>
 
+    <!-- Sección de estadísticas con íconos -->
     <div class="stats">
       <div class="stat-box clientes-stat">
-        <h4>Clientes</h4>
-        <p>PONGA EL NUMERO DE CLIENTES NENE</p>
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Clientes</h4>
+          <p>PONGA EL NÚMERO DE CLIENTES NENE</p>
+        </div>
       </div>
 
       <div class="stat-box cuentas-stat">
-        <h4>Cuentas activas</h4>
-        <p>NUMERO DE CUENTAS ACTIVAS</p>
+        <div class="stat-icon">
+          <i class="fas fa-credit-card"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Cuentas activas</h4>
+          <p>NUMERO DE CUENTAS ACTIVAS</p>
+        </div>
       </div>
 
       <div class="stat-box cajeros-stat">
-        <h4>Cajeros</h4>
-        <p>NUMERO DE CAJEROS</p>
+        <div class="stat-icon">
+          <i class="fas fa-landmark"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Cajeros</h4>
+          <p>NUMERO DE CAJEROS</p>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
     const usuario = JSON.parse(localStorage.getItem('usuario'));
-
     if (!usuario || usuario.rol !== 'admin') {
       alert('Acceso no autorizado. Redirigiendo a la página de inicio de sesión.');
       window.location.href = 'log_in.html';
