@@ -11,11 +11,11 @@
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background-color: #ffffff; /* FONDO BLANCO */
+      background-color: #ffffff;
       min-height: 100vh;
     }
 
-    /* Barra superior tipo navegador */
+    /* Barra superior */
     .navbar {
       background-color: #0a2e73;
       color: white;
@@ -55,7 +55,6 @@
       border-radius: 0;
       padding: 40px;
       text-align: center;
-      box-shadow: none;
     }
 
     .dashboard h2 {
@@ -71,16 +70,14 @@
 
     /* Grid principal */
     .menu-grid {
-    display: grid; /* 👈 esto es lo que faltaba */
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
-    gap: 30px; /* espacio entre tarjetas */
-    justify-content: center; /* centra el contenido */
-    align-items: center;
-    max-width: 900px;
-    margin: 0 auto; /* centra el grid en la pantalla */
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      justify-content: center;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto;
     }
-
-
 
     /* Tarjetas */
     .card {
@@ -143,11 +140,21 @@
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
       text-align: center;
       border-left: 6px solid #2563eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .stat-box i {
+      font-size: 2rem;
+      color: #0a2e73;
     }
 
     .stat-box h4 {
       color: #555;
-      margin: 5px 0;
+      margin: 0;
       font-weight: 500;
       text-transform: uppercase;
       font-size: 0.9rem;
@@ -207,18 +214,22 @@
       </div>
     </div>
 
+    <!-- Sección de estadísticas con íconos -->
     <div class="stats">
       <div class="stat-box clientes-stat">
+        <i class="fas fa-users"></i>
         <h4>Clientes</h4>
         <p>PONGA EL NUMERO DE CLIENTES NENE</p>
       </div>
 
       <div class="stat-box cuentas-stat">
+        <i class="fas fa-credit-card"></i>
         <h4>Cuentas activas</h4>
         <p>NUMERO DE CUENTAS ACTIVAS</p>
       </div>
 
       <div class="stat-box cajeros-stat">
+        <i class="fas fa-landmark"></i>
         <h4>Cajeros</h4>
         <p>NUMERO DE CAJEROS</p>
       </div>
