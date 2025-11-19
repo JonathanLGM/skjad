@@ -101,6 +101,10 @@ const retirarDinero = async (req, res) => {
       return res.status(404).json({ mensaje: 'Cuenta no encontrada', resultado: null });
     }
 
+    console.log("💰 Saldo actual:", cuenta.saldo);
+    console.log("💸 Monto solicitado:", monto);
+
+
     if (cuenta.saldo < monto) {
       await t.rollback();
       return res.status(400).json({ mensaje: 'Saldo insuficiente', resultado: null });
@@ -108,6 +112,10 @@ const retirarDinero = async (req, res) => {
 
     cuenta.saldo = parseFloat(cuenta.saldo) - parseFloat(monto);
     await cuenta.save({ transaction: t });
+
+    console.log("💾 Saldo actualizado en BD:", cuenta.saldo);
+
+    console.log("📝 Registrando transacción (retiro)...");
 
     // Registrar la transacción como "retiro"
     const retiro = await Transaccion1.create({
@@ -118,7 +126,11 @@ const retirarDinero = async (req, res) => {
       id_cajero: 3
     }, { transaction: t });
 
+    console.log("✔️ Transacción registrada:", retiro.id_transaccion);
+
     await t.commit();
+    consolelog('Retiro exitoso:', retiro);
+
     res.status(200).json({ mensaje: 'Retiro exitoso', resultado: retiro });
   } catch (err) {
     await t.rollback();
