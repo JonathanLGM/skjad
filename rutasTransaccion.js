@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const transaccionControlador = require('./transaccionControlador'); // Importar controlador
+const { Op } = require('sequelize');
+
 
 // Crear transacción
 router.post('/', transaccionControlador.registrarTransaccion);
@@ -19,7 +21,7 @@ router.get('/api/ultimo-retiro', async (req, res) => {
   try {
     // Tomamos la última transacción que NO tiene cuenta destino (retiro)
     const ultimoRetiro = await Transaccion1.findOne({
-      where: { id_cuenta_destino: null }, 
+      where: { id_cuenta_destino: { [Op.is]: null } }, 
       order: [['id_transaccion', 'DESC']]
     });
 
