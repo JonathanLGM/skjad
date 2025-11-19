@@ -15,7 +15,7 @@ router.post('/retirar', transaccionControlador.retirarDinero);
 
 router.post('/consignar', transaccionControlador.consignarDinero);
 
-router.get('/ultimo-retiro', async (req, res) => {
+router.get('/api/ultimo-retiro', async (req, res) => {
   try {
     // Tomamos la última transacción que NO tiene cuenta destino (retiro)
     const ultimoRetiro = await Transaccion1.findOne({
