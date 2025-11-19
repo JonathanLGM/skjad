@@ -126,10 +126,11 @@ const retirarDinero = async (req, res) => {
       id_cajero: 3
     }, { transaction: t });
 
-    console.log("✔️ Transacción registrada:", retiro.id_transaccion);
+    
 
     await t.commit();
-    consolelog('Retiro exitoso:', retiro);
+    console.log("✔️ Transacción registrada:", retiro.id_transaccion);
+    console.log('Retiro exitoso:', retiro);
 
     res.status(200).json({ mensaje: 'Retiro exitoso', resultado: retiro });
   } catch (err) {
